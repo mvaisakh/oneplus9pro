@@ -808,6 +808,16 @@ KBUILD_CFLAGS	+= -fprofile-use -Wno-coverage-mismatch -Wno-error=coverage-mismat
 KBUILD_CFLAGS	+= $(call cc-disable-warning, missing-profile)
 endif
 
+ifeq ($(CONFIG_LLVM_POLLY), y)
+KBUILD_CFLAGS	+= -mllvm -polly \
+		   -mllvm -polly-run-inliner \
+		   -mllvm -polly-opt-fusion=max \
+		   -mllvm -polly-ast-use-context \
+		   -mllvm -polly-detect-keep-going \
+		   -mllvm -polly-vectorizer=stripmine \
+		   -mllvm -polly-invariant-load-hoisting
+endif
+
 # Tell gcc to never replace conditional load with a non-conditional one
 KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)
 KBUILD_CFLAGS	+= $(call cc-option,-fno-allow-store-data-races)

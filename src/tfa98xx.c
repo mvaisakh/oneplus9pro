@@ -88,9 +88,10 @@ static int no_reset = 0;
 module_param(no_reset, int, S_IRUGO);
 MODULE_PARM_DESC(no_reset, "do not use the reset line; for debugging via user\n");
 
-static int pcm_sample_format = 0;
+static int pcm_sample_format = 0; /*Be carefull:  setting pcm_sample_format to 3 means TDM settings will be dynamically adapted, please do not set the
+HW TDM Setting in the container file in case of dynamic sample format seletcion*/
 module_param(pcm_sample_format, int, S_IRUGO);
-MODULE_PARM_DESC(pcm_sample_format, "PCM sample format: 0=S16_LE, 1=S24_LE, 2=S32_LE\n");
+MODULE_PARM_DESC(pcm_sample_format, "PCM sample format: 0=S16_LE, 1=S24_LE, 2=S32_LE, 3=dynamic\n");
 
 static int pcm_no_constraint = 0;
 module_param(pcm_no_constraint, int, S_IRUGO);
@@ -2155,11 +2156,7 @@ static void tfa98xx_container_loaded(const struct firmware *cont, void *context)
 		if (ret == Tfa98xx_Error_Not_Supported)
 			tfa98xx->dsp_fw_state = TFA98XX_DSP_FW_FAIL;
 		mutex_unlock(&tfa98xx->dsp_lock);
-	}
-	if(tfa98xx->flags & TFA98XX_FLAG_ADAPT_NOISE_MODE)
-		queue_delayed_work(tfa98xx->tfa98xx_wq,
-						&tfa98xx->nmodeupdate_work,
-						0);		
+	}		
 	tfa98xx_interrupt_enable(tfa98xx, true);
 }
 
@@ -2435,6 +2432,9 @@ static int tfa98xx_startup(struct snd_pcm_substream *substream,
 		return 0;
 
 	switch (pcm_sample_format) {
+    case 0:
+    	formats = SNDRV_PCM_FMTBIT_S16_LE;
+        break;
 	case 1:
 		formats = SNDRV_PCM_FMTBIT_S24_LE;
 		break;
@@ -2442,7 +2442,7 @@ static int tfa98xx_startup(struct snd_pcm_substream *substream,
 		formats = SNDRV_PCM_FMTBIT_S32_LE;
 		break;
 	default:
-		formats = SNDRV_PCM_FMTBIT_S16_LE;
+		formats = TFA98XX_FORMATS;
 		break;
 	}
 
@@ -2577,13 +2577,19 @@ static int tfa98xx_hw_params(struct snd_pcm_substream *substream,
 
 	/* Supported */
 	rate = params_rate(params);
+    tfa98xx->tfa->bitwidth = params_width(params);
+    tfa98xx->tfa->dynamicTDMmode = pcm_sample_format;
 	pr_debug("Requested rate: %d, sample size: %d, physical size: %d\n",
 		rate, snd_pcm_format_width(params_format(params)),
 		snd_pcm_format_physical_width(params_format(params)));
 
 	if (no_start != 0)
 		return 0;
-
+	/* set TDM bit width */
+	pr_debug("%s: Requested width: %d\n", __func__,
+			params_width(params));
+	if ((tfa98xx->tfa->dynamicTDMmode == 3) && tfa_dev_set_tdm_bitwidth(tfa98xx->tfa,tfa98xx->tfa->bitwidth))
+		return -EINVAL;
 	/* check if samplerate is supported for this mixer profile */
 	prof_idx = get_profile_id_for_sr(tfa98xx_mixer_profile, rate);
 	if (prof_idx < 0) {
@@ -2642,6 +2648,8 @@ static int tfa98xx_mute(struct snd_soc_dai *dai, int mute, int stream)
 		tfa_dev_stop(tfa98xx->tfa);
 		tfa98xx->dsp_init = TFA98XX_DSP_INIT_STOPPED;
 		mutex_unlock(&tfa98xx->dsp_lock);
+        if(tfa98xx->flags & TFA98XX_FLAG_ADAPT_NOISE_MODE)
+        	cancel_delayed_work_sync(&tfa98xx->nmodeupdate_work);
 	}
 	else {
 		if (stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -2656,7 +2664,11 @@ static int tfa98xx_mute(struct snd_soc_dai *dai, int mute, int stream)
 				&tfa98xx->init_work, 0);
 #else
 		tfa98xx_dsp_init(tfa98xx);
-#endif//	
+#endif//
+	     if(tfa98xx->flags & TFA98XX_FLAG_ADAPT_NOISE_MODE)
+		 	queue_delayed_work(tfa98xx->tfa98xx_wq,
+						&tfa98xx->nmodeupdate_work,
+						0);	
 	}
 
 	return 0;

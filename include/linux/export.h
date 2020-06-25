@@ -24,13 +24,17 @@ extern struct module __this_module;
 #if defined(CONFIG_MODULE_REL_CRCS)
 #define __CRC_SYMBOL(sym, sec)						\
 	asm("	.section \"___kcrctab" sec "+" #sym "\", \"a\"	\n"	\
+		"   .globl __kstrtab_" #sym	"				\n" \
 	    "	.weak	__crc_" #sym "				\n"	\
+		"   .globl __kstrtabns_" #sym "				\n"	\
 	    "	.long	__crc_" #sym " - .			\n"	\
 	    "	.previous					\n")
 #else
 #define __CRC_SYMBOL(sym, sec)						\
 	asm("	.section \"___kcrctab" sec "+" #sym "\", \"a\"	\n"	\
+		"   .globl __kstrtab_" #sym	"				\n" \
 	    "	.weak	__crc_" #sym "				\n"	\
+		"   .globl __kstrtabns_" #sym "				\n"	\
 	    "	.long	__crc_" #sym "				\n"	\
 	    "	.previous					\n")
 #endif
@@ -101,14 +105,14 @@ struct kernel_symbol {
 #define ___export_symbol_common(sym, sec)				\
 	extern typeof(sym) sym;						\
 	__CRC_SYMBOL(sym, sec);						\
-	static const char __kstrtab_##sym[]				\
+	static const char __visible __kstrtab_##sym[]				\
 	__attribute__((section("__ksymtab_strings"), used, aligned(1)))	\
 	= #sym								\
 
 /* For every exported symbol, place a struct in the __ksymtab section */
 #define ___EXPORT_SYMBOL_NS(sym, sec, ns)				\
 	___export_symbol_common(sym, sec);				\
-	static const char __kstrtabns_##sym[]				\
+	static const char __visible __kstrtabns_##sym[]				\
 	__attribute__((section("__ksymtab_strings"), used, aligned(1)))	\
 	= #ns;								\
 	__KSYMTAB_ENTRY_NS(sym, sec)

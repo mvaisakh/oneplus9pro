@@ -714,10 +714,10 @@ static ssize_t tfa98xx_dbgfs_rpc_read(struct file *file,
 	}
 
 	mutex_lock(&tfa98xx->dsp_lock);
-	error = dsp_msg_read(tfa98xx->tfa, count, buffer);
+	error = tfa_dsp_msg_read(tfa98xx->tfa, count, buffer);
 	mutex_unlock(&tfa98xx->dsp_lock);
 	if (error != Tfa98xx_Error_Ok) {
-		pr_debug("[0x%x] dsp_msg_read error: %d\n", tfa98xx->i2c->addr, error);
+		pr_debug("[0x%x] tfa_dsp_msg_read error: %d\n", tfa98xx->i2c->addr, error);
 		kfree(buffer);
 		return -EFAULT;
 	}
@@ -769,7 +769,7 @@ static ssize_t tfa98xx_dbgfs_rpc_send(struct file *file,
 		}
 	}
 	else {
-		error = dsp_msg(tfa98xx->tfa, msg_file->size, msg_file->data);
+		error = tfa_dsp_msg(tfa98xx->tfa, msg_file->size, msg_file->data);
 		if (error != Tfa98xx_Error_Ok) {
 			pr_debug("[0x%x] dsp_msg error: %d\n", tfa98xx->i2c->addr, error);
 			err = -EIO;
@@ -2348,7 +2348,7 @@ static void tfa98xx_dsp_init(struct tfa98xx *tfa98xx)
 				 * periodically, and re-init IC to recover if
 				 * needed.
 				 */
-				if (tfa98xx->tfa->tfa_family == 1)
+				if (tfa98xx->tfa->tfa_family == 1 || tfa98xx->tfa->dev_ops.tfa_status != NULL)
 					queue_delayed_work(tfa98xx->tfa98xx_wq,
 						&tfa98xx->monitor_work,
 						1 * HZ);
@@ -3109,6 +3109,12 @@ static int tfa98xx_i2c_probe(struct i2c_client *i2c,
 			tfa98xx->flags |= TFA98XX_FLAG_CALIBRATION_CTL;
 			tfa98xx->flags |= TFA98XX_FLAG_TDM_DEVICE;
 			break;
+		case 0x75: /* tfa9875*/
+			pr_info("TFA9875 detected\n");
+			tfa98xx->flags |= TFA98XX_FLAG_MULTI_MIC_INPUTS;
+			tfa98xx->flags |= TFA98XX_FLAG_CALIBRATION_CTL;
+			tfa98xx->flags |= TFA98XX_FLAG_TDM_DEVICE;
+			break;
 		case 0x78: /* tfa9878 */
 			pr_info("TFA9878 detected\n");
 			tfa98xx->flags |= TFA98XX_FLAG_MULTI_MIC_INPUTS;
@@ -3298,6 +3304,7 @@ static struct of_device_id tfa98xx_dt_match[] = {
 	{.compatible = "tfa,tfa98xx" },
 	{.compatible = "tfa,tfa9872" },
 	{.compatible = "tfa,tfa9873" },
+	{.compatible = "tfa,tfa9875" },
 	{.compatible = "tfa,tfa9874" },
 	{.compatible = "tfa,tfa9878" },
 	{.compatible = "tfa,tfa9888" },

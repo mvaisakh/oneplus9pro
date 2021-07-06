@@ -414,6 +414,7 @@ static struct platform_driver video_cc_yupik_driver = {
 		.of_match_table = video_cc_yupik_match_table,
 		.sync_state = video_cc_yupik_sync_state,
 		.pm = &video_cc_yupik_pm_ops,
+		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };
 

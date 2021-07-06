@@ -3625,6 +3625,7 @@ static struct platform_driver gcc_yupik_driver = {
 		.name = "gcc-yupik",
 		.of_match_table = gcc_yupik_match_table,
 		.sync_state = gcc_yupik_sync_state,
+		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };
 

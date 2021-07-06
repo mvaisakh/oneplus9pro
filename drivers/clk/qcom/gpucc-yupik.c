@@ -544,6 +544,7 @@ static struct platform_driver gpu_cc_yupik_driver = {
 		.of_match_table = gpu_cc_yupik_match_table,
 		.sync_state = gpu_cc_yupik_sync_state,
 		.pm = &gpu_cc_yupik_pm_ops,
+		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };
 

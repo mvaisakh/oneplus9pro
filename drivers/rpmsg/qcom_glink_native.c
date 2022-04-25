@@ -1246,7 +1246,6 @@ static int qcom_glink_handle_signals(struct qcom_glink *glink,
 		channel->ept.sig_cb(channel->ept.rpdev, channel->ept.priv,
 				    old, channel->rsigs);
 	}
-
 	return 0;
 }
 
@@ -1478,6 +1477,7 @@ static int qcom_glink_announce_create(struct rpmsg_device *rpdev)
 	int size;
 
 	CH_INFO(channel, "Entered\n");
+
 	if (glink->intentless || !completion_done(&channel->open_ack))
 		return 0;
 

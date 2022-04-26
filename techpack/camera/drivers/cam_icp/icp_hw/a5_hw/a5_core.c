@@ -23,7 +23,6 @@
 #include "a5_reg.h"
 #include "a5_soc.h"
 #include "cam_soc_util.h"
-#include "cam_io_util.h"
 #include "hfi_intf.h"
 #include "hfi_sys_defs.h"
 #include "cam_icp_hw_mgr_intf.h"
@@ -125,7 +124,6 @@ static int32_t cam_icp_get_fw_size(const uint8_t *elf, uint32_t *fw_size)
 			(int)prg_hdr->p_vaddr, (int)seg_mem_size);
 		if (*fw_size < seg_mem_size)
 			*fw_size = seg_mem_size;
-
 	}
 
 	if (*fw_size == 0) {
@@ -399,6 +397,8 @@ static int cam_a5_power_resume(struct cam_hw_info *a5_info, bool debug_enabled)
 {
 	uint32_t val = A5_CSR_FULL_CPU_EN;
 	void __iomem *base;
+	struct cam_hw_soc_info *soc_info = NULL;
+	struct a5_soc_info *a5_soc_info;
 
 	if (!a5_info) {
 		CAM_ERR(CAM_ICP, "invalid A5 device info");
@@ -406,6 +406,8 @@ static int cam_a5_power_resume(struct cam_hw_info *a5_info, bool debug_enabled)
 	}
 
 	base = a5_info->soc_info.reg_map[A5_SIERRA_BASE].mem_base;
+	soc_info = &a5_info->soc_info;
+	a5_soc_info = soc_info->soc_private;
 
 	cam_io_w_mb(A5_CSR_A5_CPU_EN, base + ICP_SIERRA_A5_CSR_A5_CONTROL);
 	cam_io_w_mb(A5_CSR_FUNC_RESET, base + ICP_SIERRA_A5_CSR_NSEC_RESET);
@@ -414,6 +416,11 @@ static int cam_a5_power_resume(struct cam_hw_info *a5_info, bool debug_enabled)
 		val |= A5_CSR_FULL_DBG_EN;
 
 	cam_io_w_mb(val, base + ICP_SIERRA_A5_CSR_A5_CONTROL);
+	cam_io_w_mb(a5_soc_info->a5_qos_val,
+		base + ICP_SIERRA_A5_CSR_ACCESS);
+
+	CAM_DBG(CAM_ICP, "a5 qos-val : 0x%x",
+		cam_io_r_mb(base + ICP_SIERRA_A5_CSR_ACCESS));
 
 	return 0;
 }

@@ -1143,7 +1143,6 @@ error:
 	mutex_unlock(&lrme_hw->hw_mutex);
 
 	return rc;
-
 }
 
 int cam_lrme_hw_reset(void *hw_priv, void *reset_core_args, uint32_t arg_size)

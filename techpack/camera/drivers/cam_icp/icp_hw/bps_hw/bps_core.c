@@ -17,7 +17,6 @@
 #include "bps_core.h"
 #include "bps_soc.h"
 #include "cam_soc_util.h"
-#include "cam_io_util.h"
 #include "cam_bps_hw_intf.h"
 #include "cam_icp_hw_intf.h"
 #include "cam_icp_hw_mgr_intf.h"

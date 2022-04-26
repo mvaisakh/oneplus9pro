@@ -488,7 +488,6 @@ struct cam_packet {
 	__u32                        kmd_cmd_buf_index;
 	__u32                        kmd_cmd_buf_offset;
 	__u64                        payload[1];
-
 };
 
 /**
@@ -716,7 +715,7 @@ struct cam_ubwc_config {
 	__u32   api_version;
 	__u32   num_ports;
 	struct cam_ubwc_plane_cfg_v1
-		   ubwc_plane_cfg[1][CAM_PACKET_MAX_PLANES - 1];
+		ubwc_plane_cfg[1][CAM_PACKET_MAX_PLANES - 1];
 };
 
 /**
@@ -734,7 +733,7 @@ struct cam_ubwc_config_v2 {
 	__u32   api_version;
 	__u32   num_ports;
 	struct cam_ubwc_plane_cfg_v2
-	   ubwc_plane_cfg[1][CAM_PACKET_MAX_PLANES - 1];
+		ubwc_plane_cfg[1][CAM_PACKET_MAX_PLANES - 1];
 };
 
 /**
@@ -804,10 +803,10 @@ struct cam_dmi_read_desc {
 	__u32                         num_pre_writes;
 	__u32                         num_post_writes;
 	struct cam_reg_write_desc        pre_read_config[
-						CAM_REG_DUMP_DMI_CONFIG_MAX];
+			CAM_REG_DUMP_DMI_CONFIG_MAX];
 	struct cam_reg_range_read_desc   dmi_data_read;
 	struct cam_reg_write_desc        post_read_config[
-						CAM_REG_DUMP_DMI_CONFIG_MAX];
+			CAM_REG_DUMP_DMI_CONFIG_MAX];
 };
 
 /**
@@ -891,5 +890,8 @@ struct cam_dump_req_cmd {
 	__s32           link_hdl;
 	__s32           dev_handle;
 };
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include "oplus/media/oplus_cam_defs.h"
+#endif
 
 #endif /* __UAPI_CAM_DEFS_H__ */

@@ -13,7 +13,6 @@
 #include "cam_soc_util.h"
 #include "cam_smmu_api.h"
 #include "cam_cdm.h"
-#include "cam_soc_util.h"
 #include "cam_io_util.h"
 #include "cam_cdm_soc.h"
 
@@ -47,7 +46,6 @@ bool cam_cdm_read_hw_reg(struct cam_hw_info *cdm_hw,
 permission_error:
 	*value = 0;
 	return true;
-
 }
 
 bool cam_cdm_write_hw_reg(struct cam_hw_info *cdm_hw,
@@ -74,7 +72,6 @@ bool cam_cdm_write_hw_reg(struct cam_hw_info *cdm_hw,
 
 permission_error:
 	return true;
-
 }
 
 int cam_cdm_soc_load_dt_private(struct platform_device *pdev,
@@ -111,7 +108,6 @@ int cam_cdm_soc_load_dt_private(struct platform_device *pdev,
 				i);
 			goto end;
 		}
-
 	}
 
 	cdm_pvt_data->is_single_ctx_cdm =

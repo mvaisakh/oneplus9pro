@@ -52,7 +52,6 @@ static void cam_mem_mgr_print_tbl(void)
 				tbl.bufq[i].len);
 		}
 	}
-
 }
 
 static int cam_mem_util_get_dma_dir(uint32_t flags)
@@ -140,7 +139,7 @@ static int cam_mem_mgr_create_debug_fs(void)
 
 	dbgfileptr = debugfs_create_dir("camera_memmgr", NULL);
 	if (!dbgfileptr) {
-		CAM_ERR(CAM_MEM,"DebugFS could not create directory!");
+		CAM_ERR(CAM_MEM, "DebugFS could not create directory!");
 		rc = -ENOENT;
 		goto end;
 	}
@@ -625,16 +624,19 @@ static int cam_mem_util_map_hw_va(uint32_t flags,
 
 	return rc;
 multi_map_fail:
-	if (flags & CAM_MEM_FLAG_PROTECTED_MODE)
-		for (--i; i >= 0; i--)
+	if (flags & CAM_MEM_FLAG_PROTECTED_MODE) {
+		for (--i; i >= 0; i--) {
 			cam_smmu_unmap_stage2_iova(mmu_hdls[i], fd);
-	else
-		for (--i; i >= 0; i--)
+		}
+	}
+	else {
+		for (--i; i >= 0; i--) {
 			cam_smmu_unmap_user_iova(mmu_hdls[i],
 				fd,
 				CAM_SMMU_REGION_IO);
+		}
+	}
 	return rc;
-
 }
 
 int cam_mem_mgr_alloc_and_map(struct cam_mem_mgr_alloc_cmd *cmd)
@@ -687,7 +689,6 @@ int cam_mem_mgr_alloc_and_map(struct cam_mem_mgr_alloc_cmd *cmd)
 	if ((cmd->flags & CAM_MEM_FLAG_HW_READ_WRITE) ||
 		(cmd->flags & CAM_MEM_FLAG_HW_SHARED_ACCESS) ||
 		(cmd->flags & CAM_MEM_FLAG_PROTECTED_MODE)) {
-
 		enum cam_smmu_region_id region;
 
 		if (cmd->flags & CAM_MEM_FLAG_HW_READ_WRITE)

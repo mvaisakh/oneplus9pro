@@ -678,13 +678,14 @@ static int __cam_custom_stop_dev_core(
 		CAM_DBG(CAM_CUSTOM,
 			"signal fence in pending list. fence num %d",
 			 req_custom->num_fence_map_out);
-		for (i = 0; i < req_custom->num_fence_map_out; i++)
+		for (i = 0; i < req_custom->num_fence_map_out; i++) {
 			if (req_custom->fence_map_out[i].sync_id != -1) {
 				cam_sync_signal(
 					req_custom->fence_map_out[i].sync_id,
 					CAM_SYNC_STATE_SIGNALED_CANCEL,
 					CAM_SYNC_COMMON_EVENT_STOP);
 			}
+		}
 		list_add_tail(&req->list, &ctx->free_req_list);
 	}
 
@@ -695,13 +696,14 @@ static int __cam_custom_stop_dev_core(
 		req_custom = (struct cam_custom_dev_ctx_req *) req->req_priv;
 		CAM_DBG(CAM_CUSTOM, "signal fence in wait list. fence num %d",
 			 req_custom->num_fence_map_out);
-		for (i = 0; i < req_custom->num_fence_map_out; i++)
+		for (i = 0; i < req_custom->num_fence_map_out; i++) {
 			if (req_custom->fence_map_out[i].sync_id != -1) {
 				cam_sync_signal(
 					req_custom->fence_map_out[i].sync_id,
 					CAM_SYNC_STATE_SIGNALED_CANCEL,
 					CAM_SYNC_COMMON_EVENT_STOP);
 			}
+		}
 		list_add_tail(&req->list, &ctx->free_req_list);
 	}
 
@@ -712,13 +714,14 @@ static int __cam_custom_stop_dev_core(
 		req_custom = (struct cam_custom_dev_ctx_req *) req->req_priv;
 		CAM_DBG(CAM_CUSTOM, "signal fence in active list. fence num %d",
 			 req_custom->num_fence_map_out);
-		for (i = 0; i < req_custom->num_fence_map_out; i++)
+		for (i = 0; i < req_custom->num_fence_map_out; i++) {
 			if (req_custom->fence_map_out[i].sync_id != -1) {
 				cam_sync_signal(
 					req_custom->fence_map_out[i].sync_id,
 					CAM_SYNC_STATE_SIGNALED_CANCEL,
 					CAM_SYNC_COMMON_EVENT_STOP);
 			}
+		}
 		list_add_tail(&req->list, &ctx->free_req_list);
 	}
 	ctx_custom->frame_id = 0;
@@ -1306,7 +1309,6 @@ free_req:
 	spin_unlock_bh(&ctx->lock);
 
 	return rc;
-
 }
 
 static int __cam_custom_ctx_config_dev_in_flushed(struct cam_context *ctx,

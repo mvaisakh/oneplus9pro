@@ -242,7 +242,6 @@ static int cam_vfe_fe_resource_deinit(
 	}
 
 	return rc;
-
 }
 
 static int cam_vfe_fe_resource_start(

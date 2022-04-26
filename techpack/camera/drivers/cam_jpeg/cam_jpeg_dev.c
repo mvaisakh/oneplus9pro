@@ -48,7 +48,6 @@ static const struct of_device_id cam_jpeg_dt_match[] = {
 static int cam_jpeg_subdev_open(struct v4l2_subdev *sd,
 	struct v4l2_subdev_fh *fh)
 {
-
 	mutex_lock(&g_jpeg_dev.jpeg_mutex);
 	g_jpeg_dev.open_cnt++;
 	mutex_unlock(&g_jpeg_dev.jpeg_mutex);
@@ -195,7 +194,6 @@ static int cam_jpeg_dev_probe(struct platform_device *pdev)
 		CAM_ERR(CAM_JPEG, "failed to add component rc: %d", rc);
 
 	return rc;
-
 }
 
 struct platform_driver jpeg_driver = {

@@ -63,4 +63,4 @@ int crm_timer_init(struct cam_req_mgr_timer **timer,
  */
 void crm_timer_exit(struct cam_req_mgr_timer **timer);
 
-#endif
+#endif /*_CAM_REQ_MGR_TIMER_H_*/

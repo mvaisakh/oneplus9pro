@@ -98,7 +98,6 @@ struct cam_cdm_utils_ops *cam_cdm_get_ops(
 			((cam_version->major == 1) &&
 			(cam_version->minor == 2) &&
 			(cam_version->incr == 0))) {
-
 			CAM_DBG(CAM_CDM,
 				"cam_hw_version=%x:%x:%x supported",
 				cam_version->major, cam_version->minor,
@@ -449,7 +448,6 @@ int cam_cdm_stream_start(void *hw_priv,
 
 	rc = cam_cdm_stream_ops_internal(hw_priv, start_args, true);
 	return rc;
-
 }
 
 int cam_cdm_stream_stop(void *hw_priv,
@@ -462,7 +460,6 @@ int cam_cdm_stream_stop(void *hw_priv,
 
 	rc = cam_cdm_stream_ops_internal(hw_priv, start_args, false);
 	return rc;
-
 }
 
 int cam_cdm_process_cmd(void *hw_priv,
@@ -819,8 +816,7 @@ int cam_cdm_process_cmd(void *hw_priv,
 		rc = cam_hw_cdm_hang_detect(cdm_hw, *handle);
 		break;
 	}
-	case CAM_CDM_HW_INTF_DUMP_DBG_REGS:
-	{
+	case CAM_CDM_HW_INTF_DUMP_DBG_REGS: {
 		uint32_t *handle = cmd_args;
 
 		if (sizeof(uint32_t) != arg_size) {

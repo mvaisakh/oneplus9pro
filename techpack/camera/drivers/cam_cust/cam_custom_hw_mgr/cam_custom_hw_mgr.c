@@ -701,7 +701,6 @@ static int cam_custom_hw_mgr_acquire_cid_res(
 				continue;
 			else
 				break;
-
 	}
 
 	if (!csid_acquire.node_res) {
@@ -729,7 +728,6 @@ put_res:
 	cam_custom_hw_mgr_put_res(&custom_ctx->free_res_list, cid_res);
 end:
 	return rc;
-
 }
 
 static int cam_custom_hw_mgr_acquire_csid_res(
@@ -1032,9 +1030,9 @@ static int cam_custom_mgr_acquire_hw_for_ctx(
 			continue;
 		}
 		/* need to be set in reserve based on HW being acquired */
-		//custom_ctx->sub_hw_list[i].hw_res = acq.rsrc_node;
-		//custom_ctx->sub_hw_list[i].res_type = <res_type>
-		//custom_ctx->sub_hw_list[i].res_id = <res_id>;
+		/* custom_ctx->sub_hw_list[i].hw_res = acq.rsrc_node; */
+		/* custom_ctx->sub_hw_list[i].res_type = <res_type> */
+		/* custom_ctx->sub_hw_list[i].res_id = <res_id>; */
 		break;
 	}
 
@@ -1451,7 +1449,7 @@ static int cam_custom_mgr_cmd(void *hw_mgr_priv, void *cmd_args)
 		switch (custom_hw_cmd_args->cmd_type) {
 		case CAM_CUSTOM_HW_MGR_PROG_DEFAULT_CONFIG:
 			CAM_DBG(CAM_CUSTOM, "configure RUP and scratch buffer");
-			//use custom_ctx->scratch_buffer_addr
+			/* use custom_ctx->scratch_buffer_addr */
 			break;
 		default:
 			CAM_ERR(CAM_CUSTOM, "Invalid HW mgr command:0x%x",

@@ -6,7 +6,6 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/irqflags.h>
-#include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/debugfs.h>
 #if IS_REACHABLE(CONFIG_MSM_GLOBAL_SYNX)
@@ -663,7 +662,6 @@ static int cam_sync_handle_register_user_payload(
 	if ((row->state == CAM_SYNC_STATE_SIGNALED_SUCCESS) ||
 		(row->state == CAM_SYNC_STATE_SIGNALED_ERROR) ||
 		(row->state == CAM_SYNC_STATE_SIGNALED_CANCEL)) {
-
 		cam_sync_util_send_v4l2_event(CAM_SYNC_V4L_EVENT_ID_CB_TRIG,
 			sync_obj,
 			row->state,
@@ -684,7 +682,6 @@ static int cam_sync_handle_register_user_payload(
 				user_payload_kernel->payload_data[0] &&
 			user_payload_iter->payload_data[1] ==
 				user_payload_kernel->payload_data[1]) {
-
 			spin_unlock_bh(&sync_dev->row_spinlocks[sync_obj]);
 			kfree(user_payload_kernel);
 			return -EALREADY;
@@ -736,10 +733,19 @@ static int cam_sync_handle_deregister_user_payload(
 
 	list_for_each_entry_safe(user_payload_kernel, temp,
 				&row->user_payload_list, list) {
+#ifndef OPLUS_FEATURE_CAMERA_COMMON
 		if (user_payload_kernel->payload_data[0] ==
 				userpayload_info.payload[0] &&
 				user_payload_kernel->payload_data[1] ==
 				userpayload_info.payload[1]) {
+#else
+		if (user_payload_kernel->payload_data[0] ==
+				userpayload_info.payload[0]) {
+			CAM_ERR(CAM_SYNC,
+				"Info: deregister success for sync_obj %d payload[0] %llx",
+				sync_obj,
+				user_payload_kernel->payload_data[0]);
+#endif
 			list_del_init(&user_payload_kernel->list);
 			kfree(user_payload_kernel);
 		}
@@ -916,8 +922,7 @@ static int cam_sync_close(struct file *filep)
 }
 
 static void cam_sync_event_queue_notify_error(const struct v4l2_event *old,
-	struct v4l2_event *new)
-{
+	struct v4l2_event *new) {
 	if (sync_dev->version == CAM_SYNC_V4L_EVENT_V2) {
 		struct cam_sync_ev_header_v2 *ev_header;
 
@@ -1056,7 +1061,7 @@ static int cam_sync_create_debugfs(void)
 
 	dbgfileptr = debugfs_create_dir("camera_sync", NULL);
 	if (!dbgfileptr) {
-		CAM_ERR(CAM_SYNC,"DebugFS could not create directory!");
+		CAM_ERR(CAM_SYNC, "DebugFS could not create directory!");
 		rc = -ENOENT;
 		goto end;
 	}

@@ -28,7 +28,7 @@ struct cam_kmd_buf_info {
 
 /* Generic Cmd Buffer blob callback function type */
 typedef int (*cam_packet_generic_blob_handler)(void *user_data,
-	uint32_t blob_type, uint32_t blob_size, uint8_t *blob_data);
+		uint32_t blob_type, uint32_t blob_size, uint8_t *blob_data);
 
 /**
  * cam_packet_util_get_cmd_mem_addr()
@@ -43,7 +43,7 @@ typedef int (*cam_packet_generic_blob_handler)(void *user_data,
  *                         -EINVAL for Fail
  */
 int cam_packet_util_get_cmd_mem_addr(int handle, uint32_t **buf_addr,
-	size_t *len);
+				     size_t *len);
 
 /**
  * cam_packet_util_validate_packet()
@@ -58,7 +58,7 @@ int cam_packet_util_get_cmd_mem_addr(int handle, uint32_t **buf_addr,
  *                         -EINVAL for Fail
  */
 int cam_packet_util_validate_packet(struct cam_packet *packet,
-	size_t remain_len);
+				    size_t remain_len);
 
 /**
  * cam_packet_util_validate_cmd_desc()
@@ -84,7 +84,7 @@ int cam_packet_util_validate_cmd_desc(struct cam_cmd_buf_desc *cmd_desc);
  *                         -EINVAL for Fail
  */
 int cam_packet_util_get_kmd_buffer(struct cam_packet *packet,
-	struct cam_kmd_buf_info *kmd_buf_info);
+				   struct cam_kmd_buf_info *kmd_buf_info);
 
 /**
  * cam_packet_dump_patch_info()
@@ -98,7 +98,7 @@ int cam_packet_util_get_kmd_buffer(struct cam_packet *packet,
  *
  */
 void cam_packet_dump_patch_info(struct cam_packet *packet,
-	int32_t iommu_hdl, int32_t sec_mmu_hdl);
+				int32_t iommu_hdl, int32_t sec_mmu_hdl);
 
 /**
  * cam_packet_util_process_patches()
@@ -115,7 +115,7 @@ void cam_packet_dump_patch_info(struct cam_packet *packet,
  *                      Negative: Failure
  */
 int cam_packet_util_process_patches(struct cam_packet *packet,
-	int32_t iommu_hdl, int32_t sec_mmu_hdl);
+				    int32_t iommu_hdl, int32_t sec_mmu_hdl);
 
 /**
  * cam_packet_util_process_generic_cmd_buffer()

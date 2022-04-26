@@ -18,7 +18,6 @@
 #include "cam_tfe_bus.h"
 #include "cam_tfe_irq.h"
 #include "cam_tfe_soc.h"
-#include "cam_debug_util.h"
 #include "cam_cpas_api.h"
 
 
@@ -1795,14 +1794,12 @@ static void cam_tfe_bus_error_bottom_half(
 				rsrc_data->width,
 				rsrc_data->height,
 				rsrc_data->stride);
-
 			}
 		}
 	}
 
 	if (overflow_status) {
 		for (i = 0; i < CAM_TFE_BUS_MAX_CLIENTS; i++) {
-
 			if (!(evt_payload->overflow_status >> i))
 				break;
 
@@ -1855,7 +1852,6 @@ static int cam_tfe_bus_bottom_half(void   *priv,
 		val &= ~bus_priv->bus_irq_error_mask[0];
 		cam_io_w(val, bus_priv->common_data.mem_base +
 			bus_priv->common_data.common_reg->irq_mask[0]);
-
 	}
 
 	if (rup_process) {
@@ -1870,7 +1866,6 @@ static int cam_tfe_bus_bottom_half(void   *priv,
 
 end:
 	return 0;
-
 }
 
 static int cam_tfe_bus_update_wm(void *priv, void *cmd_args,
@@ -2204,7 +2199,6 @@ static int cam_tfe_bus_dump_bus_info(
 		/* disable WM */
 			cam_io_w_mb(0, common_data->mem_base +
 				wm_data->hw_regs->cfg);
-
 	}
 	return 0;
 }

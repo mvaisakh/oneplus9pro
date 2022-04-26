@@ -115,7 +115,7 @@ static int cam_custom_hw_sub_mod_component_bind(struct device *dev,
 		cam_custom_hw_sub_mod_list[hw_intf->hw_idx] = hw_intf;
 
 	/* needs to be invoked when custom hw is in place */
-	//cam_custom_hw_sub_mod_init_hw(hw, NULL, 0);
+	/* cam_custom_hw_sub_mod_init_hw(hw, NULL, 0); */
 
 	CAM_DBG(CAM_CUSTOM, "HW idx:%d component bound successfully",
 		hw_intf->hw_idx);

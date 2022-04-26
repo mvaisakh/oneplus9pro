@@ -955,7 +955,6 @@ static void cam_vfe_camif_lite_print_status(uint32_t *status,
 		if (violation_mask & violation_status)
 			CAM_INFO(CAM_ISP, "PD VIOLATION Module ID:%d",
 				violation_mask & violation_status);
-
 	}
 
 	goto print_state;
@@ -1049,7 +1048,6 @@ print_state:
 	if ((err_type == CAM_VFE_IRQ_STATUS_OVERFLOW) &&
 		bus_overflow_status)
 		cam_cpas_log_votes();
-
 }
 
 static int cam_vfe_camif_lite_handle_irq_top_half(uint32_t evt_id,

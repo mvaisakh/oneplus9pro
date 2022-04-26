@@ -26,6 +26,7 @@
 #include "camera_main.h"
 #include "cam_trace.h"
 #include "cam_req_mgr_workq.h"
+#include "cam_common_util.h"
 
 #define CAM_CDM_BL_FIFO_WAIT_TIMEOUT 2000
 #define CAM_CDM_DBG_GEN_IRQ_USR_DATA 0xff
@@ -510,7 +511,6 @@ int cam_hw_cdm_set_cdm_core_cfg(struct cam_hw_info *cdm_hw)
 
 		if (core->arbitration == CAM_CDM_ARBITRATION_ROUND_ROBIN)
 			cfg_mask = cfg_mask | CAM_CDM_ARB_SEL_RR;
-
 	}
 
 	if (cdm_version >= CAM_CDM_VERSION_2_1) {
@@ -954,7 +954,6 @@ int cam_hw_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 
 		if ((!rc) && (hw_vaddr_ptr) && (len) &&
 			(len >= cdm_cmd->cmd[i].offset)) {
-
 			if ((len - cdm_cmd->cmd[i].offset) <
 				cdm_cmd->cmd[i].len) {
 				CAM_ERR(CAM_CDM,
@@ -1008,7 +1007,6 @@ int cam_hw_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 				"write BL done cnt=%d with tag=%d total_cnt=%d",
 				i, core->bl_fifo[fifo_idx].bl_tag,
 				req->data->cmd_arrary_count);
-
 			if (core->arbitration ==
 				CAM_CDM_ARBITRATION_PRIORITY_BASED &&
 				(req->data->flag == true) &&
@@ -1062,7 +1060,6 @@ int cam_hw_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 			if ((!rc) && (req->data->flag == true) &&
 				(i == (req->data->cmd_arrary_count -
 				1))) {
-
 				if (write_count == 0) {
 					write_count =
 						cam_hw_cdm_wait_for_bl_fifo(
@@ -1078,7 +1075,6 @@ int cam_hw_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 
 				if (core->arbitration !=
 					CAM_CDM_ARBITRATION_PRIORITY_BASED) {
-
 					rc = cam_hw_cdm_submit_gen_irq(
 						cdm_hw, req, fifo_idx,
 						cdm_cmd->gen_irq_arb);
@@ -1100,7 +1096,6 @@ int cam_hw_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 
 end:
 	return rc;
-
 }
 
 static void cam_hw_cdm_reset_cleanup(
@@ -1171,8 +1166,10 @@ static void cam_hw_cdm_work(struct work_struct *work)
 		return;
 	}
 
-	cam_req_mgr_thread_switch_delay_detect(
-		payload->workq_scheduled_ts);
+	cam_common_util_thread_switch_delay_detect(
+		"CDM workq schedule",
+		payload->workq_scheduled_ts,
+		CAM_WORKQ_SCHEDULE_TIME_THRESHOLD);
 
 	CAM_DBG(CAM_CDM, "IRQ status=0x%x", payload->irq_status);
 	if (payload->irq_status &
@@ -1309,7 +1306,6 @@ static void cam_hw_cdm_work(struct work_struct *work)
 	}
 	kfree(payload);
 	payload = NULL;
-
 }
 
 static void cam_hw_cdm_iommu_fault_handler(struct cam_smmu_pf_info *pf_info)
@@ -1340,7 +1336,6 @@ static void cam_hw_cdm_iommu_fault_handler(struct cam_smmu_pf_info *pf_info)
 	} else {
 		CAM_ERR(CAM_CDM, "Invalid token");
 	}
-
 }
 
 irqreturn_t cam_hw_cdm_irq(int irq_num, void *data)
@@ -1415,7 +1410,6 @@ irqreturn_t cam_hw_cdm_irq(int irq_num, void *data)
 		}
 
 		if (irq_status[i] & CAM_CDM_IRQ_STATUS_INLINE_IRQ_MASK) {
-
 			payload[i]->irq_data = (user_data >> (i * 0x8)) &
 				CAM_CDM_IRQ_STATUS_USR_DATA_MASK;
 
@@ -1760,7 +1754,7 @@ int cam_hw_cdm_hang_detect(
 
 	cdm_core = (struct cam_cdm *)cdm_hw->core_info;
 
-	for (i = 0; i < cdm_core->offsets->reg_data->num_bl_fifo; i++)
+	for (i = 0; i < cdm_core->offsets->reg_data->num_bl_fifo; i++) {
 		if (atomic_read(&cdm_core->bl_fifo[i].work_record)) {
 			CAM_WARN(CAM_CDM,
 				"workqueue got delayed, work_record :%u",
@@ -1768,7 +1762,7 @@ int cam_hw_cdm_hang_detect(
 			rc = 0;
 			break;
 		}
-
+	}
 	return rc;
 }
 

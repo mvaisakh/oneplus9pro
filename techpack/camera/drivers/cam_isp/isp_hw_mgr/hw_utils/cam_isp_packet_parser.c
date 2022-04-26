@@ -131,7 +131,6 @@ static int cam_isp_update_dual_config(
 		return -EINVAL;
 	}
 	for (i = 0; i < dual_config->num_ports; i++) {
-
 		if (i >= CAM_ISP_IFE_OUT_RES_BASE + size_isp_out) {
 			CAM_ERR(CAM_ISP,
 				"failed update for i:%d > size_isp_out:%d",
@@ -670,7 +669,6 @@ int cam_isp_add_io_buffers(
 					"mmu_hdl=0x%x, size=%d, end=0x%x",
 					mmu_hdl, (int)size,
 					io_addr[plane_id]+size);
-
 			}
 			if (!plane_id) {
 				CAM_ERR(CAM_ISP, "No valid planes for res%d",
@@ -826,7 +824,6 @@ int cam_isp_add_io_buffers(
 					"mmu_hdl=0x%x, size=%d, end=0x%x",
 					mmu_hdl, (int)size,
 					io_addr[plane_id]+size);
-
 			}
 			if (!plane_id) {
 				CAM_ERR(CAM_ISP, "No valid planes for res%d",

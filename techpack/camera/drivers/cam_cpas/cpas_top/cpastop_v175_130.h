@@ -708,7 +708,6 @@ static struct cam_camnoc_specific
 		.ubwc_ctl = {
 			.enable = false,
 		},
-
 	},
 	{
 		/*SidebandManager_main_SidebandManager_FlagOutSet0_Low*/

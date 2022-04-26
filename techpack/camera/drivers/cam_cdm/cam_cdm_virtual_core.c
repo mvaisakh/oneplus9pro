@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2017-2021,  The Linux Foundation. All rights reserved.
  */
 
 #include <linux/delay.h>
@@ -20,6 +20,7 @@
 #include "cam_cdm_soc.h"
 #include "cam_io_util.h"
 #include "cam_req_mgr_workq.h"
+#include "cam_common_util.h"
 
 #define CAM_CDM_VIRTUAL_NAME "qcom,cam_virtual_cdm"
 
@@ -34,8 +35,10 @@ static void cam_virtual_cdm_work(struct work_struct *work)
 		cdm_hw = payload->hw;
 		core = (struct cam_cdm *)cdm_hw->core_info;
 
-		cam_req_mgr_thread_switch_delay_detect(
-			payload->workq_scheduled_ts);
+		cam_common_util_thread_switch_delay_detect(
+			"Virtual CDM workq schedule",
+			payload->workq_scheduled_ts,
+			CAM_WORKQ_SCHEDULE_TIME_THRESHOLD);
 
 		if (payload->irq_status & 0x2) {
 			struct cam_cdm_bl_cb_request_entry *node;
@@ -70,7 +73,6 @@ static void cam_virtual_cdm_work(struct work_struct *work)
 		}
 		kfree(payload);
 	}
-
 }
 
 int cam_virtual_cdm_submit_bl(struct cam_hw_info *cdm_hw,
@@ -114,8 +116,6 @@ int cam_virtual_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 
 		if ((!rc) && (vaddr_ptr) && (len) &&
 			(len >= cdm_cmd->cmd[i].offset)) {
-
-
 			if ((len - cdm_cmd->cmd[i].offset) <
 				cdm_cmd->cmd[i].len) {
 				CAM_ERR(CAM_CDM, "Not enough buffer");

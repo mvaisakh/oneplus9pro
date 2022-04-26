@@ -210,7 +210,6 @@ static struct cam_tfe_rdi_reg_data tfe530_rdi2_reg_data = {
 	.enable_diagnostic_hw        = 0x1,
 	.diag_sensor_sel             = 0x3,
 	.diag_sensor_shift           = 0x1,
-
 };
 
 static struct cam_tfe_clc_hw_status  tfe530_clc_hw_info[CAM_TFE_MAX_CLC] = {

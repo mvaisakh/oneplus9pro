@@ -195,7 +195,6 @@ a5_dev_alloc_failure:
 	kfree(a5_dev_intf);
 
 	return rc;
-
 }
 
 static void cam_a5_component_unbind(struct device *dev,

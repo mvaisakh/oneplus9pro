@@ -61,4 +61,4 @@ struct cam_icp_clk_update_cmd {
 	int32_t clk_level;
 };
 
-#endif
+#endif /*CAM_ICP_HW_INTF_H*/

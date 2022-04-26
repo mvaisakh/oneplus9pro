@@ -17,7 +17,6 @@
 #include "cam_sfe_bus.h"
 #include "cam_sfe_bus_rd.h"
 #include "cam_sfe_core.h"
-#include "cam_debug_util.h"
 #include "cam_cpas_api.h"
 
 static const char drv_name[] = "sfe_bus_rd";
@@ -1067,7 +1066,6 @@ static int cam_sfe_bus_rd_update_fs_cfg(void *priv, void *cmd_args,
 	fe_cfg = &fe_upd_args->fe_config;
 
 	for (i = 0; i < sfe_bus_rd_data->num_rm; i++) {
-
 		rm_data = sfe_bus_rd_data->rm_res[i]->res_priv;
 		common_data = rm_data->common_data;
 

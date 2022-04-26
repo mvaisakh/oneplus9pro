@@ -31,7 +31,6 @@ static struct cam_ife_csid_hw_info cam_custom_csid480_hw_info = {
 static int cam_custom_csid_component_bind(struct device *dev,
 	struct device *master_dev, void *data)
 {
-
 	struct cam_hw_intf	       *csid_hw_intf;
 	struct cam_hw_info	       *csid_hw_info;
 	struct cam_ife_csid_hw	       *csid_dev = NULL;

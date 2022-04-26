@@ -17,4 +17,4 @@ int cam_req_mgr_debug_unregister(void);
  * @brief    : increment debug_fs varaible by 1 whenever delay occurred.
  */
 void cam_req_mgr_debug_delay_detect(void);
-#endif
+#endif/*_CAM_REQ_MGR_DEBUG_H_*/

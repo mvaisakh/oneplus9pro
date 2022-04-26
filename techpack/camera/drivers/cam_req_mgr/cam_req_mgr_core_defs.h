@@ -14,4 +14,4 @@
 
 #define CRM_GET_REQ_ID(in_q, idx) in_q->slot[idx].req_id
 
-#endif
+#endif /*_CAM_REQ_MGR_CORE_DEFS_H_*/

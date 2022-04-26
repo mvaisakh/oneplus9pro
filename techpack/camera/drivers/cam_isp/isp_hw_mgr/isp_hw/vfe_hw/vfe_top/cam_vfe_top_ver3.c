@@ -505,7 +505,6 @@ int cam_vfe_top_ver3_reserve(void *device_priv,
 			acquire_args->res_id &&
 			top_priv->top_common.mux_rsrc[i].res_state ==
 			CAM_ISP_RESOURCE_STATE_AVAILABLE) {
-
 			if (acquire_args->res_id == CAM_ISP_HW_VFE_IN_CAMIF) {
 				rc = cam_vfe_camif_ver3_acquire_resource(
 					&top_priv->top_common.mux_rsrc[i],
@@ -546,7 +545,6 @@ int cam_vfe_top_ver3_reserve(void *device_priv,
 	}
 
 	return rc;
-
 }
 
 int cam_vfe_top_ver3_release(void *device_priv,

@@ -1024,7 +1024,7 @@ static int cam_lrme_mgr_create_debugfs_entry(void)
 
 	dbgfileptr = debugfs_create_dir("camera_lrme", NULL);
 	if (!dbgfileptr) {
-		CAM_ERR(CAM_ISP,"DebugFS could not create directory!");
+		CAM_ERR(CAM_ISP, "DebugFS could not create directory!");
 		rc = -ENOENT;
 		goto err;
 	}

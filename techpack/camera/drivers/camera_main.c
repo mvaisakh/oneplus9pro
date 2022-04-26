@@ -23,7 +23,10 @@
 #include "cam_csiphy_dev.h"
 #include "cam_eeprom_dev.h"
 #include "cam_ois_dev.h"
-
+/*ifdef OPLUS_FEATURE_CAMERA_COMMON */
+#include "tof8801_driver.h"
+#include "tof8801_pdrv.h"
+/*end OPLUS_FEATURE_CAMERA_COMMON*/
 #if IS_REACHABLE(CONFIG_LEDS_QPNP_FLASH_V2) || \
 	IS_REACHABLE(CONFIG_LEDS_QTI_FLASH)
 #include "cam_flash_dev.h"
@@ -108,6 +111,9 @@ static const struct camera_submodule_component camera_sensor[] = {
 	{&cam_sensor_driver_init, &cam_sensor_driver_exit},
 	{&cam_eeprom_driver_init, &cam_eeprom_driver_exit},
 	{&cam_ois_driver_init, &cam_ois_driver_exit},
+	/*ifdef OPLUS_FEATURE_CAMERA_COMMON */
+	{&cam_tof8801_driver_init, &cam_tof8801_driver_exit},
+	/*end OPLUS_FEATURE_CAMERA_COMMON*/
 #if IS_REACHABLE(CONFIG_LEDS_QPNP_FLASH_V2) || \
 	IS_REACHABLE(CONFIG_LEDS_QTI_FLASH)
 	{&cam_flash_init_module, &cam_flash_exit_module},
@@ -221,9 +227,10 @@ static int camera_verify_submodules(void)
 
 	for (i = 0; i < ARRAY_SIZE(submodule_table); i++) {
 		num_components = submodule_table[i].num_component;
+
 		for (j = 0; j < num_components; j++) {
 			if (!submodule_table[i].component[j].init ||
-				!submodule_table[i].component[j].exit) {
+					!submodule_table[i].component[j].exit) {
 				CAM_ERR(CAM_UTIL,
 					"%s module has init = %ps, exit = %ps",
 					submodule_table[i].name,
@@ -250,6 +257,7 @@ static void __camera_exit(int i, int j)
 	/* Exit remaining submodules */
 	for (i -= 1; i >= 0; i--) {
 		num_exits = submodule_table[i].num_component;
+
 		for (j = num_exits - 1; j >= 0; j--)
 			submodule_table[i].component[j].exit();
 	}
@@ -261,6 +269,7 @@ static int camera_init(void)
 	uint i, j, num_inits;
 
 	rc = camera_verify_submodules();
+
 	if (rc)
 		goto end_init;
 
@@ -269,8 +278,10 @@ static int camera_init(void)
 		num_inits = submodule_table[i].num_component;
 		CAM_DBG(CAM_UTIL, "Number of %s components: %u",
 			submodule_table[i].name, num_inits);
+
 		for (j = 0; j < num_inits; j++) {
 			rc = submodule_table[i].component[j].init();
+
 			if (rc) {
 				CAM_ERR(CAM_UTIL,
 					"%s module failure at %ps rc = %d",

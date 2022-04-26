@@ -31,6 +31,7 @@
 #include "cpastop_v570_200.h"
 #include "cpastop_v680_100.h"
 #include "cam_req_mgr_workq.h"
+#include "cam_common_util.h"
 
 struct cam_camnoc_info *camnoc_info;
 
@@ -101,7 +102,6 @@ static const uint32_t cam_cpas_hw_version_map
 		0,
 		0,
 		0,
-
 	},
 	/* for camera_540 */
 	{
@@ -138,9 +138,7 @@ static int cam_cpas_translate_camera_cpas_version_id(
 	uint32_t *cam_version_id,
 	uint32_t *cpas_version_id)
 {
-
 	switch (cam_version) {
-
 	case CAM_CPAS_CAMERA_VERSION_150:
 		*cam_version_id = CAM_CPAS_CAMERA_VERSION_ID_150;
 		break;
@@ -188,7 +186,6 @@ static int cam_cpas_translate_camera_cpas_version_id(
 	}
 
 	switch (cpas_version) {
-
 	case CAM_CPAS_VERSION_100:
 		*cpas_version_id = CAM_CPAS_VERSION_ID_100;
 		break;
@@ -572,8 +569,10 @@ static void cam_cpastop_work(struct work_struct *work)
 		return;
 	}
 
-	cam_req_mgr_thread_switch_delay_detect(
-			payload->workq_scheduled_ts);
+	cam_common_util_thread_switch_delay_detect(
+		"CPAS workq schedule",
+		payload->workq_scheduled_ts,
+		CAM_WORKQ_SCHEDULE_TIME_THRESHOLD);
 
 	cpas_hw = payload->hw;
 	cpas_core = (struct cam_cpas *) cpas_hw->core_info;

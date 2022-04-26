@@ -678,7 +678,6 @@ static int cam_ife_csid_path_reset(struct cam_ife_csid_hw *csid_hw,
 
 end:
 	return rc;
-
 }
 
 int cam_ife_csid_cid_reserve(struct cam_ife_csid_hw *csid_hw,
@@ -859,7 +858,6 @@ int cam_ife_csid_cid_reserve(struct cam_ife_csid_hw *csid_hw,
 			cid_reserv->in_port->lane_type ||
 			csid_hw->csi2_rx_cfg.lane_num !=
 			cid_reserv->in_port->lane_num)) {
-
 			rc = -EINVAL;
 			goto end;
 		}
@@ -873,7 +871,6 @@ int cam_ife_csid_cid_reserve(struct cam_ife_csid_hw *csid_hw,
 			cid_reserv->in_port->height     ||
 			csid_hw->tpg_cfg.test_pattern !=
 			cid_reserv->in_port->test_pattern)) {
-
 			rc = -EINVAL;
 			goto end;
 		}
@@ -1585,8 +1582,7 @@ static int cam_ife_csid_tpg_start(struct cam_ife_csid_hw   *csid_hw,
 		CAM_DBG(CAM_ISP, "CSID:%d start CSID TPG",
 			csid_hw->hw_intf->hw_idx);
 
-		soc_info = &csid_hw->hw_info->soc_info;
-		{
+		soc_info = &csid_hw->hw_info->soc_info; {
 			uint32_t val;
 			uint32_t i;
 			uint32_t base = 0x600;
@@ -3659,7 +3655,13 @@ int cam_ife_csid_release(void *hw_priv,
 			csid_hw->hw_intf->hw_idx,
 			res->res_type, res->res_id,
 			res->res_state);
-		goto end;
+
+		if (res->res_type != CAM_ISP_RESOURCE_CID) {
+				goto end;
+		} else {
+				cid_data = (struct cam_ife_csid_cid_data	*) res->res_priv;
+				CAM_WARN(CAM_ISP, "cid data cnt %d", cid_data->cnt);
+		}
 	}
 
 	CAM_DBG(CAM_ISP, "CSID:%d res type :%d Resource id:%d",
@@ -4170,7 +4172,6 @@ int cam_ife_csid_stop(void *hw_priv,
 	CAM_DBG(CAM_ISP,  "%s: Exit\n", __func__);
 
 	return rc;
-
 }
 
 int cam_ife_csid_read(void *hw_priv,
@@ -4565,14 +4566,12 @@ static int cam_ife_csid_process_cmd(void *hw_priv,
 	}
 
 	return rc;
-
 }
 
 static int cam_csid_get_evt_payload(
 	struct cam_ife_csid_hw *csid_hw,
 	struct cam_csid_evt_payload **evt_payload)
 {
-
 	spin_lock(&csid_hw->lock_state);
 
 	if (list_empty(&csid_hw->free_payload_list)) {
@@ -4996,7 +4995,6 @@ irqreturn_t cam_ife_csid_irq(int irq_num, void *data)
 			CSID_CSI2_RX_ERROR_UNMAPPED_VC_DT) &&
 			(csid_hw->csid_debug &
 				CSID_DEBUG_ENABLE_UNMAPPED_VC_DT_IRQ)) {
-
 			val = cam_io_r_mb(soc_info->reg_map[0].mem_base +
 			csi2_reg->csid_csi2_rx_captured_long_pkt_0_addr);
 
@@ -5093,7 +5091,6 @@ handle_fatal_error:
 	if ((csid_hw->csid_debug & CSID_DEBUG_ENABLE_LONG_PKT_CAPTURE) &&
 		(irq_status[CAM_IFE_CSID_IRQ_REG_RX] &
 			CSID_CSI2_RX_INFO_LONG_PKT_CAPTURED)) {
-
 		CAM_INFO_RATE_LIMIT(CAM_ISP, "CSID:%d LONG_PKT_CAPTURED",
 			csid_hw->hw_intf->hw_idx);
 		val = cam_io_r_mb(soc_info->reg_map[0].mem_base +
@@ -5115,7 +5112,6 @@ handle_fatal_error:
 	if ((csid_hw->csid_debug & CSID_DEBUG_ENABLE_SHORT_PKT_CAPTURE) &&
 		(irq_status[CAM_IFE_CSID_IRQ_REG_RX] &
 			CSID_CSI2_RX_INFO_SHORT_PKT_CAPTURED)) {
-
 		CAM_INFO_RATE_LIMIT(CAM_ISP, "CSID:%d SHORT_PKT_CAPTURED",
 			csid_hw->hw_intf->hw_idx);
 		val = cam_io_r_mb(soc_info->reg_map[0].mem_base +
@@ -5349,8 +5345,7 @@ handle_fatal_error:
 			val = cam_io_r_mb(soc_info->reg_map[0].mem_base +
 			csid_reg->rdi_reg[i]->csid_rdi_format_measure0_addr);
 			val2 = cam_io_r_mb(soc_info->reg_map[0].mem_base +
-			csid_reg->rdi_reg[i]->csid_rdi_format_measure_cfg1_addr
-			);
+			csid_reg->rdi_reg[i]->csid_rdi_format_measure_cfg1_addr);
 			CAM_ERR(CAM_ISP,
 				"CSID:%d irq_status_rdi[%d]:0x%x",
 				csid_hw->hw_intf->hw_idx, i, irq_status[i]);
@@ -5635,7 +5630,6 @@ err:
 
 		for (i = 0; i < CAM_IFE_CSID_CID_MAX; i++)
 			kfree(ife_csid_hw->cid_res[i].res_priv);
-
 	}
 
 	return rc;

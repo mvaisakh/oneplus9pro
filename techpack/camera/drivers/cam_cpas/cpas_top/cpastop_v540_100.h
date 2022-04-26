@@ -77,7 +77,7 @@ static struct cam_camnoc_irq_err
 };
 
 
-// TODO: Need to update cam_cpas_v540_100_camnoc_specific values based on QoS
+/* TODO: Need to update cam_cpas_v540_100_camnoc_specific values based on QoS */
 static struct cam_camnoc_specific
 	cam_cpas_v540_100_camnoc_specific[] = {
 	{

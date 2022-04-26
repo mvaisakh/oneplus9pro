@@ -759,7 +759,6 @@ static void cam_tfe_hw_mgr_dump_all_ctx(void)
 		}
 	}
 	mutex_unlock(&g_tfe_hw_mgr.ctx_mutex);
-
 }
 
 static void cam_tfe_mgr_add_base_info(
@@ -987,7 +986,6 @@ static int cam_tfe_hw_mgr_acquire_res_tfe_out_pixel(
 			CAM_DBG(CAM_ISP, "resource type :0x%x res id:0x%x",
 				tfe_out_res->hw_res[j]->res_type,
 				tfe_out_res->hw_res[j]->res_id);
-
 		}
 		tfe_out_res->res_type = CAM_ISP_RESOURCE_TFE_OUT;
 		tfe_out_res->res_id = out_port->res_id;
@@ -1143,7 +1141,6 @@ static int cam_tfe_hw_mgr_acquire_res_tfe_in(
 				hw_intf->hw_idx,
 				tfe_src_res->hw_res[i]->res_type,
 				tfe_src_res->hw_res[i]->res_id);
-
 		}
 		csid_res->num_children++;
 	}
@@ -1206,7 +1203,6 @@ static int cam_tfe_hw_mgr_acquire_res_tfe_csid_pxl(
 	/* Try acquiring CSID resource from previously acquired HW */
 	list_for_each_entry(csid_res_iterator, &tfe_ctx->res_list_tfe_csid,
 		list) {
-
 		for (i = 0; i < CAM_ISP_HW_SPLIT_MAX; i++) {
 			if (!csid_res_iterator->hw_res[i])
 				continue;
@@ -1519,7 +1515,6 @@ static int cam_tfe_hw_mgr_acquire_res_tfe_csid_rdi(
 		/* Try acquiring CSID resource from previously acquired HW */
 		list_for_each_entry(csid_res_iterator,
 			&tfe_ctx->res_list_tfe_csid, list) {
-
 			for (i = 0; i < CAM_ISP_HW_SPLIT_MAX; i++) {
 				if (!csid_res_iterator->hw_res[i])
 					continue;
@@ -1984,7 +1979,6 @@ static int cam_tfe_mgr_acquire_hw(void *hw_mgr_priv, void *acquire_hw_args)
 
 	/* acquire HW resources */
 	for (i = 0; i < acquire_hw_info->num_inputs; i++) {
-
 		if (in_port->num_out_res > CAM_TFE_HW_OUT_RES_MAX) {
 			CAM_ERR(CAM_ISP, "too many output res %d",
 				in_port->num_out_res);
@@ -2494,7 +2488,6 @@ static int cam_tfe_mgr_config_hw(void *hw_mgr_priv,
 
 	for (i = 0; i < CAM_TFE_HW_NUM_MAX; i++) {
 		if (hw_update_data->bw_config_valid[i] == true) {
-
 			CAM_DBG(CAM_ISP, "idx=%d, bw_config_version=%d",
 				ctx->ctx_index, i,
 				hw_update_data->bw_config_version);
@@ -3259,7 +3252,6 @@ static int cam_tfe_mgr_user_dump_hw(
 
 static int cam_tfe_mgr_dump(void *hw_mgr_priv, void *args)
 {
-
 	struct cam_isp_hw_dump_args isp_hw_dump_args;
 	struct cam_hw_dump_args *dump_args = (struct cam_hw_dump_args *)args;
 	struct cam_isp_hw_mgr_res            *hw_mgr_res;
@@ -4458,7 +4450,6 @@ static void cam_tfe_mgr_print_io_bufs(struct cam_tfe_hw_mgr  *hw_mgr,
 		uint32_t res_id, struct cam_packet *packet,
 		bool    *ctx_found, struct cam_tfe_hw_mgr_ctx *ctx)
 {
-
 	struct cam_buf_io_cfg  *io_cfg = NULL;
 	int32_t      mmu_hdl, iommu_hdl, sec_mmu_hdl;
 	dma_addr_t   iova_addr;
@@ -4696,8 +4687,6 @@ static void cam_tfe_mgr_dump_pf_data(
 outportlog:
 	cam_tfe_mgr_print_io_bufs(hw_mgr, *resource_type, packet,
 		ctx_found, ctx);
-
-
 }
 
 static int cam_tfe_mgr_cmd(void *hw_mgr_priv, void *cmd_args)
@@ -5076,7 +5065,6 @@ static bool cam_tfe_hw_mgr_is_ctx_affected(
 	uint32_t                    *affected_core,
 	uint32_t                     size)
 {
-
 	bool                  rc = false;
 	uint32_t              i = 0, j = 0;
 	uint32_t              max_idx =  tfe_hwr_mgr_ctx->num_base;
@@ -5198,7 +5186,6 @@ static int cam_tfe_hw_mgr_handle_csid_event(
 	 */
 	switch (event_info->err_type) {
 	case CAM_ISP_HW_ERROR_CSID_FATAL: {
-
 		if (!g_tfe_hw_mgr.debug_cfg.enable_csid_recovery)
 			break;
 
@@ -5607,7 +5594,7 @@ static int cam_tfe_hw_mgr_debug_register(void)
 
 	dbgfileptr = debugfs_create_dir("camera_ife", NULL);
 	if (!dbgfileptr) {
-		CAM_ERR(CAM_ISP,"DebugFS could not create directory!");
+		CAM_ERR(CAM_ISP, "DebugFS could not create directory!");
 		rc = -ENOENT;
 		goto end;
 	}

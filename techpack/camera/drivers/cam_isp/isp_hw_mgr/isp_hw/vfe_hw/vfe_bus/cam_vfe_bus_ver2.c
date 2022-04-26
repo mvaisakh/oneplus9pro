@@ -17,7 +17,6 @@
 #include "cam_vfe_bus.h"
 #include "cam_vfe_bus_ver2.h"
 #include "cam_vfe_core.h"
-#include "cam_debug_util.h"
 #include "cam_cpas_api.h"
 
 static const char drv_name[] = "vfe_bus";
@@ -898,7 +897,6 @@ static void cam_vfe_bus_get_comp_vfe_out_res_id_list(
 		out_list[count++] = CAM_ISP_IFE_OUT_RES_DS16_DISP;
 
 	*num_out = count;
-
 }
 
 static enum cam_vfe_bus_packer_format
@@ -2008,7 +2006,6 @@ static int cam_vfe_bus_deinit_comp_grp(
 static int cam_vfe_bus_get_secure_mode(void *priv, void *cmd_args,
 	uint32_t arg_size)
 {
-
 	struct cam_isp_hw_get_cmd_update      *secure_mode = cmd_args;
 	struct cam_vfe_bus_ver2_vfe_out_data  *rsrc_data;
 	uint32_t                              *mode;
@@ -2109,7 +2106,6 @@ static int cam_vfe_bus_acquire_vfe_out(void *bus_priv, void *acquire_args,
 		CAM_ISP_RES_COMP_GROUP_NONE &&
 		out_acquire_args->out_port_info->comp_grp_id <
 		CAM_ISP_RES_COMP_GROUP_ID_MAX)) {
-
 		rc = cam_vfe_bus_acquire_comp_grp(ver2_bus_priv,
 			out_acquire_args->out_port_info,
 			acq_args->tasklet,
@@ -3154,7 +3150,6 @@ static int cam_vfe_bus_update_ubwc_config(void *cmd_args)
 	ubwc_plane_cfg = (struct cam_ubwc_plane_cfg_v1   *)update_ubwc->data;
 
 	for (i = 0; i < vfe_out_data->num_wm; i++) {
-
 		wm_data = vfe_out_data->wm_res[i]->res_priv;
 		if (i > 0)
 			ubwc_plane_cfg++;
@@ -3265,7 +3260,6 @@ static int cam_vfe_bus_update_ubwc_config_v2(void *cmd_args)
 		update_ubwc->data;
 
 	for (i = 0; i < vfe_out_data->num_wm; i++) {
-
 		wm_data = vfe_out_data->wm_res[i]->res_priv;
 		ubwc_generic_plane_cfg = &ubwc_generic_cfg->ubwc_plane_cfg[i];
 

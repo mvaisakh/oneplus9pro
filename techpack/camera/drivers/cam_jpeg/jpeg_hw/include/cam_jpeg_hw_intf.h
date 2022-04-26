@@ -50,4 +50,4 @@ enum cam_jpeg_cmd_type {
 	CAM_JPEG_CMD_MAX,
 };
 
-#endif
+#endif /* CAM_JPEG_HW_INTF_H */

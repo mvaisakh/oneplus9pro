@@ -122,6 +122,7 @@ enum cam_pipeline_delay {
  */
 #define CAM_TRIGGER_POINT_SOF     (1 << 0)
 #define CAM_TRIGGER_POINT_EOF     (1 << 1)
+#define CAM_TRIGGER_MAX_TYPES     2
 
 /**
  * enum cam_req_status
@@ -407,4 +408,4 @@ struct cam_req_mgr_dump_info {
 	int32_t     link_hdl;
 	int32_t     dev_hdl;
 };
-#endif
+#endif /*_CAM_REQ_MGR_INTERFACE_H*/

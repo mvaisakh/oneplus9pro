@@ -2,7 +2,8 @@
 /*
  * Copyright (c) 2020, The Linux Foundation. All rights reserved.
  */
-
+#ifndef CAM_CDM_HW_REG_2_0_H_
+#define CAM_CDM_HW_REG_2_0_H_
 #include "cam_cdm.h"
 
 struct cam_cdm_bl_pending_req_reg_params cdm_hw_2_0_bl_pending_req0 = {
@@ -249,3 +250,4 @@ struct cam_cdm_hw_reg_offset cam_cdm_2_0_reg_offset = {
 		},
 	.reg_data = &cdm_hw_2_0_cmn_reg_data,
 };
+#endif /*CAM_CDM_HW_REG_2_0_H_*/

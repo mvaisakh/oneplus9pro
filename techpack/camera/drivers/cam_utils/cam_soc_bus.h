@@ -59,23 +59,23 @@ struct cam_soc_bus_client {
 int cam_soc_bus_client_update_request(void *client, unsigned int idx);
 
 int cam_soc_bus_client_update_bw(void *client, uint64_t ab,
-	uint64_t ib);
+				 uint64_t ib);
 
 int cam_soc_bus_client_register(struct platform_device *pdev,
-	struct device_node *dev_node, void **client,
-	struct cam_soc_bus_client_common_data *common_data);
+				struct device_node *dev_node, void **client,
+				struct cam_soc_bus_client_common_data *common_data);
 
 void cam_soc_bus_client_unregister(void **client);
 
 #else
 static inline int cam_soc_bus_client_update_request(void *client,
-	unsigned int idx)
+		unsigned int idx)
 {
 	return 0;
 }
 
 static inline int cam_soc_bus_client_update_bw(void *client,
-	uint64_t ab, uint64_t ib)
+		uint64_t ab, uint64_t ib)
 {
 	return 0;
 }

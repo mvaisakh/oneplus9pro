@@ -41,6 +41,10 @@
 #define CAM_IO_ACCESS  (1 << 29)
 #define CAM_SFE        (1 << 30)
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#define CAM_TOF        (1 << 31)
+#endif
+
 /* Log level types */
 #define CAM_TYPE_TRACE      (1 << 0)
 #define CAM_TYPE_ERR        (1 << 1)
@@ -90,7 +94,7 @@ struct camera_debug_settings {
  *
  */
 void cam_debug_log(unsigned int module_id, const char *func, const int line,
-	const char *fmt, ...);
+		   const char *fmt, ...);
 
 /*
  *  cam_debug_trace()
@@ -107,7 +111,7 @@ void cam_debug_log(unsigned int module_id, const char *func, const int line,
  *
  */
 void cam_debug_trace(unsigned int tag, unsigned int module_id,
-	const char *func, const int line, const char *fmt, ...);
+		     const char *func, const int line, const char *fmt, ...);
 
 /*
  * cam_get_module_name()
@@ -323,6 +327,6 @@ const struct camera_debug_settings *cam_debug_get_settings(void);
  * @return Number of bytes read from buffer on success, or -EPERM on error.
  */
 ssize_t cam_debug_sysfs_node_store(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count);
+				   struct device_attribute *attr, const char *buf, size_t count);
 
 #endif /* _CAM_DEBUG_UTIL_H_ */

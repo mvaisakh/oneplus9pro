@@ -476,7 +476,6 @@ void cam_cpas_log_votes(void)
 	} else {
 		CAM_ERR(CAM_CPAS, "Invalid process_cmd ops");
 	}
-
 }
 EXPORT_SYMBOL(cam_cpas_log_votes);
 

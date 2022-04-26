@@ -569,7 +569,6 @@ static int cam_vfe_camif_lite_handle_irq_bottom_half(
 		ret = CAM_VFE_IRQ_STATUS_OVERFLOW;
 
 		cam_cpas_log_votes();
-
 	}
 
 	cam_vfe_camif_lite_put_evt_payload(camif_lite_priv, &payload);

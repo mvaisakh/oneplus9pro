@@ -786,7 +786,6 @@ static void cam_ife_hw_mgr_dump_all_ctx(void)
 		}
 	}
 	mutex_unlock(&g_ife_hw_mgr.ctx_mutex);
-
 }
 
 static void cam_ife_hw_mgr_print_acquire_info(
@@ -1386,7 +1385,6 @@ static int cam_ife_hw_mgr_acquire_res_ife_out_pixel(
 			CAM_DBG(CAM_ISP, "resource type :0x%x res id:0x%x",
 				ife_out_res->hw_res[j]->res_type,
 				ife_out_res->hw_res[j]->res_id);
-
 		}
 		ife_out_res->res_type = CAM_ISP_RESOURCE_VFE_OUT;
 		ife_out_res->res_id = out_port->res_type;
@@ -1679,7 +1677,6 @@ static int cam_ife_hw_mgr_acquire_res_ife_src(
 				hw_intf->hw_idx,
 				ife_src_res->hw_res[i]->res_type,
 				ife_src_res->hw_res[i]->res_id);
-
 		}
 		csid_res->num_children++;
 	}
@@ -1786,7 +1783,6 @@ static int cam_ife_mgr_acquire_cid_res(
 	/* Try acquiring CID resource from previously acquired HW */
 	list_for_each_entry(cid_res_iterator, &ife_ctx->res_list_ife_cid,
 		list) {
-
 		for (i = 0; i < CAM_ISP_HW_SPLIT_MAX; i++) {
 			if (!cid_res_iterator->hw_res[i])
 				continue;
@@ -1930,7 +1926,6 @@ put_res:
 	cam_ife_hw_mgr_put_res(&ife_ctx->free_res_list, cid_res);
 end:
 	return rc;
-
 }
 
 static int cam_ife_hw_mgr_acquire_tpg(
@@ -2261,7 +2256,6 @@ static int cam_ife_mgr_check_and_update_fe_v0(
 		((uint8_t *)&acquire_hw_info->data +
 		 acquire_hw_info->input_info_offset);
 	for (i = 0; i < acquire_hw_info->num_inputs; i++) {
-
 		if (((uint8_t *)in_port +
 			sizeof(struct cam_isp_in_port_info)) >
 			((uint8_t *)acquire_hw_info +
@@ -2324,7 +2318,6 @@ static int cam_ife_mgr_check_and_update_fe_v2(
 		((uint8_t *)&acquire_hw_info->data +
 		 acquire_hw_info->input_info_offset);
 	for (i = 0; i < acquire_hw_info->num_inputs; i++) {
-
 		if (((uint8_t *)in_port +
 			sizeof(struct cam_isp_in_port_info)) >
 			((uint8_t *)acquire_hw_info +
@@ -3149,7 +3142,6 @@ static int cam_ife_mgr_acquire_hw(void *hw_mgr_priv, void *acquire_hw_args)
 
 	/* acquire HW resources */
 	for (i = 0; i < acquire_hw_info->num_inputs; i++) {
-
 		CAM_DBG(CAM_ISP, "in_res_type %x", in_port[i].res_type);
 
 		if ((in_port[i].cust_node) && (!ife_ctx->custom_enabled)) {
@@ -3524,6 +3516,7 @@ static int cam_ife_mgr_acquire_dev(void *hw_mgr_priv, void *acquire_hw_args)
 	acquire_args->ctxt_to_hw_map = ife_ctx;
 	ife_ctx->ctx_in_use = 1;
 	ife_ctx->num_reg_dump_buf = 0;
+	ife_ctx->is_anchor_instance = true;
 
 	cam_ife_hw_mgr_print_acquire_info(ife_ctx, total_pix_port,
 		total_pd_port, total_rdi_port, rc);
@@ -3919,7 +3912,6 @@ static int cam_ife_mgr_config_hw(void *hw_mgr_priv,
 
 	for (i = 0; i < CAM_IFE_HW_NUM_MAX; i++) {
 		if (hw_update_data->bw_config_valid[i] == true) {
-
 			CAM_DBG(CAM_PERF, "idx=%d, bw_config_version=%d",
 				ctx, ctx->ctx_index, i,
 				hw_update_data->bw_config_version);
@@ -4816,6 +4808,7 @@ static int cam_ife_mgr_release_hw(void *hw_mgr_priv,
 	ctx->is_offline = false;
 	ctx->pf_mid_found = false;
 	ctx->last_cdm_done_req = 0;
+	ctx->is_anchor_instance = 1;
 	atomic_set(&ctx->overflow_pending, 0);
 	for (i = 0; i < CAM_IFE_HW_NUM_MAX; i++) {
 		ctx->sof_cnt[i] = 0;
@@ -5356,7 +5349,6 @@ static int cam_isp_blob_csid_qcfa_update(
 
 	list_for_each_entry(hw_mgr_res, &ctx->res_list_ife_csid, list) {
 		for (i = 0; i < CAM_ISP_HW_SPLIT_MAX; i++) {
-
 			if (!hw_mgr_res->hw_res[i] ||
 				hw_mgr_res->res_id != CAM_IFE_PIX_PATH_RES_IPP)
 				continue;
@@ -5424,8 +5416,7 @@ static int cam_isp_blob_core_cfg_update(
 						CAM_ISP_HW_CMD_CORE_CONFIG,
 						&vfe_core_config,
 						sizeof(
-						struct cam_vfe_core_config_args)
-						);
+						struct cam_vfe_core_config_args));
 					if (rc)
 						CAM_ERR(CAM_ISP,
 						"Core cfg parse fail");
@@ -5509,11 +5500,11 @@ static int cam_isp_blob_clock_update(
 				}
 			} else if ((hw_mgr_res->res_id >=
 				CAM_ISP_HW_VFE_IN_RD) && (hw_mgr_res->res_id
-				<= CAM_ISP_HW_VFE_IN_RDI3))
+				<= CAM_ISP_HW_VFE_IN_RDI3)) {
 				for (j = 0; j < clock_config->num_rdi; j++)
 					clk_rate = max(clock_config->rdi_hz[j],
 						clk_rate);
-			else
+			} else {
 				if (hw_mgr_res->res_id != CAM_ISP_HW_VFE_IN_LCR
 					&& hw_mgr_res->hw_res[i]) {
 					CAM_ERR(CAM_ISP, "Invalid res_id %u",
@@ -5521,6 +5512,7 @@ static int cam_isp_blob_clock_update(
 					rc = -EINVAL;
 					return rc;
 				}
+			}
 
 			hw_intf = hw_mgr_res->hw_res[i]->hw_intf;
 			if (hw_intf && hw_intf->hw_ops.process_cmd) {
@@ -5580,6 +5572,23 @@ end:
 	return rc;
 }
 
+static int cam_isp_blob_anchor_config(
+	struct cam_isp_anchor_config        *anchor_config,
+	struct cam_hw_prepare_update_args   *prepare)
+{
+	int                                 rc = 0;
+	struct cam_ife_hw_mgr_ctx          *ctx = NULL;
+
+	ctx = prepare->ctxt_to_hw_map;
+
+	ctx->is_anchor_instance = anchor_config->anchor_instance;
+
+	CAM_INFO(CAM_ISP, "ctx is anchor instance %d",
+		ctx->is_anchor_instance);
+
+	return rc;
+}
+
 static int cam_isp_blob_sensor_config(
 	uint32_t                               blob_type,
 	struct cam_isp_generic_blob_info      *blob_info,
@@ -5633,8 +5642,7 @@ static int cam_isp_blob_sensor_config(
 					&update_args,
 					sizeof(
 					struct
-					cam_ife_sensor_dimension_update_args)
-					);
+					cam_ife_sensor_dimension_update_args));
 				if (rc) {
 					CAM_ERR(CAM_ISP,
 						"Dimension Update failed");
@@ -5773,8 +5781,7 @@ static int cam_isp_blob_csid_config_update(
 					CAM_IFE_CSID_SET_CONFIG,
 					&epd_update_args,
 					sizeof(
-					struct cam_ife_csid_epd_update_args)
-					);
+					struct cam_ife_csid_epd_update_args));
 				if (rc)
 					CAM_ERR(CAM_ISP,
 						"Failed to epd config:%d",
@@ -5782,7 +5789,6 @@ static int cam_isp_blob_csid_config_update(
 			} else {
 				CAM_WARN(CAM_ISP, "NULL hw_intf!");
 			}
-
 		}
 	}
 
@@ -6214,7 +6220,6 @@ static int cam_isp_packet_generic_blob_handler(void *user_data,
 				qcfa_config, prepare);
 		if (rc)
 			CAM_ERR(CAM_ISP, "QCFA Update Failed rc: %d", rc);
-
 	}
 		break;
 	case CAM_ISP_GENERIC_BLOB_TYPE_FE_CONFIG: {
@@ -6374,6 +6379,25 @@ static int cam_isp_packet_generic_blob_handler(void *user_data,
 		if (rc)
 			CAM_ERR(CAM_ISP,
 				"TPG config failed rc: %d", rc);
+	}
+		break;
+	case CAM_ISP_GENERIC_BLOB_TYPE_ANCHOR_CONFIG: {
+		struct cam_isp_anchor_config *anchor_config;
+
+		if (blob_size < sizeof(struct cam_isp_anchor_config)) {
+			CAM_ERR(CAM_ISP, "Invalid blob size %zu expected %zu",
+				blob_size,
+				sizeof(struct cam_isp_anchor_config));
+			return -EINVAL;
+		}
+
+		anchor_config =
+			(struct cam_isp_anchor_config *)blob_data;
+
+		rc = cam_isp_blob_anchor_config(anchor_config, prepare);
+		if (rc)
+			CAM_ERR(CAM_ISP,
+				"Anchor config failed rc: %d", rc);
 	}
 		break;
 	default:
@@ -6733,7 +6757,6 @@ static void cam_ife_mgr_print_io_bufs(struct cam_ife_hw_mgr  *hw_mgr,
 		uint32_t res_id, struct cam_packet *packet,
 		bool    *ctx_found, struct cam_ife_hw_mgr_ctx *ctx)
 {
-
 	struct cam_buf_io_cfg  *io_cfg = NULL;
 	int32_t      mmu_hdl, iommu_hdl, sec_mmu_hdl;
 	dma_addr_t   iova_addr;
@@ -6977,7 +7000,6 @@ mid_check:
 outportlog:
 	cam_ife_mgr_print_io_bufs(hw_mgr, *resource_type, packet,
 		ctx_found, ctx);
-
 }
 
 static int cam_ife_mgr_cmd(void *hw_mgr_priv, void *cmd_args)
@@ -7047,6 +7069,10 @@ static int cam_ife_mgr_cmd(void *hw_mgr_priv, void *cmd_args)
 		case CAM_ISP_HW_MGR_GET_LAST_CDM_DONE:
 			isp_hw_cmd_args->u.last_cdm_done =
 				ctx->last_cdm_done_req;
+			break;
+		case CAM_ISP_HW_MGR_GET_ANCHOR_CONFIG:
+			isp_hw_cmd_args->u.is_anchor_instance =
+				ctx->is_anchor_instance;
 			break;
 		default:
 			CAM_ERR(CAM_ISP, "Invalid HW mgr command:0x%x",
@@ -7464,7 +7490,6 @@ static bool cam_ife_hw_mgr_is_ctx_affected(
 	uint32_t                    *affected_core,
 	uint32_t                     size)
 {
-
 	bool                  rc = false;
 	uint32_t              i = 0, j = 0;
 	uint32_t              max_idx =  ife_hwr_mgr_ctx->num_base;
@@ -7665,7 +7690,6 @@ static int cam_ife_hw_mgr_handle_csid_event(
 	 */
 	switch (event_info->err_type) {
 	case CAM_ISP_HW_ERROR_CSID_FATAL: {
-
 		if (!g_ife_hw_mgr.debug_cfg.enable_csid_recovery)
 			break;
 
@@ -8122,7 +8146,7 @@ static int cam_ife_hw_mgr_debug_register(void)
 
 	dbgfileptr = debugfs_create_dir("camera_ife", NULL);
 	if (!dbgfileptr) {
-		CAM_ERR(CAM_ISP,"DebugFS could not create directory!");
+		CAM_ERR(CAM_ISP, "DebugFS could not create directory!");
 		rc = -ENOENT;
 		goto end;
 	}

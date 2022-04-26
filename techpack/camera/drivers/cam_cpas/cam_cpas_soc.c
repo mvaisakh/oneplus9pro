@@ -46,7 +46,6 @@ void cam_cpas_dump_axi_vote_info(
 		axi_vote->axi_path[i].mnoc_ab_bw,
 		axi_vote->axi_path[i].mnoc_ib_bw);
 	}
-
 }
 
 void cam_cpas_util_debug_parse_data(
@@ -145,7 +144,6 @@ static int cam_cpas_update_camnoc_node(struct cam_cpas *cpas_core,
 	camnoc_node = of_find_node_by_name(curr_node,
 			"qcom,axi-port-camnoc");
 	if (camnoc_node) {
-
 		if (*camnoc_idx >=
 			CAM_CPAS_MAX_AXI_PORTS) {
 			CAM_ERR(CAM_CPAS, "CAMNOC axi index overshoot %d",
@@ -580,7 +578,7 @@ int cam_cpas_get_hw_features(struct platform_device *pdev,
 				else
 					feature_info->enable = false;
 			} else if (enable_type ==
-				CAM_CPAS_FEATURE_TYPE_DISABLE){
+				CAM_CPAS_FEATURE_TYPE_DISABLE) {
 				/*
 				 * fuse is for disable feature
 				 * if fust bit is set means feature is disabled

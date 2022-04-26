@@ -123,4 +123,4 @@ int cam_ife_csid_disable_ife_force_clock_on(struct cam_hw_soc_info *soc_info,
 uint32_t cam_ife_csid_get_vote_level(struct cam_hw_soc_info *soc_info,
 	uint64_t clock_rate);
 
-#endif
+#endif /*_CAM_IFE_CSID_SOC_H_*/

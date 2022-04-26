@@ -17,7 +17,6 @@
 #include "ipe_core.h"
 #include "ipe_soc.h"
 #include "cam_soc_util.h"
-#include "cam_io_util.h"
 #include "cam_ipe_hw_intf.h"
 #include "cam_icp_hw_mgr_intf.h"
 #include "cam_cpas_api.h"
@@ -181,7 +180,6 @@ static int cam_ipe_handle_pc(struct cam_hw_info *ipe_dev)
 		if (pwr_status >> IPE_PWR_ON_MASK)
 			CAM_WARN(CAM_PERF, "BPS: pwr_status(%x):pwr_ctrl(%x)",
 				pwr_status, pwr_ctrl);
-
 	}
 
 	rc = cam_ipe_get_gdsc_control(soc_info);

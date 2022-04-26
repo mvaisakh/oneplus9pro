@@ -10,7 +10,11 @@
 #include <linux/types.h>
 #include <linux/ioctl.h>
 #include <linux/media.h>
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include <media/cam_defs.h>
+#else
 #include <camera/media/cam_defs.h>
+#endif
 
 #define CAM_REQ_MGR_VNODE_NAME "cam-req-mgr-devnode"
 
@@ -315,7 +319,7 @@ struct cam_req_mgr_link_control {
 
 #define CAM_MEM_MGR_IS_SECURE_HDL(hdl) \
 	(((hdl) & \
-	(1<<CAM_MEM_MGR_SECURE_BIT_POS)) >> CAM_MEM_MGR_SECURE_BIT_POS)
+	(1 << CAM_MEM_MGR_SECURE_BIT_POS)) >> CAM_MEM_MGR_SECURE_BIT_POS)
 
 /**
  * memory allocation type

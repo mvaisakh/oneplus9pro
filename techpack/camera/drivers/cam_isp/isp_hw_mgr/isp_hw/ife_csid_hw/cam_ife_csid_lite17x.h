@@ -9,7 +9,6 @@
 
 static const struct cam_ife_csid_rdi_reg_offset
 	cam_ife_csid_lite_17x_rdi_0_reg_offset = {
-
 	.csid_rdi_irq_status_addr                 = 0x30,
 	.csid_rdi_irq_mask_addr                   = 0x34,
 	.csid_rdi_irq_clear_addr                  = 0x38,
@@ -52,7 +51,6 @@ static const struct cam_ife_csid_rdi_reg_offset
 
 static const struct cam_ife_csid_rdi_reg_offset
 	cam_ife_csid_lite_17x_rdi_1_reg_offset = {
-
 	.csid_rdi_irq_status_addr                 = 0x40,
 	.csid_rdi_irq_mask_addr                   = 0x44,
 	.csid_rdi_irq_clear_addr                  = 0x48,
@@ -95,7 +93,6 @@ static const struct cam_ife_csid_rdi_reg_offset
 
 static const struct cam_ife_csid_rdi_reg_offset
 	cam_ife_csid_lite_17x_rdi_2_reg_offset = {
-
 	.csid_rdi_irq_status_addr                 = 0x50,
 	.csid_rdi_irq_mask_addr                   = 0x54,
 	.csid_rdi_irq_clear_addr                  = 0x58,
@@ -139,7 +136,6 @@ static const struct cam_ife_csid_rdi_reg_offset
 
 static const struct cam_ife_csid_rdi_reg_offset
 	cam_ife_csid_lite_17x_rdi_3_reg_offset = {
-
 	.csid_rdi_irq_status_addr                 = 0x60,
 	.csid_rdi_irq_mask_addr                   = 0x64,
 	.csid_rdi_irq_clear_addr                  = 0x68,
@@ -183,7 +179,6 @@ static const struct cam_ife_csid_rdi_reg_offset
 
 static const struct cam_ife_csid_csi2_rx_reg_offset
 	cam_ife_csid_lite_17x_csi2_reg_offset = {
-
 	.csid_csi2_rx_irq_status_addr                 = 0x20,
 	.csid_csi2_rx_irq_mask_addr                   = 0x24,
 	.csid_csi2_rx_irq_clear_addr                  = 0x28,
@@ -231,7 +226,6 @@ static const struct cam_ife_csid_csi2_rx_reg_offset
 
 static const struct cam_ife_csid_csi2_tpg_reg_offset
 	cam_ife_csid_lite_17x_tpg_reg_offset = {
-
 	/*CSID TPG control */
 	.csid_tpg_ctrl_addr                           = 0x600,
 	.csid_tpg_vc_cfg0_addr                        = 0x604,
@@ -260,7 +254,6 @@ static const struct cam_ife_csid_csi2_tpg_reg_offset
 
 static const struct cam_ife_csid_common_reg_offset
 	cam_csid_lite_17x_cmn_reg_offset = {
-
 	.csid_hw_version_addr                         = 0x0,
 	.csid_cfg0_addr                               = 0x4,
 	.csid_ctrl_addr                               = 0x8,

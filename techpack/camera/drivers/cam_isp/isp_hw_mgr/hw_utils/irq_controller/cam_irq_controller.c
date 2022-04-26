@@ -666,7 +666,6 @@ irqreturn_t cam_irq_controller_clear_and_mask(int irq_num, void *priv)
 		return IRQ_NONE;
 
 	for (i = 0; i < controller->num_registers; i++) {
-
 		cam_io_w_mb(0x0, controller->mem_base +
 			controller->irq_register_arr[i].clear_reg_offset);
 	}

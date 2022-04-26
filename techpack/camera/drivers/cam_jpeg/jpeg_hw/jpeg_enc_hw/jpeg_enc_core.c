@@ -17,7 +17,6 @@
 #include "jpeg_enc_core.h"
 #include "jpeg_enc_soc.h"
 #include "cam_soc_util.h"
-#include "cam_io_util.h"
 #include "cam_jpeg_hw_intf.h"
 #include "cam_jpeg_hw_mgr_intf.h"
 #include "cam_cpas_api.h"
@@ -212,6 +211,7 @@ irqreturn_t cam_jpeg_enc_irq(int irq_num, void *data)
 			} else {
 				CAM_ERR(CAM_JPEG, "unexpected done, no cb");
 			}
+			cam_cpas_notify_event("JPEG FrameDone", 0);
 		} else {
 			CAM_ERR(CAM_JPEG, "unexpected done irq");
 		}
@@ -422,7 +422,6 @@ int cam_jpeg_enc_hw_dump(
 	struct cam_hw_info           *jpeg_enc_dev,
 	struct cam_jpeg_hw_dump_args *dump_args)
 {
-
 	int                                   i;
 	uint8_t                              *dst;
 	uint32_t                             *addr, *start;
@@ -515,26 +514,26 @@ int cam_jpeg_enc_process_cmd(void *device_priv, uint32_t cmd_type,
 
 	switch (cmd_type) {
 	case CAM_JPEG_CMD_SET_IRQ_CB:
-	{
-		struct cam_jpeg_set_irq_cb *irq_cb = cmd_args;
+        {
+			struct cam_jpeg_set_irq_cb *irq_cb = cmd_args;
 
-		if (!cmd_args) {
-			CAM_ERR(CAM_JPEG, "cmd args NULL");
-			return -EINVAL;
+			if (!cmd_args) {
+				CAM_ERR(CAM_JPEG, "cmd args NULL");
+				return -EINVAL;
+			}
+			if (irq_cb->b_set_cb) {
+				core_info->irq_cb.jpeg_hw_mgr_cb =
+					irq_cb->jpeg_hw_mgr_cb;
+				core_info->irq_cb.data = irq_cb->data;
+			} else {
+				core_info->irq_cb.jpeg_hw_mgr_cb = NULL;
+				core_info->irq_cb.data = NULL;
+			}
+			rc = 0;
+			break;
 		}
-		if (irq_cb->b_set_cb) {
-			core_info->irq_cb.jpeg_hw_mgr_cb =
-				irq_cb->jpeg_hw_mgr_cb;
-			core_info->irq_cb.data = irq_cb->data;
-		} else {
-			core_info->irq_cb.jpeg_hw_mgr_cb = NULL;
-			core_info->irq_cb.data = NULL;
-		}
-		rc = 0;
-		break;
-	}
 	case CAM_JPEG_CMD_HW_DUMP:
-	{
+	    {
 		rc = cam_jpeg_enc_hw_dump(jpeg_enc_dev,
 			cmd_args);
 		break;

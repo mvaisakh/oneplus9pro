@@ -39,4 +39,4 @@
 #define CAM_REQ_MGR_GET_HDL_TYPE(hdl) \
 	((hdl >> CAM_REQ_MGR_HDL_IDX_POS) & CAM_REQ_MGR_HDL_TYPE_MASK)
 
-#endif
+#endif /*_CAM_REQ_MGR_UTIL_PRIV_H_*/

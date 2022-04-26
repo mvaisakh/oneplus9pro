@@ -37,6 +37,9 @@ extern struct platform_driver cam_actuator_platform_driver;
 extern struct platform_driver cam_sensor_platform_driver;
 extern struct platform_driver cam_eeprom_platform_driver;
 extern struct platform_driver cam_ois_platform_driver;
+/*ifdef OPLUS_FEATURE_CAMERA_COMMON */
+extern struct platform_driver tof_pltf_driver;
+/*end OPLUS_FEATURE_CAMERA_COMMON*/
 #if IS_REACHABLE(CONFIG_LEDS_QPNP_FLASH_V2) || \
 	IS_REACHABLE(CONFIG_LEDS_QTI_FLASH)
 extern struct platform_driver cam_flash_platform_driver;
@@ -76,7 +79,7 @@ extern struct platform_driver custom_driver;
  * CRM as master
  */
 static struct platform_driver *const cam_component_drivers[] = {
-/* BASE */
+	/* BASE */
 	&cam_sync_driver,
 	&cam_smmu_driver,
 	&cam_cpas_driver,
@@ -105,6 +108,9 @@ static struct platform_driver *const cam_component_drivers[] = {
 	&cam_sensor_platform_driver,
 	&cam_eeprom_platform_driver,
 	&cam_ois_platform_driver,
+	/*ifdef OPLUS_FEATURE_CAMERA_COMMON */
+	&tof_pltf_driver,
+	/*end OPLUS_FEATURE_CAMERA_COMMON*/
 #if IS_REACHABLE(CONFIG_LEDS_QPNP_FLASH_V2) || \
 	IS_REACHABLE(CONFIG_LEDS_QTI_FLASH)
 	&cam_flash_platform_driver,

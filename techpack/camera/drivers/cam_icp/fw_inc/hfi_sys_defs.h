@@ -212,11 +212,11 @@
  * Section describes different modes (HFI_DEBUG_MODE_X)
  * available to communicate the debug messages
  */
- /* Debug message output through the interface debug queue. */
+/* Debug message output through the interface debug queue. */
 #define HFI_DEBUG_MODE_QUEUE     0x00000001
- /* Debug message output through QDSS. */
+/* Debug message output through QDSS. */
 #define HFI_DEBUG_MODE_QDSS      0x00000002
- /* Number of debug modes available. */
+/* Number of debug modes available. */
 #define NUM_HFI_DEBUG_MODE       0x00000002
 
 #define HFI_DEBUG_MSG_LOW        0x00000001

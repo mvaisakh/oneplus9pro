@@ -874,13 +874,11 @@ static struct cam_vfe_bus_ver2_hw_info vfe175_bus_hw_info = {
 		{
 			.comp_mask                    = 0x00002030,
 			.addr_sync_mask               = 0x0000208C,
-
 		},
 		/* CAM_VFE_BUS_VER2_COMP_GRP_DUAL_2 */
 		{
 			.comp_mask                    = 0x00002034,
 			.addr_sync_mask               = 0x00002090,
-
 		},
 		/* CAM_VFE_BUS_VER2_COMP_GRP_DUAL_3 */
 		{
@@ -1039,7 +1037,6 @@ static struct cam_vfe_hw_info cam_vfe175_hw_info = {
 
 	.camif_lite_version            = CAM_VFE_CAMIF_LITE_VER_2_0,
 	.camif_lite_reg                = &vfe175_camif_lite_reg,
-
 };
 
 #endif /* _CAM_VFE175_H_ */

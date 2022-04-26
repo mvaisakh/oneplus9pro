@@ -19,7 +19,6 @@ static const char jpeg_dev_name[] = "cam-jpeg";
 static int cam_jpeg_context_dump_active_request(void *data,
 	struct cam_smmu_pf_info *pf_info)
 {
-
 	struct cam_context *ctx = (struct cam_context *)data;
 	struct cam_ctx_request          *req = NULL;
 	struct cam_ctx_request          *req_temp = NULL;

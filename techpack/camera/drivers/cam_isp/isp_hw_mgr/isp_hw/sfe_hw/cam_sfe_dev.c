@@ -21,7 +21,6 @@ static char sfe_dev_name[8];
 static int cam_sfe_component_bind(struct device *dev,
 	struct device *master_dev, void *data)
 {
-
 	struct cam_hw_info                *sfe_info = NULL;
 	struct cam_hw_intf                *sfe_hw_intf = NULL;
 	const struct of_device_id         *match_dev = NULL;
@@ -134,7 +133,6 @@ end:
 static void cam_sfe_component_unbind(struct device *dev,
 	struct device *master_dev, void *data)
 {
-
 	struct cam_hw_info                *sfe_info = NULL;
 	struct cam_hw_intf                *sfe_hw_intf = NULL;
 	struct cam_sfe_hw_core_info       *core_info = NULL;

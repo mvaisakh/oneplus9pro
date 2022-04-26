@@ -311,7 +311,7 @@ struct cam_hw_soc_dump_args {
  * @return:             Success or failure
  */
 int cam_soc_util_get_level_from_string(const char *string,
-	enum cam_vote_level *level);
+				       enum cam_vote_level *level);
 
 /**
  * cam_soc_util_get_dt_properties()
@@ -338,7 +338,7 @@ int cam_soc_util_get_dt_properties(struct cam_hw_soc_info *soc_info);
  * @return:             Success or failure
  */
 int cam_soc_util_request_platform_resource(struct cam_hw_soc_info *soc_info,
-	irq_handler_t handler, void *irq_data);
+		irq_handler_t handler, void *irq_data);
 
 /**
  * cam_soc_util_release_platform_resource()
@@ -372,7 +372,7 @@ int cam_soc_util_release_platform_resource(struct cam_hw_soc_info *soc_info);
  * @return:             Success or failure
  */
 int cam_soc_util_enable_platform_resource(struct cam_hw_soc_info *soc_info,
-	bool enable_clocks, enum cam_vote_level clk_level, bool enable_irq);
+		bool enable_clocks, enum cam_vote_level clk_level, bool enable_irq);
 
 /**
  * cam_soc_util_disable_platform_resource()
@@ -388,7 +388,7 @@ int cam_soc_util_enable_platform_resource(struct cam_hw_soc_info *soc_info,
  * @return:             Success or failure
  */
 int cam_soc_util_disable_platform_resource(struct cam_hw_soc_info *soc_info,
-	bool disable_clocks, bool disable_irq);
+		bool disable_clocks, bool disable_irq);
 
 /**
  * cam_soc_util_get_clk_round_rate()
@@ -403,7 +403,7 @@ int cam_soc_util_disable_platform_resource(struct cam_hw_soc_info *soc_info,
  * @return:             Rounded clock rate
  */
 long cam_soc_util_get_clk_round_rate(struct cam_hw_soc_info *soc_info,
-	uint32_t clk_index, unsigned long clk_rate);
+				     uint32_t clk_index, unsigned long clk_rate);
 
 /**
  * cam_soc_util_set_src_clk_rate()
@@ -416,7 +416,7 @@ long cam_soc_util_get_clk_round_rate(struct cam_hw_soc_info *soc_info,
  * @return:             success or failure
  */
 int cam_soc_util_set_src_clk_rate(struct cam_hw_soc_info *soc_info,
-	int64_t clk_rate);
+				  int64_t clk_rate);
 
 /**
  * cam_soc_util_get_option_clk_by_name()
@@ -433,8 +433,8 @@ int cam_soc_util_set_src_clk_rate(struct cam_hw_soc_info *soc_info,
  *                      Negative: Failure
  */
 int cam_soc_util_get_option_clk_by_name(struct cam_hw_soc_info *soc_info,
-	const char *clk_name, struct clk **clk, int32_t *clk_index,
-	int32_t *clk_rate);
+					const char *clk_name, struct clk **clk, int32_t *clk_index,
+					int32_t *clk_rate);
 
 /**
  * cam_soc_util_clk_put()
@@ -459,7 +459,7 @@ int cam_soc_util_clk_put(struct clk **clk);
  * @return:             Success or failure
  */
 int cam_soc_util_clk_enable(struct clk *clk, const char *clk_name,
-	int32_t clk_rate);
+			    int32_t clk_rate);
 
 /**
  * cam_soc_util_set_clk_rate_level()
@@ -475,7 +475,7 @@ int cam_soc_util_clk_enable(struct clk *clk, const char *clk_name,
  * @return:             Success or failure
  */
 int cam_soc_util_set_clk_rate_level(struct cam_hw_soc_info *soc_info,
-	enum cam_vote_level clk_level, bool do_not_set_src_clk);
+				    enum cam_vote_level clk_level, bool do_not_set_src_clk);
 
 /**
  * cam_soc_util_clk_disable()
@@ -526,9 +526,9 @@ int cam_soc_util_irq_disable(struct cam_hw_soc_info *soc_info);
  * @return:             Success or failure
  */
 int cam_soc_util_regulator_enable(struct regulator *rgltr,
-	const char *rgltr_name,
-	uint32_t rgltr_min_volt, uint32_t rgltr_max_volt,
-	uint32_t rgltr_op_mode, uint32_t rgltr_delay);
+				  const char *rgltr_name,
+				  uint32_t rgltr_min_volt, uint32_t rgltr_max_volt,
+				  uint32_t rgltr_op_mode, uint32_t rgltr_delay);
 
 /**
  * cam_soc_util_regulator_enable()
@@ -545,9 +545,9 @@ int cam_soc_util_regulator_enable(struct regulator *rgltr,
  * @return:             Success or failure
  */
 int cam_soc_util_regulator_disable(struct regulator *rgltr,
-	const char *rgltr_name,
-	uint32_t rgltr_min_volt, uint32_t rgltr_max_volt,
-	uint32_t rgltr_op_mode, uint32_t rgltr_delay);
+				   const char *rgltr_name,
+				   uint32_t rgltr_min_volt, uint32_t rgltr_max_volt,
+				   uint32_t rgltr_op_mode, uint32_t rgltr_delay);
 
 
 /**
@@ -563,12 +563,13 @@ int cam_soc_util_regulator_disable(struct regulator *rgltr,
  * @return:             Success or Failure
  */
 static inline int cam_soc_util_w(struct cam_hw_soc_info *soc_info,
-	uint32_t base_index, uint32_t offset, uint32_t data)
+				 uint32_t base_index, uint32_t offset, uint32_t data)
 {
 	if (!CAM_SOC_GET_REG_MAP_START(soc_info, base_index))
 		return -EINVAL;
+
 	return cam_io_w(data,
-		CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
+			CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
 }
 
 /**
@@ -587,12 +588,13 @@ static inline int cam_soc_util_w(struct cam_hw_soc_info *soc_info,
  * @return:             Success or Failure
  */
 static inline int cam_soc_util_w_mb(struct cam_hw_soc_info *soc_info,
-	uint32_t base_index, uint32_t offset, uint32_t data)
+				    uint32_t base_index, uint32_t offset, uint32_t data)
 {
 	if (!CAM_SOC_GET_REG_MAP_START(soc_info, base_index))
 		return -EINVAL;
+
 	return cam_io_w_mb(data,
-		CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
+			   CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
 }
 
 /**
@@ -607,12 +609,13 @@ static inline int cam_soc_util_w_mb(struct cam_hw_soc_info *soc_info,
  * @return:             Value read from the register address
  */
 static inline uint32_t cam_soc_util_r(struct cam_hw_soc_info *soc_info,
-	uint32_t base_index, uint32_t offset)
+				      uint32_t base_index, uint32_t offset)
 {
 	if (!CAM_SOC_GET_REG_MAP_START(soc_info, base_index))
 		return 0;
+
 	return cam_io_r(
-		CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
+		       CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
 }
 
 /**
@@ -630,12 +633,13 @@ static inline uint32_t cam_soc_util_r(struct cam_hw_soc_info *soc_info,
  * @return:             Value read from the register address
  */
 static inline uint32_t cam_soc_util_r_mb(struct cam_hw_soc_info *soc_info,
-	uint32_t base_index, uint32_t offset)
+		uint32_t base_index, uint32_t offset)
 {
 	if (!CAM_SOC_GET_REG_MAP_START(soc_info, base_index))
 		return 0;
+
 	return cam_io_r_mb(
-		CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
+		       CAM_SOC_GET_REG_MAP_START(soc_info, base_index) + offset);
 }
 
 /**
@@ -651,20 +655,20 @@ static inline uint32_t cam_soc_util_r_mb(struct cam_hw_soc_info *soc_info,
  * @return:             Success or Failure
  */
 int cam_soc_util_reg_dump(struct cam_hw_soc_info *soc_info,
-	uint32_t base_index, uint32_t offset, int size);
+			  uint32_t base_index, uint32_t offset, int size);
 
 void cam_soc_util_clk_disable_default(struct cam_hw_soc_info *soc_info);
 
 int cam_soc_util_clk_enable_default(struct cam_hw_soc_info *soc_info,
-	enum cam_vote_level clk_level);
+				    enum cam_vote_level clk_level);
 
 int cam_soc_util_get_clk_level(struct cam_hw_soc_info *soc_info,
-	int64_t clk_rate, int clk_idx, int32_t *clk_lvl);
+			       int64_t clk_rate, int clk_idx, int32_t *clk_lvl);
 
 /* Callback to get reg space data for specific HW */
 typedef int (*cam_soc_util_regspace_data_cb)(uint32_t reg_base_type,
-	void *ctx, struct cam_hw_soc_info **soc_info_ptr,
-	uint32_t *reg_base_idx);
+		void *ctx, struct cam_hw_soc_info **soc_info_ptr,
+		uint32_t *reg_base_idx);
 
 /**
  * cam_soc_util_reg_dump_to_cmd_buf()
@@ -683,10 +687,10 @@ typedef int (*cam_soc_util_regspace_data_cb)(uint32_t reg_base_type,
  * @return:                Success or Failure
  */
 int cam_soc_util_reg_dump_to_cmd_buf(void *ctx,
-	struct cam_cmd_buf_desc *cmd_desc, uint64_t req_id,
-	cam_soc_util_regspace_data_cb reg_data_cb,
-	struct cam_hw_soc_dump_args *soc_dump_args,
-	bool user_triggered_dump);
+				     struct cam_cmd_buf_desc *cmd_desc, uint64_t req_id,
+				     cam_soc_util_regspace_data_cb reg_data_cb,
+				     struct cam_hw_soc_dump_args *soc_dump_args,
+				     bool user_triggered_dump);
 
 /**
  * cam_soc_util_print_clk_freq()

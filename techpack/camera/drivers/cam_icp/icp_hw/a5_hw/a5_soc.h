@@ -38,4 +38,4 @@ int cam_a5_disable_soc_resources(struct cam_hw_soc_info *soc_info);
 
 int cam_a5_update_clk_rate(struct cam_hw_soc_info *soc_info,
 	int32_t clk_level);
-#endif
+#endif /*CAM_A5_SOC_H*/

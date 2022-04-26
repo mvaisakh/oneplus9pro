@@ -21,7 +21,6 @@
 #include "cam_sfe_bus_wr.h"
 #include "cam_sfe_core.h"
 #include "cam_sfe_soc.h"
-#include "cam_debug_util.h"
 #include "cam_cpas_api.h"
 #include "cam_trace.h"
 
@@ -391,7 +390,6 @@ static int cam_sfe_bus_acquire_wm(
 
 	if ((sfe_out_res_id >= CAM_SFE_BUS_SFE_OUT_RDI0) &&
 		(sfe_out_res_id <= CAM_SFE_BUS_SFE_OUT_RDI4)) {
-
 		rsrc_data->pack_fmt = 0x0;
 		switch (rsrc_data->format) {
 		case CAM_FORMAT_MIPI_RAW_6:
@@ -436,14 +434,12 @@ static int cam_sfe_bus_acquire_wm(
 		rsrc_data->en_cfg = 0x1;
 	} else if ((sfe_out_res_id >= CAM_SFE_BUS_SFE_OUT_BE_0) &&
 		(sfe_out_res_id <= CAM_SFE_BUS_SFE_OUT_BHIST_2)) {
-
 		rsrc_data->width = 0;
 		rsrc_data->height = 0;
 		rsrc_data->stride = 1;
 		rsrc_data->en_cfg = (0x1 << 16) | 0x1;
 
 	} else if (sfe_out_res_id == CAM_SFE_BUS_SFE_OUT_LCR) {
-
 		switch (rsrc_data->format) {
 		case CAM_FORMAT_PLAIN16_10:
 		case CAM_FORMAT_PLAIN16_12:
@@ -996,7 +992,7 @@ static int cam_sfe_bus_acquire_sfe_out(void *priv, void *acquire_args,
 	}
 	mutex_unlock(&rsrc_data->common_data->bus_mutex);
 
-	//bus_priv->tasklet_info = acq_args->tasklet;
+	/*bus_priv->tasklet_info = acq_args->tasklet;*/
 	rsrc_node->rdi_only_ctx = 0;
 	rsrc_node->res_id = out_acquire_args->out_port_info->res_type;
 	rsrc_node->tasklet_info = acq_args->tasklet;
@@ -1605,7 +1601,6 @@ static int cam_sfe_bus_wr_handle_bus_irq(uint32_t    evt_id,
 static int cam_sfe_bus_wr_err_irq_top_half(uint32_t evt_id,
 	struct cam_irq_th_payload *th_payload)
 {
-
 	int i = 0, rc = 0;
 	struct cam_sfe_bus_wr_priv *bus_priv =
 		th_payload->handler_priv;

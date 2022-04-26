@@ -437,7 +437,6 @@ static int cam_vfe_hw_dump(
 
 	/*dump LUT*/
 	for (i = 0; i < dump_data->num_lut_dump_entries; i++) {
-
 		dst = (char *)dump_args->cpu_addr + dump_args->offset;
 		hdr = (struct cam_isp_hw_dump_header *)dst;
 		scnprintf(hdr->tag, CAM_ISP_HW_DUMP_TAG_MAX_LEN, "LUT_REG:");
@@ -555,7 +554,6 @@ int cam_vfe_top_reserve(void *device_priv,
 			acquire_args->res_id &&
 			top_priv->top_common.mux_rsrc[i].res_state ==
 			CAM_ISP_RESOURCE_STATE_AVAILABLE) {
-
 			if (acquire_args->res_id == CAM_ISP_HW_VFE_IN_CAMIF) {
 				rc = cam_vfe_camif_ver2_acquire_resource(
 					&top_priv->top_common.mux_rsrc[i],
@@ -607,7 +605,6 @@ int cam_vfe_top_reserve(void *device_priv,
 	}
 
 	return rc;
-
 }
 
 int cam_vfe_top_release(void *device_priv,

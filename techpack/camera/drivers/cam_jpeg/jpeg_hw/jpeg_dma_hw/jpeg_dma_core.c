@@ -17,7 +17,6 @@
 #include "jpeg_dma_core.h"
 #include "jpeg_dma_soc.h"
 #include "cam_soc_util.h"
-#include "cam_io_util.h"
 #include "cam_jpeg_hw_intf.h"
 #include "cam_jpeg_hw_mgr_intf.h"
 #include "cam_cpas_api.h"
@@ -394,24 +393,24 @@ int cam_jpeg_dma_process_cmd(void *device_priv, uint32_t cmd_type,
 
 	switch (cmd_type) {
 	case CAM_JPEG_CMD_SET_IRQ_CB:
-	{
-		struct cam_jpeg_set_irq_cb *irq_cb = cmd_args;
+        {
+			struct cam_jpeg_set_irq_cb *irq_cb = cmd_args;
 
-		if (!cmd_args) {
-			CAM_ERR(CAM_JPEG, "cmd args NULL");
-			return -EINVAL;
+			if (!cmd_args) {
+				CAM_ERR(CAM_JPEG, "cmd args NULL");
+				return -EINVAL;
+			}
+			if (irq_cb->b_set_cb) {
+				core_info->irq_cb.jpeg_hw_mgr_cb =
+					irq_cb->jpeg_hw_mgr_cb;
+				core_info->irq_cb.data = irq_cb->data;
+			} else {
+				core_info->irq_cb.jpeg_hw_mgr_cb = NULL;
+				core_info->irq_cb.data = NULL;
+			}
+			rc = 0;
+			break;
 		}
-		if (irq_cb->b_set_cb) {
-			core_info->irq_cb.jpeg_hw_mgr_cb =
-				irq_cb->jpeg_hw_mgr_cb;
-			core_info->irq_cb.data = irq_cb->data;
-		} else {
-			core_info->irq_cb.jpeg_hw_mgr_cb = NULL;
-			core_info->irq_cb.data = NULL;
-		}
-		rc = 0;
-		break;
-	}
 	default:
 		rc = -EINVAL;
 		break;

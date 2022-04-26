@@ -10,19 +10,19 @@
 
 #ifndef CONFIG_QCOM_CX_IPEAK
 static inline int cam_cx_ipeak_register_cx_ipeak
-	(struct cam_hw_soc_info *soc_info)
+(struct cam_hw_soc_info *soc_info)
 {
 	return 0;
 }
 
 static inline int cam_cx_ipeak_update_vote_cx_ipeak
-	(struct cam_hw_soc_info *soc_info, int32_t apply_level)
+(struct cam_hw_soc_info *soc_info, int32_t apply_level)
 {
 	return 0;
 }
 
 static inline int cam_cx_ipeak_unvote_cx_ipeak
-	(struct cam_hw_soc_info *soc_info)
+(struct cam_hw_soc_info *soc_info)
 {
 	return 0;
 }
@@ -30,7 +30,7 @@ static inline int cam_cx_ipeak_unvote_cx_ipeak
 int cam_cx_ipeak_register_cx_ipeak(struct cam_hw_soc_info *soc_info);
 
 int cam_cx_ipeak_update_vote_cx_ipeak(struct cam_hw_soc_info *soc_info,
-	int32_t apply_level);
+				      int32_t apply_level);
 int cam_cx_ipeak_unvote_cx_ipeak(struct cam_hw_soc_info *soc_info);
 #endif
 

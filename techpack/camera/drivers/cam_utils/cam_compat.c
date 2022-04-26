@@ -21,24 +21,30 @@ int cam_reserve_icp_fw(struct cam_fw_alloc_info *icp_fw, size_t fw_length)
 
 	of_node = (icp_fw->fw_dev)->of_node;
 	mem_node = of_parse_phandle(of_node, "memory-region", 0);
+
 	if (!mem_node) {
 		rc = -ENOMEM;
 		CAM_ERR(CAM_SMMU, "FW memory carveout not found");
 		goto end;
 	}
+
 	rc = of_address_to_resource(mem_node, 0, &res);
 	of_node_put(mem_node);
+
 	if (rc < 0) {
 		CAM_ERR(CAM_SMMU, "Unable to get start of FW mem carveout");
 		goto end;
 	}
+
 	icp_fw->fw_hdl = res.start;
 	icp_fw->fw_kva = ioremap_wc(icp_fw->fw_hdl, fw_length);
+
 	if (!icp_fw->fw_kva) {
 		CAM_ERR(CAM_SMMU, "Failed to map the FW.");
 		rc = -ENOMEM;
 		goto end;
 	}
+
 	memset_io(icp_fw->fw_kva, 0, fw_length);
 
 end:
@@ -56,6 +62,7 @@ int cam_ife_notify_safe_lut_scm(bool safe_trigger)
 	uint32_t camera_hw_version, rc = 0;
 
 	rc = cam_cpas_get_cpas_hw_version(&camera_hw_version);
+
 	if (!rc && qcom_scm_smmu_notify_secure_lut(smmu_se_ife, safe_trigger)) {
 		switch (camera_hw_version) {
 		case CAM_CPAS_TITAN_170_V100:
@@ -64,6 +71,7 @@ int cam_ife_notify_safe_lut_scm(bool safe_trigger)
 			CAM_ERR(CAM_ISP, "scm call to enable safe failed");
 			rc = -EINVAL;
 			break;
+
 		default:
 			break;
 		}
@@ -73,16 +81,17 @@ int cam_ife_notify_safe_lut_scm(bool safe_trigger)
 }
 
 int cam_csiphy_notify_secure_mode(struct csiphy_device *csiphy_dev,
-	bool protect, int32_t offset)
+				  bool protect, int32_t offset)
 {
 	int rc = 0;
 
 	if (offset >= CSIPHY_MAX_INSTANCES_PER_PHY) {
 		CAM_ERR(CAM_CSIPHY, "Invalid CSIPHY offset");
 		rc = -EINVAL;
+
 	} else if (qcom_scm_camera_protect_phy_lanes(protect,
 			csiphy_dev->csiphy_info[offset]
-				.csiphy_cpas_cp_reg_mask)) {
+			.csiphy_cpas_cp_reg_mask)) {
 		CAM_ERR(CAM_CSIPHY, "SCM call to hypervisor failed");
 		rc = -EINVAL;
 	}
@@ -109,7 +118,7 @@ int cam_reserve_icp_fw(struct cam_fw_alloc_info *icp_fw, size_t fw_length)
 	int rc = 0;
 
 	icp_fw->fw_kva = dma_alloc_coherent(icp_fw->fw_dev, fw_length,
-		&icp_fw->fw_hdl, GFP_KERNEL);
+					    &icp_fw->fw_hdl, GFP_KERNEL);
 
 	if (!icp_fw->fw_kva) {
 		CAM_ERR(CAM_SMMU, "FW memory alloc failed");
@@ -122,7 +131,7 @@ int cam_reserve_icp_fw(struct cam_fw_alloc_info *icp_fw, size_t fw_length)
 void cam_unreserve_icp_fw(struct cam_fw_alloc_info *icp_fw, size_t fw_length)
 {
 	dma_free_coherent(icp_fw->fw_dev, fw_length, icp_fw->fw_kva,
-		icp_fw->fw_hdl);
+			  icp_fw->fw_hdl);
 }
 
 int cam_ife_notify_safe_lut_scm(bool safe_trigger)
@@ -136,6 +145,7 @@ int cam_ife_notify_safe_lut_scm(bool safe_trigger)
 	};
 
 	rc = cam_cpas_get_cpas_hw_version(&camera_hw_version);
+
 	if (!rc && scm_call2(SCM_SIP_FNID(0x15, 0x3), &description)) {
 		switch (camera_hw_version) {
 		case CAM_CPAS_TITAN_170_V100:
@@ -144,6 +154,7 @@ int cam_ife_notify_safe_lut_scm(bool safe_trigger)
 			CAM_ERR(CAM_ISP, "scm call to enable safe failed");
 			rc = -EINVAL;
 			break;
+
 		default:
 			break;
 		}
@@ -153,19 +164,20 @@ int cam_ife_notify_safe_lut_scm(bool safe_trigger)
 }
 
 int cam_csiphy_notify_secure_mode(struct csiphy_device *csiphy_dev,
-	bool protect, int32_t offset)
+				  bool protect, int32_t offset)
 {
 	int rc = 0;
 	struct scm_desc description = {
 		.arginfo = SCM_ARGS(2, SCM_VAL, SCM_VAL),
 		.args[0] = protect,
 		.args[1] = csiphy_dev->csiphy_info[offset]
-			.csiphy_cpas_cp_reg_mask,
+		.csiphy_cpas_cp_reg_mask,
 	};
 
 	if (offset >= CSIPHY_MAX_INSTANCES_PER_PHY) {
 		CAM_ERR(CAM_CSIPHY, "Invalid CSIPHY offset");
 		rc = -EINVAL;
+
 	} else if (scm_call2(SCM_SIP_FNID(0x18, 0x7), &description)) {
 		CAM_ERR(CAM_CSIPHY, "SCM call to hypervisor failed");
 		rc = -EINVAL;
@@ -197,7 +209,7 @@ static inline int camera_component_compare_dev(struct device *dev, void *data)
 
 /* Add component matches to list for master of aggregate driver */
 int camera_component_match_add_drivers(struct device *master_dev,
-	struct component_match **match_list)
+				       struct component_match **match_list)
 {
 	int i, rc = 0;
 	struct platform_device *pdev = NULL;
@@ -211,7 +223,7 @@ int camera_component_match_add_drivers(struct device *master_dev,
 	for (i = 0; i < ARRAY_SIZE(cam_component_drivers); i++) {
 #if KERNEL_VERSION(5, 4, 0) <= LINUX_VERSION_CODE
 		struct device_driver const *drv =
-			&cam_component_drivers[i]->driver;
+				&cam_component_drivers[i]->driver;
 		const void *drv_ptr = (const void *)drv;
 #else
 		struct device_driver *drv = &cam_component_drivers[i]->driver;
@@ -220,15 +232,16 @@ int camera_component_match_add_drivers(struct device *master_dev,
 		struct device *start_dev = NULL, *match_dev;
 
 		while ((match_dev = bus_find_device(&platform_bus_type,
-			start_dev, drv_ptr, &camera_platform_compare_dev))) {
+						    start_dev, drv_ptr, &camera_platform_compare_dev))) {
 			put_device(start_dev);
 			pdev = to_platform_device(match_dev);
 			CAM_DBG(CAM_UTIL, "Adding matched component:%s",
 				pdev->name);
 			component_match_add(master_dev, match_list,
-				camera_component_compare_dev, match_dev);
+					    camera_component_compare_dev, match_dev);
 			start_dev = match_dev;
 		}
+
 		put_device(start_dev);
 	}
 

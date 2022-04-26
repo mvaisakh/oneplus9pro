@@ -119,7 +119,7 @@ int cam_req_mgr_debug_register(struct cam_req_mgr_core_device *core_dev)
 
 	dbgfileptr = debugfs_create_dir("cam_req_mgr", NULL);
 	if (!dbgfileptr) {
-		CAM_ERR(CAM_MEM,"DebugFS could not create directory!");
+		CAM_ERR(CAM_MEM, "DebugFS could not create directory!");
 		rc = -ENOENT;
 		goto end;
 	}

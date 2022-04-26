@@ -1645,7 +1645,6 @@ static int cam_tfe_csid_poll_stop_status(
 			if (csid_hw->rdi_res[res_id].res_state !=
 				CAM_ISP_RESOURCE_STATE_STREAMING)
 				continue;
-
 		}
 
 		CAM_DBG(CAM_ISP, "start polling CSID:%d res_id:%d",
@@ -2633,7 +2632,6 @@ static int cam_tfe_csid_log_acquire_data(
 	}
 
 	return 0;
-
 }
 
 static int cam_tfe_csid_process_cmd(void *hw_priv,
@@ -2690,7 +2688,6 @@ static int cam_tfe_csid_get_evt_payload(
 	struct cam_tfe_csid_hw *csid_hw,
 	struct cam_csid_evt_payload **evt_payload)
 {
-
 	spin_lock(&csid_hw->spin_lock);
 
 	if (list_empty(&csid_hw->free_payload_list)) {
@@ -3146,7 +3143,6 @@ handle_fatal_error:
 	}
 
 	if (csid_hw->csid_debug & TFE_CSID_DEBUG_ENABLE_RST_IRQ_LOG) {
-
 		if (irq_status[TFE_CSID_IRQ_REG_IPP] &
 			BIT(csid_reg->cmn_reg->path_rst_done_shift_val))
 			CAM_INFO_RATE_LIMIT(CAM_ISP,
@@ -3204,11 +3200,9 @@ handle_fatal_error:
 		if (irq_status[TFE_CSID_IRQ_REG_IPP] &
 			TFE_CSID_PATH_IPP_ERROR_CCIF_VIOLATION)
 			is_error_irq = true;
-
 	}
 
 	for (i = 0; i < csid_reg->cmn_reg->num_rdis; i++) {
-
 		if ((irq_status[i] &
 			BIT(csid_reg->cmn_reg->path_rst_done_shift_val)) &&
 			(csid_hw->csid_debug &

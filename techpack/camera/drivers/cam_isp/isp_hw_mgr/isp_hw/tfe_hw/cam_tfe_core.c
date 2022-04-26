@@ -444,7 +444,6 @@ static void cam_tfe_log_error_irq_status(
 		"TFE clock rate:%d TFE total bw applied:%lld",
 		top_priv->hw_clk_rate,
 		top_priv->total_bw_applied);
-
 }
 
 static int cam_tfe_error_irq_bottom_half(
@@ -934,7 +933,6 @@ irqreturn_t cam_tfe_irq(int irq_num, void *data)
 
 end:
 	return IRQ_HANDLED;
-
 }
 
 static int cam_tfe_top_set_hw_clk_rate(
@@ -1587,7 +1585,6 @@ static int cam_tfe_hw_dump(
 	mem_base = soc_info->reg_map[TFE_CORE_BASE_IDX].mem_base;
 
 	if (dump_args->is_dump_all) {
-
 		/*Dump registers size*/
 		for (i = 0; i < reg_dump_data->num_reg_dump_entries; i++)
 			reg_dump_size +=
@@ -1675,7 +1672,6 @@ static int cam_tfe_hw_dump(
 	reg_start_offset = soc_info->mem_block[TFE_CORE_BASE_IDX]->start +
 		reg_dump_data->bus_client_start_addr;
 	for (j = 0; j < reg_dump_data->num_bus_clients; j++) {
-
 		for (i = 0; i <= 0x3c; i += 4) {
 			addr[0] = reg_start_offset + i;
 			addr[1] = cam_io_r(reg_base + i);
@@ -1696,7 +1692,6 @@ static int cam_tfe_hw_dump(
 
 	/* Dump LUT entries */
 	for (i = 0; i < reg_dump_data->num_lut_dump_entries; i++) {
-
 		lut_bank_sel = reg_dump_data->lut_entry[i].lut_bank_sel;
 		lut_size = reg_dump_data->lut_entry[i].lut_addr_size;
 		lut_word_size = reg_dump_data->lut_entry[i].lut_word_size;
@@ -2398,7 +2393,6 @@ int cam_tfe_top_init(
 
 deinit_resources:
 	for (--i; i >= 0; i--) {
-
 		top_priv->in_rsrc[i].start = NULL;
 		top_priv->in_rsrc[i].stop  = NULL;
 		top_priv->in_rsrc[i].process_cmd = NULL;

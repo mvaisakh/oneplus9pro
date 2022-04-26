@@ -30,7 +30,6 @@
 #include "cam_smmu_api.h"
 #include "cam_mem_mgr.h"
 #include "cam_req_mgr_workq.h"
-#include "cam_mem_mgr.h"
 #include "cam_debug_util.h"
 #include "cam_soc_util.h"
 #include "cam_trace.h"
@@ -184,7 +183,6 @@ static void cam_ope_device_timer_stop(struct cam_ope_hw_mgr *hw_mgr)
 
 static void cam_ope_device_timer_reset(struct cam_ope_hw_mgr *hw_mgr)
 {
-
 	if (hw_mgr->clk_info.watch_dog) {
 		CAM_DBG(CAM_OPE, "reset timer");
 		crm_timer_reset(hw_mgr->clk_info.watch_dog);
@@ -653,7 +651,6 @@ static int32_t cam_ope_process_request_timer(void *priv, void *data)
 	}
 
 	if (cam_ope_is_pending_request(ctx_data)) {
-
 		if (cam_ope_check_req_delay(ctx_data,
 			ctx_data->last_req_time)) {
 			mutex_unlock(&ctx_data->ctx_mutex);
@@ -1760,7 +1757,6 @@ static int cam_ope_mgr_process_io_cfg(struct cam_ope_hw_mgr *hw_mgr,
 	struct cam_hw_prepare_update_args *prep_args,
 	struct cam_ope_ctx *ctx_data, uint32_t req_idx)
 {
-
 	int i, j = 0, k = 0, l, rc = 0;
 	struct ope_io_buf *io_buf;
 	int32_t sync_in_obj[CAM_MAX_IN_RES];
@@ -3477,7 +3473,6 @@ static void cam_ope_mgr_print_io_bufs(struct cam_packet *packet,
 				io_cfg[i].mem_handle[j]);
 
 			iova_addr += io_cfg[i].offsets[j];
-
 		}
 	}
 	cam_packet_dump_patch_info(packet, ope_hw_mgr->iommu_hdl,
@@ -3862,7 +3857,6 @@ static void cam_req_mgr_process_ope_timer_queue(struct work_struct *w)
 
 static int cam_ope_mgr_create_wq(void)
 {
-
 	int rc;
 	int i;
 

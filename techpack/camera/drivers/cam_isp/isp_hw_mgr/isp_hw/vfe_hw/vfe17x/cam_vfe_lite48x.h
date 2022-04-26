@@ -3,8 +3,8 @@
  * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
  */
 
-#ifndef _CAM_VFE_LITE48x_H_
-#define _CAM_VFE_LITE48x_H_
+#ifndef _CAM_VFE_LITE48X_H_
+#define _CAM_VFE_LITE48X_H_
 
 #include "cam_vfe_bus_ver3.h"
 #include "cam_irq_controller.h"
@@ -430,7 +430,6 @@ static struct cam_vfe_hw_info cam_vfe_lite48x_hw_info = {
 
 	.top_version                   = CAM_VFE_TOP_VER_3_0,
 	.top_hw_info                   = &vfe48x_top_hw_info,
-
 };
 
 #endif /* _CAM_VFE_LITE48x_H_ */

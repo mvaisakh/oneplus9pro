@@ -661,7 +661,6 @@ irqreturn_t cam_fd_hw_irq(int irq_num, void *data)
 	/* Do not change state to IDLE on HALT IRQ. Reset must follow halt */
 	if ((irq_type == CAM_FD_IRQ_RESET_DONE) ||
 		(irq_type == CAM_FD_IRQ_FRAME_DONE)) {
-
 		fd_core->core_state = CAM_FD_CORE_STATE_IDLE;
 		if (irq_type == CAM_FD_IRQ_FRAME_DONE)
 			fd_core->results_valid = true;

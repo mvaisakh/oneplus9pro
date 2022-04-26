@@ -34,7 +34,7 @@
 #define BYTE_SIZE 8
 #define COOKIE_NUM_BYTE 2
 #define COOKIE_SIZE (BYTE_SIZE*COOKIE_NUM_BYTE)
-#define COOKIE_MASK ((1<<COOKIE_SIZE)-1)
+#define COOKIE_MASK ((1 << COOKIE_SIZE)-1)
 #define HANDLE_INIT (-1)
 #define CAM_SMMU_CB_MAX 6
 #define CAM_SMMU_SHARED_HDL_MAX 6
@@ -44,7 +44,7 @@
 
 #define CAM_SMMU_MONITOR_MAX_ENTRIES   100
 #define CAM_SMMU_INC_MONITOR_HEAD(head, ret) \
-	div_u64_rem(atomic64_add_return(1, head),\
+	div_u64_rem(atomic64_add_return(1, head), \
 	CAM_SMMU_MONITOR_MAX_ENTRIES, (ret))
 
 static int g_num_pf_handled = 1;
@@ -746,7 +746,6 @@ void cam_smmu_reset_cb_page_fault_cnt(void)
 
 	for (idx = 0; idx < iommu_cb_set.cb_num; idx++)
 		iommu_cb_set.cb_info[idx].pf_count = 0;
-
 }
 
 static int cam_smmu_translate_dir_to_iommu_dir(
@@ -763,7 +762,7 @@ static int cam_smmu_translate_dir_to_iommu_dir(
 	default:
 		CAM_ERR(CAM_SMMU, "Error: Direction is invalid. dir = %d", dir);
 		break;
-	};
+	}
 	return IOMMU_INVALID_DIR;
 }
 
@@ -1896,7 +1895,8 @@ static int cam_smmu_map_buffer_validate(struct dma_buf *buf,
 		table = dma_buf_map_attachment(attach, dma_dir);
 		if (IS_ERR_OR_NULL(table)) {
 			rc = PTR_ERR(table);
-			CAM_ERR(CAM_SMMU, "Error: dma map attachment failed");
+			CAM_ERR(CAM_SMMU, "Error: dma map attachment failed, rc:%d, table:%p",
+				rc, table);
 			goto err_detach;
 		}
 
@@ -3985,7 +3985,7 @@ static int cam_smmu_create_debug_fs(void)
 
 	dbgfileptr = debugfs_create_dir("camera_smmu", NULL);
 	if (!dbgfileptr) {
-		CAM_ERR(CAM_SMMU,"DebugFS could not create directory!");
+		CAM_ERR(CAM_SMMU, "DebugFS could not create directory!");
 		rc = -ENOENT;
 		goto end;
 	}

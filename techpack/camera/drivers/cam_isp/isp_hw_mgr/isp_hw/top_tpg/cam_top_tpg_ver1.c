@@ -179,7 +179,6 @@ static int cam_top_tpg_ver1_reserve(
 			tpg_data->dt_cfg[i].frame_width,
 			tpg_data->dt_cfg[i].data_type,
 			tpg_data->dt_cfg[i].encode_format);
-
 	}
 end:
 	reserv->node_res = &tpg_hw->tpg_res;

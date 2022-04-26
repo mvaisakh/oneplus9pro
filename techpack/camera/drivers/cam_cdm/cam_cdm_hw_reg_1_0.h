@@ -2,7 +2,8 @@
 /*
  * Copyright (c) 2020, The Linux Foundation. All rights reserved.
  */
-
+#ifndef CAM_CDM_HW_REG_1_0_H_
+#define CAM_CDM_HW_REG_1_0_H_
 #include "cam_cdm.h"
 
 static struct cam_version_reg cdm_hw_1_0_titan_version = {
@@ -147,3 +148,4 @@ static struct cam_cdm_hw_reg_offset cam_cdm_1_0_reg_offset = {
 		},
 	.reg_data = &cdm_hw_1_0_cmn_reg_data,
 };
+#endif /*CAM_CDM_HW_REG_1_0_H_*/

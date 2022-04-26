@@ -351,7 +351,6 @@ struct cam_ife_csid_csi2_tpg_reg_offset {
 	uint32_t tpg_dtn_cfg_offset;
 	uint32_t tpg_cgen_cfg_offset;
 	uint32_t tpg_cpas_ife_reg_offset;
-
 };
 struct cam_ife_csid_common_reg_offset {
 	/* MIPI CSID registers */
@@ -442,7 +441,6 @@ struct cam_ife_csid_hw_info {
 	uint32_t                                hw_dts_version;
 	uint32_t                                hw_reg_version;
 	uint32_t                                csid_max_clk;
-
 };
 
 

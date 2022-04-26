@@ -19,7 +19,6 @@
 #include "cam_vfe_bus.h"
 #include "cam_vfe_bus_rd_ver1.h"
 #include "cam_vfe_core.h"
-#include "cam_debug_util.h"
 #include "cam_cpas_api.h"
 
 static const char drv_name[] = "vfe_bus_rd";
@@ -434,7 +433,7 @@ static int cam_vfe_bus_start_rm(struct cam_isp_resource_node *rm_res)
 	common_data = rm_data->common_data;
 
 	buf_size = ((rm_data->width)&(0x0000FFFF)) |
-		((rm_data->height<<16)&(0xFFFF0000));
+		((rm_data->height << 16)&(0xFFFF0000));
 	cam_io_w_mb(buf_size, common_data->mem_base +
 		rm_data->hw_regs->buf_size);
 	cam_io_w_mb(rm_data->width, common_data->mem_base +
@@ -905,7 +904,7 @@ static int cam_vfe_bus_rd_update_rm(void *priv, void *cmd_args,
 		rm_data->height = io_cfg->planes[i].height;
 
 		buf_size = ((rm_data->width)&(0x0000FFFF)) |
-			((rm_data->height<<16)&(0xFFFF0000));
+			((rm_data->height << 16)&(0xFFFF0000));
 
 		CAM_VFE_ADD_REG_VAL_PAIR(reg_val_pair, j,
 			rm_data->hw_regs->buf_size, buf_size);
@@ -928,7 +927,6 @@ static int cam_vfe_bus_rd_update_rm(void *priv, void *cmd_args,
 			rm_data->common_data->core_index,
 			rm_data->index, reg_val_pair[j-1]);
 		rm_data->img_addr = reg_val_pair[j-1];
-
 	}
 
 	size = vfe_bus_rd_data->cdm_util_ops->cdm_required_size_reg_random(j/2);
@@ -981,7 +979,6 @@ static int cam_vfe_bus_rd_update_fs_cfg(void *priv, void *cmd_args,
 	fe_cfg = &fe_upd_args->fe_config;
 
 	for (i = 0; i < vfe_bus_rd_data->num_rm; i++) {
-
 		rm_data = vfe_bus_rd_data->rm_res[i]->res_priv;
 		common_data = rm_data->common_data;
 
@@ -1070,7 +1067,6 @@ static int cam_vfe_bus_rd_add_go_cmd(void *priv, void *cmd_args,
 	cdm_args->cmd.used_bytes = size * 4;
 
 	return 0;
-
 }
 
 static int cam_vfe_bus_start_hw(void *hw_priv,

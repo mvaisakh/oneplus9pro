@@ -25,9 +25,6 @@
 #include "wcd938x.h"
 #include "internal.h"
 #include "asoc/bolero-slave-internal.h"
-#ifdef OPLUS_FEATURE_AUDIO_FTM
-#include <linux/proc_fs.h>
-#endif /* OPLUS_FEATURE_AUDIO_FTM */
 
 #define NUM_SWRS_DT_PARAMS 5
 #define WCD938X_VARIANT_ENTRY_SIZE 32
@@ -3789,26 +3786,6 @@ done:
 	return rc;
 }
 
-#ifdef OPLUS_FEATURE_AUDIO_FTM
-static ssize_t wcd_codec_exist_read(struct file *p_file,
-			 char __user *puser_buf, size_t count, loff_t *p_offset)
-{
-	return 0;
-}
-
-static ssize_t wcd_codec_exist_write(struct file *p_file,
-			 const char __user *puser_buf,
-			 size_t count, loff_t *p_offset)
-{
-	return 0;
-}
-
-static const struct file_operations wcd_codec_exist_operations = {
-	.read = wcd_codec_exist_read,
-	.write = wcd_codec_exist_write,
-};
-#endif /* OPLUS_FEATURE_AUDIO_FTM */
-
 static int wcd938x_soc_codec_probe(struct snd_soc_component *component)
 {
 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
@@ -3816,9 +3793,6 @@ static int wcd938x_soc_codec_probe(struct snd_soc_component *component)
 			snd_soc_component_get_dapm(component);
 	int variant;
 	int ret = -EINVAL;
-	#ifdef OPLUS_FEATURE_AUDIO_FTM
-	u32 sts1 = 0;
-	#endif /* OPLUS_FEATURE_AUDIO_FTM */
 
 	dev_info(component->dev, "%s()\n", __func__);
 	wcd938x = snd_soc_component_get_drvdata(component);
@@ -3915,16 +3889,6 @@ static int wcd938x_soc_codec_probe(struct snd_soc_component *component)
 			return ret;
 		}
 	}
-
-	#ifdef OPLUS_FEATURE_AUDIO_FTM
-	if (regmap_read(wcd938x->regmap, WCD938X_DIGITAL_INTR_STATUS_0, &sts1) == 0) {
-		if (!proc_create("wcd_codec_exist", 0644, NULL,
-				&wcd_codec_exist_operations)) {
-			pr_err("%s : Failed to register proc interface\n",
-				__func__);
-		}
-	}
-	#endif /* OPLUS_FEATURE_AUDIO_FTM */
 
 	return ret;
 

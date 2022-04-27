@@ -14,6 +14,7 @@
 #include <linux/iio/consumer.h>
 
 #ifdef OPLUS_BUG_STABILITY
+#include <linux/proc_fs.h>
 #include <linux/uaccess.h>
 #endif /* OPLUS_BUG_STABILITY */
 
@@ -21,10 +22,6 @@
 #include <linux/of_gpio.h>
 #include <linux/gpio.h>
 #endif /* OPLUS_ARCH_EXTENDS */
-
-#ifdef OPLUS_FEATURE_AUDIO_FTM
-#include <linux/proc_fs.h>
-#endif /* OPLUS_FEATURE_AUDIO_FTM */
 
 #define FSA4480_I2C_NAME	"fsa4480-driver"
 
@@ -563,26 +560,6 @@ static void fsa4480_update_reg_defaults(struct regmap *regmap)
 				   fsa_reg_i2c_defaults[i].val);
 }
 
-#ifdef OPLUS_FEATURE_AUDIO_FTM
-static ssize_t fsa4480_exist_read(struct file *p_file,
-			 char __user *puser_buf, size_t count, loff_t *p_offset)
-{
-	return 0;
-}
-
-static ssize_t fsa4480_exist_write(struct file *p_file,
-			 const char __user *puser_buf,
-			 size_t count, loff_t *p_offset)
-{
-	return 0;
-}
-
-static const struct file_operations fsa4480_exist_operations = {
-	.read = fsa4480_exist_read,
-	.write = fsa4480_exist_write,
-};
-#endif /* OPLUS_FEATURE_AUDIO_FTM */
-
 #ifdef OPLUS_BUG_STABILITY
 static ssize_t fsa4480_dbgfs_reg_get(struct file *file,
 					 char __user *user_buf, size_t count,
@@ -667,9 +644,6 @@ static int fsa4480_probe(struct i2c_client *i2c,
 	struct fsa4480_priv *fsa_priv;
 	u32 use_powersupply = 0;
 	int rc = 0;
-	#ifdef OPLUS_FEATURE_AUDIO_FTM
-	u32 switch_status = 0;
-	#endif /* OPLUS_FEATURE_AUDIO_FTM */
 	#ifdef OPLUS_ARCH_EXTENDS
 	pr_err("%s enter fsa4480_probe\n", __func__);
 	#endif /* OPLUS_ARCH_EXTENDS */
@@ -757,17 +731,6 @@ static int fsa4480_probe(struct i2c_client *i2c,
 #ifdef OPLUS_BUG_STABILITY
 	fsa4480_debug_init(fsa_priv, i2c);
 #endif /* OPLUS_BUG_STABILITY */
-
-	#ifdef OPLUS_FEATURE_AUDIO_FTM
-	if ((regmap_read(fsa_priv->regmap, FSA4480_SWITCH_STATUS1,
-				&switch_status)) == 0) {
-		if (!proc_create("audio_switch_exist", 0644, NULL,
-				&fsa4480_exist_operations)) {
-			pr_err("%s : Failed to register proc interface\n",
-				__func__);
-		}
-	}
-	#endif /* OPLUS_FEATURE_AUDIO_FTM */
 
 	return 0;
 

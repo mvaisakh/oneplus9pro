@@ -1574,95 +1574,6 @@ static ssize_t tfa98xx_dbgfs_fw_state_get(struct file *file,
 	return simple_read_from_buffer(user_buf, count, ppos, str, strlen(str));
 }
 
-#ifdef OPLUS_FEATURE_AUDIO_FTM
-#define I2SCLK_ERROR 0x1
-#define REGMAP_ERROR (0x1 << 1)
-#define OTP_ERROR (0x1 << 2)
-#define UVP_ERROR (0x1 << 3)
-#define OVP_ERROR (0x1 << 4)
-#define OCP_ERROR (0x1 << 5)
-#define CNT_NO_REGISTER (0x1 << 7)
-
-//Provide nodes for AT audio self-test
-static ssize_t tfa98xx_selfcheck_read(struct file *file,
-                     char __user *user_buf, size_t count,
-                     loff_t *ppos)
-{
-	int ret, ready = 0;
-	unsigned int state[2] = {0}; // state[0]: top pa, state[1]: bottom pa
-	unsigned int *state_temp = NULL;
-	unsigned int reg10h, reg13h;
-
-	struct tfa98xx *tfa98xx ;
-
-	pr_err("%s enter\n", __func__);
-
-	list_for_each_entry(tfa98xx, &tfa98xx_device_list, list) {
-		if (tfa98xx == NULL)
-			return -EINVAL;
-
-		if (tfa98xx->tfa->channel == 0)
-			state_temp = &state[0];
-		else
-			state_temp = &state[1];
-
-		if (tfa98xx->dsp_fw_state != TFA98XX_DSP_FW_OK) {
-			*state_temp |= CNT_NO_REGISTER;
-			return -EINVAL;
-		}
-
-		/*step 1, check i2s clock, if not stable, we stop and return fail*/
-		tfa98xx_dsp_system_stable_v6(tfa98xx->tfa, &ready);
-		if (!ready) {
-			dev_err(&tfa98xx->i2c->dev,
-					"Device 0x%x  I2S clock not stable, please check!\n", tfa98xx->i2c->addr);
-			*state_temp |= I2SCLK_ERROR;
-		}
-
-		/*step 2, check alarm for OTP/UVP/OVP/OCP */
-		ret = regmap_read(tfa98xx->regmap, 0x10, &reg10h);
-		if (ret < 0) {
-			dev_err(&tfa98xx->i2c->dev, "Failed to read 0x%x 10h-STATUS_FLAGS0\n", tfa98xx->i2c->addr);
-			*state_temp |= REGMAP_ERROR;
-			return -EIO;
-		}
-		/*bit 5 is MANALARM*/
-		if(reg10h & 0x20){
-			dev_info(&tfa98xx->i2c->dev, "Device 0x%x is in alarm state\n", tfa98xx->i2c->addr);
-			/*bit3 == 1 is OCP*/
-			if(reg10h & 0x8){
-				dev_err(&tfa98xx->i2c->dev, "Device 0x%x is OCP!\n", tfa98xx->i2c->addr);
-				*state_temp |= OCP_ERROR;
-			}
-			/*bit2 == 0 is OTP*/
-			if(!(reg10h & 0x4)){
-				dev_err(&tfa98xx->i2c->dev, "Device 0x%x is OTP!\n", tfa98xx->i2c->addr);
-				*state_temp |= OTP_ERROR;
-			}
-			/*bit4 == 0 is UVP*/
-			if(!(reg10h & 0x10)){
-				dev_err(&tfa98xx->i2c->dev, "Device 0x%x is UVP!\n", tfa98xx->i2c->addr);
-				*state_temp |= UVP_ERROR;
-			}
-			/*(13Hbit8 == 0) is OVP*/
-			ret = regmap_read(tfa98xx->regmap, 0x13, &reg13h);
-			if (ret < 0) {
-				dev_err(&tfa98xx->i2c->dev, "Failed to read 0x%x 13h-STATUS_FLAGS3\n", tfa98xx->i2c->addr);
-				*state_temp |= REGMAP_ERROR;
-			}
-			if(!(reg13h & 0x100)){
-				dev_err(&tfa98xx->i2c->dev, "Device 0x%x is OVP!\n", tfa98xx->i2c->addr);
-				*state_temp |= OVP_ERROR;
-			}
-		}
-	}
-
-	ret = simple_read_from_buffer(user_buf, count, ppos, state, sizeof(state));
-
-	return ret;
-}
-#endif /* OPLUS_FEATURE_AUDIO_FTM */
-
 static ssize_t tfa98xx_dbgfs_rpc_read(struct file *file,
 				     char __user *user_buf, size_t count,
 				     loff_t *ppos)
@@ -1961,14 +1872,6 @@ static const struct file_operations tfa98xx_dbgfs_rpc_fops = {
 	.llseek = default_llseek,
 };
 
-#ifdef OPLUS_FEATURE_AUDIO_FTM
-static const struct file_operations tfa98xx_selfcheck_fops = {
-	.open = simple_open,
-	.read = tfa98xx_selfcheck_read,
-	.llseek = default_llseek,
-};
-#endif /* OPLUS_FEATURE_AUDIO_FTM */
-
 static void tfa98xx_debug_init(struct tfa98xx *tfa98xx, struct i2c_client *i2c)
 {
 	char name[50];
@@ -2037,11 +1940,6 @@ static void tfa98xx_debug_init(struct tfa98xx *tfa98xx, struct i2c_client *i2c)
 					&tfa98xx_dbgfs_fw_state_fops, i2c);
 	proc_create_data("rpc", S_IRUGO|S_IWUGO, tfa98xx->dbg_dir,
 					&tfa98xx_dbgfs_rpc_fops, i2c);
-
-	#ifdef OPLUS_FEATURE_AUDIO_FTM
-	proc_create_data("selfcheck", S_IRUGO|S_IWUGO, tfa98xx->dbg_dir,
-					&tfa98xx_selfcheck_fops, i2c);
-	#endif /* OPLUS_FEATURE_AUDIO_FTM */
 
 	if (tfa98xx->flags & TFA98XX_FLAG_SAAM_AVAILABLE) {
 		dev_dbg(tfa98xx->dev, "Adding pga_gain debug interface\n");

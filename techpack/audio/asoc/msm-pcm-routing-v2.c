@@ -31847,56 +31847,7 @@ static int msm_routing_put_app_type_gain_control(struct snd_kcontrol *kcontrol,
 	return ret ? -EINVAL : 0;
 }
 
-#ifdef OPLUS_FEATURE_KTV
-static int audio_loopback_reverb_set_param(struct snd_kcontrol *kcontrol,
-		struct snd_ctl_elem_value *ucontrol)
-{
-	int i, j, fe_id, be_id, port_type;
-	int ret = 0;
-	unsigned long copp;
-	int32_t params[20];
-	struct msm_pcm_routing_bdai_data *bedai;
-
-	pr_debug("%s\n", __func__);
-
-	for (i = 0; i < 20; i++) {
-		params[i] = (int32_t)(ucontrol->value.integer.value[i]);
-	}
-	port_type =MSM_AFE_PORT_TYPE_TX;
-	mutex_lock(&routing_lock);
-	for (be_id = 0; be_id < MSM_BACKEND_DAI_MAX; be_id++) {
-		if (is_be_dai_extproc(be_id))
-			continue;
-
-		bedai = &msm_bedais[be_id];
-		if (afe_get_port_type(bedai->port_id) != port_type)
-			continue;
-
-		if (!bedai->active)
-			continue;
-
-		for (fe_id = 0; fe_id < MSM_FRONTEND_DAI_MAX; fe_id++) {
-			if (!test_bit(fe_id, &bedai->fe_sessions[0]))
-				continue;
-
-			copp = session_copp_map[fe_id][MSM_AFE_PORT_TYPE_TX][be_id];
-			for (j = 0; j < MAX_COPPS_PER_PORT; j++) {
-				if (!test_bit(j, &copp))
-					continue;
-				ret |= adm_set_reverb_param(bedai->port_id, j, params);
-			}
-		}
-	}
-	mutex_unlock(&routing_lock);
-	return ret ? -EINVAL : 0;
-}
-#endif /* OPLUS_FEATURE_KTV */
-
 static const struct snd_kcontrol_new app_type_cfg_controls[] = {
-	#ifdef OPLUS_FEATURE_KTV
-	SOC_SINGLE_MULTI_EXT("AudioLoopback", SND_SOC_NOPM, 0,
-	0x100, 0, 20, NULL, audio_loopback_reverb_set_param),
-	#endif /* OPLUS_FEATURE_KTV */
 	SOC_SINGLE_MULTI_EXT("App Type Config", SND_SOC_NOPM, 0,
 	0x7FFFFFFF, 0, 128, msm_routing_get_app_type_cfg_control,
 	msm_routing_put_app_type_cfg_control),

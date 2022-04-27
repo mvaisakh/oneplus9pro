@@ -77,7 +77,7 @@
   init_task
 #endif
 
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
   msm_drm_register_client
   msm_drm_unregister_client
   msm_drm_notifier_call_chain

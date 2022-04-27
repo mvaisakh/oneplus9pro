@@ -20,7 +20,7 @@ static void black_timer_func(struct timer_list *t);
 struct black_data g_black_data = {
 	.is_panic = 0,
 	.status = BLACK_STATUS_INIT,
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 	.blank = MSM_DRM_BLANK_UNBLANK,
 #else
 	.blank = FB_BLANK_UNBLANK,
@@ -40,7 +40,7 @@ int black_screen_timer_restart(void)
 		BLACK_DEBUG_PRINTK("black_screen_timer_restart:g_black_data.status = %d return\n", g_black_data.status);
 		return g_black_data.status;
 	}
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 	if (g_black_data.blank == MSM_DRM_BLANK_POWERDOWN) {
 #else
 	if (g_black_data.blank == FB_BLANK_POWERDOWN) {
@@ -61,7 +61,7 @@ EXPORT_SYMBOL(black_screen_timer_restart);
 #define ALARM_BOOT 7
 static int get_status(void)
 {
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 	if (MSM_BOOT_MODE__NORMAL == get_boot_mode()) {
 		return g_black_data.status;
 	}
@@ -261,7 +261,7 @@ static void black_timer_func(struct timer_list *t)
 	}
 }
 
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 static int black_fb_notifier_callback(struct notifier_block *self,
 				 unsigned long event, void *data)
 {
@@ -333,7 +333,7 @@ static int black_fb_notifier_callback(struct notifier_block *self,
 	}
 	return 0;
 }
-#endif /* CONFIG_DRM_MSM */
+#endif /* CONFIG_QCOM_KGSL */
 
 int black_screen_check_init(void)
 {
@@ -341,7 +341,7 @@ int black_screen_check_init(void)
 
 	sprintf(g_black_data.error_id, "%s", "null");
 	g_black_data.fb_notif.notifier_call = black_fb_notifier_callback;
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 	msm_drm_register_client(&g_black_data.fb_notif);
 #else
 	fb_register_client(&g_black_data.fb_notif);

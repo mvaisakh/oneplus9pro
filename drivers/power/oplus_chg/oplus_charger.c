@@ -2507,11 +2507,11 @@ int oplus_chg_init(struct oplus_chg_chip *chip)
 #ifndef CONFIG_OPLUS_CHG_OOS
 
 	chip->chg_fb_notify.notifier_call = fb_notifier_callback;
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 	rc = msm_drm_register_client(&chip->chg_fb_notify);
 #else
 	rc = fb_register_client(&chip->chg_fb_notify);
-#endif /*CONFIG_DRM_MSM*/
+#endif /* CONFIG_QCOM_KGSL */
 	if (rc) {
 		pr_err("Unable to register chg_fb_notify: %d\n", rc);
 	}
@@ -5676,7 +5676,7 @@ static bool oplus_chg_check_time_is_good(struct oplus_chg_chip *chip)
 
 #ifndef CONFIG_OPLUS_CHG_OOS
 #ifdef OPLUS_CHG_OP_DEF
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 static int fb_notifier_callback(struct notifier_block *nb, unsigned long event,
 				void *data)
 {
@@ -5755,7 +5755,7 @@ static int fb_notifier_callback(struct notifier_block *nb, unsigned long event,
 	}
 	return 0;
 }
-#endif /* CONFIG_DRM_MSM */
+#endif /* CONFIG_QCOM_KGSL */
 
 void oplus_chg_set_allow_switch_to_fastchg(bool allow)
 {

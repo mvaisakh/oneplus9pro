@@ -28,7 +28,7 @@ enum cnss_dev_bus_type cnss_get_bus_type(struct cnss_plat_data *plat_priv)
 	if (plat_priv->is_converged_dt) {
 		dev = &plat_priv->plat_dev->dev;
 		ret = of_property_read_u32(dev->of_node, "qcom,bus-type",
-					   &bus_type);
+					   (u32)&bus_type);
 		if (!ret && bus_type <= CNSS_BUS_USB)
 			cnss_pr_dbg("Got bus type[%u] from dt\n", bus_type);
 		else

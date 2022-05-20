@@ -24,7 +24,7 @@
 
 
 union	FLTVAL2 {
-	float			SfFltVal ;
+	long			SfFltVal ;
 	struct {
 		unsigned char UcDataHH;
 		unsigned char UcDataHL;
@@ -37,24 +37,24 @@ typedef union FLTVAL2	UnFltVal2 ;
 
 typedef struct tag_Dual_Axis
 {
-	float xpos;
-	float xhall;
-	float ypos;
-	float yhall;
+	long xpos;
+	long xhall;
+	long ypos;
+	long yhall;
 }Dual_Axis_t;
 
 /* Raw data buffers */	
 //Dual_Axis_t xy_raw_data[360/DEGSTEP + 1];
 __OISACCURACY_HEADER__	Dual_Axis_t	xy_raw_data[360/3 + 1];
-__OISACCURACY_HEADER__	float		xMaxAcc, yMaxAcc;
-__OISACCURACY_HEADER__	float		xLimit, yLimit;
+__OISACCURACY_HEADER__	long		xMaxAcc, yMaxAcc;
+__OISACCURACY_HEADER__	long		xLimit, yLimit;
 
-//__OISACCURACY_HEADER__	unsigned short HallCheck(float ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
+//__OISACCURACY_HEADER__	unsigned short HallCheck(long ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
 __OISACCURACY_HEADER__	unsigned short HallCheck(void);
-__OISACCURACY_HEADER__	unsigned short HallCheckH(float flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
-__OISACCURACY_HEADER__	unsigned short HallCheckL(float flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
-__OISACCURACY_HEADER__	unsigned short HallCheckS(float flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3 , unsigned char ACT_AXIS);
-__OISACCURACY_HEADER__	unsigned short HallCheckG(float flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
+__OISACCURACY_HEADER__	unsigned short HallCheckH(long flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
+__OISACCURACY_HEADER__	unsigned short HallCheckL(long flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
+__OISACCURACY_HEADER__	unsigned short HallCheckS(long flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3 , unsigned char ACT_AXIS);
+__OISACCURACY_HEADER__	unsigned short HallCheckG(long flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3);
 //__OISACCURACY_HEADER__	unsigned char  SMA_Sensitivity( unsigned short LIMIT_RANGE_SMA, unsigned short RADIUS, unsigned short DEGREE, unsigned short WAIT_MSEC1);
 
 #endif	//__OISACCURACY_H__

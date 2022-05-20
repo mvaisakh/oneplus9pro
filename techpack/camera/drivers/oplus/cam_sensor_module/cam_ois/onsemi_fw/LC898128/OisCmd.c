@@ -759,7 +759,7 @@ UINT_32	LopGan( UINT_8 UcDirSel, ADJ_LOPGAN* ptr )
 	StFRAParam.StHostCom.UcAvgCycl	= 3 ;
 //	StFRAParam.StHostCom.SfAmpCom.SfFltVal	= 100.0f;
 //	StFRAParam.StHostCom.SfFrqCom.SfFltVal 	= 20.0f ;
-	StFRAParam.StHostCom.SfAmpCom.SfFltVal	= (float)100;
+	StFRAParam.StHostCom.SfAmpCom.SfFltVal	= (long)100;
 	StFRAParam.StHostCom.SfFrqCom.SfFltVal 	= (flaot)20;
 	MesStart_FRA_Single( UcDirSel ) ;	
 	MesEnd_FRA_Sweep() ;
@@ -2421,9 +2421,9 @@ void	OscStb( void )
 UINT_8	GyrSlf( void )
 {
 	UINT_8		UcFinSts = 0 ;
-	float		flGyrRltX ;
-	float		flGyrRltY ;
-	float		flMeasureAveValueA , flMeasureAveValueB ;
+	long		flGyrRltX ;
+	long		flGyrRltY ;
+	long		flMeasureAveValueA , flMeasureAveValueB ;
 	INT_32		SlMeasureParameterNum ;
 	INT_32		SlMeasureParameterA, SlMeasureParameterB ;
 	UnllnVal	StMeasValueA , StMeasValueB ;
@@ -2467,8 +2467,8 @@ UINT_8	GyrSlf( void )
 	RamRead32A( StMeasFunc_MFB_LLiIntegral2 	, &StMeasValueB.StUllnVal.UlLowVal ) ;	// Y axis
 	RamRead32A( StMeasFunc_MFB_LLiIntegral2 + 4	, &StMeasValueB.StUllnVal.UlHigVal ) ;
 
-	flMeasureAveValueA = (float)((( (INT_64)StMeasValueA.UllnValue >> 16 ) / (float)SlMeasureParameterNum ) ) ;
-	flMeasureAveValueB = (float)((( (INT_64)StMeasValueB.UllnValue >> 16 ) / (float)SlMeasureParameterNum ) ) ;
+	flMeasureAveValueA = (long)((( (INT_64)StMeasValueA.UllnValue >> 16 ) / (long)SlMeasureParameterNum ) ) ;
+	flMeasureAveValueB = (long)((( (INT_64)StMeasValueB.UllnValue >> 16 ) / (long)SlMeasureParameterNum ) ) ;
 
 	flGyrRltX = flMeasureAveValueA / 175.0 ;	// sensitivity 175 dps
 	flGyrRltY = flMeasureAveValueB / 175.0 ;	// sensitivity 175 dps
@@ -2513,8 +2513,8 @@ UINT_8	GyrSlf( void )
 	RamRead32A( StMeasFunc_MFB_LLiIntegral2 	, &StMeasValueB.StUllnVal.UlLowVal ) ;	// Y axis
 	RamRead32A( StMeasFunc_MFB_LLiIntegral2 + 4	, &StMeasValueB.StUllnVal.UlHigVal ) ;
 
-	flMeasureAveValueA = (float)((( (INT_64)StMeasValueA.UllnValue >> 16 ) / (float)SlMeasureParameterNum ) ) ;
-	flMeasureAveValueB = (float)((( (INT_64)StMeasValueB.UllnValue >> 16 ) / (float)SlMeasureParameterNum ) ) ;
+	flMeasureAveValueA = (long)((( (INT_64)StMeasValueA.UllnValue >> 16 ) / (long)SlMeasureParameterNum ) ) ;
+	flMeasureAveValueB = (long)((( (INT_64)StMeasValueB.UllnValue >> 16 ) / (long)SlMeasureParameterNum ) ) ;
 
 	flGyrRltX = flMeasureAveValueA / GYRO_SENSITIVITY ;
 	flGyrRltY = flMeasureAveValueB / GYRO_SENSITIVITY ;
@@ -2906,7 +2906,7 @@ UINT_32	MeasGain ( UINT_16	UcDirSel, UINT_16	UsMeasFreq , UINT_32 UlMesAmp )
 #if FS_MODE == 0
 #define	DivOffset	5746.68f		/* 18044.6/3.14 */
 #else //FS_MODE
-#define	DivOffset	4785.76f		/* 15027.3/3.14 */
+#define	DivOffset	4785760/1000		/* 15027.3/3.14 */
 #endif //FS_MODE
 
 void	MesFil2( UINT_16	UsMesFreq )		
@@ -2914,7 +2914,7 @@ void	MesFil2( UINT_16	UsMesFreq )
 	UINT_32	UlMeasFilA1 , UlMeasFilB1 , UlMeasFilC1 , UlTempval ;
 	UINT_32	UlMeasFilA2 , UlMeasFilC2 ;
 		
-	UlTempval = (UINT_32)(2147483647 * (float)UsMesFreq / ((float)UsMesFreq + DivOffset ));
+	UlTempval = (UINT_32)(2147483647 * (long)UsMesFreq / ((long)UsMesFreq + DivOffset ));
 	UlMeasFilA1	=	0x7fffffff - UlTempval;
 	UlMeasFilB1	=	~UlMeasFilA1 + 0x00000001;	
 	UlMeasFilC1	=	0x7FFFFFFF - ( UlTempval << 1 ) ;
@@ -3024,15 +3024,15 @@ const UINT_8 PACT1Tbl[] = { 0x20, 0xDF };	/* [ACT_02][ACT_01][ACT_03] */
 const UINT_8 PACT2Tbl[] = { 0x46, 0xB9 };	/* [---] */
 
 
-UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement )
+UINT_8 SetAngleCorrection( long DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement )
 {
-//	double OffsetAngle = 0.0f;
-//	double OffsetAngleV_slt = 0.0f;
-	double OffsetAngle = (double)0;
-	double OffsetAngleV_slt = (double)0;
+//	long OffsetAngle = 0.0f;
+//	long OffsetAngleV_slt = 0.0f;
+	long OffsetAngle = (long)0;
+	long OffsetAngleV_slt = (long)0;
 #if(SEL_MODEL == 0x10)
-//	double OffsetAngleS_slt = 0.0f;
-	double OffsetAngleS_slt = (double)0;
+//	long OffsetAngleS_slt = 0.0f;
+	long OffsetAngleS_slt = (long)0;
 #endif
 	INT_32 Slgx45x = 0, Slgx45y = 0;
 	INT_32 Slgy45y = 0, Slgy45x = 0;
@@ -3042,7 +3042,7 @@ UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement
 	UINT_8	UcCnvF = 0;
 
 //	if( ( DegreeGap > 180.0f) || ( DegreeGap < -180.0f ) ) return ( 1 );
-	if( ( DegreeGap > (double)180) || ( DegreeGap < (double)-180 ) ) return ( 1 );
+	if( ( DegreeGap > (long)180) || ( DegreeGap < (long)-180 ) ) return ( 1 );
 	if( Arrangement >= 2 ) return ( 1 );
 
 /************************************************************************/
@@ -3050,12 +3050,12 @@ UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement
 /************************************************************************/
 	switch(SelectAct) {
 //		case 0x00 :
-//			OffsetAngle = (double)( 45.0f + DegreeGap ) * 3.141592653589793238 / 180.0f ;
-//			OffsetAngle = (double)( (double)45 + DegreeGap ) * (double)77633864123 / (double)24711626453 / (double)180 ;
+//			OffsetAngle = (long)( 45.0f + DegreeGap ) * 3.141592653589793238 / 180.0f ;
+//			OffsetAngle = (long)( (long)45 + DegreeGap ) * (long)77633864123 / (long)24711626453 / (long)180 ;
 //			UcCnvF = PACT1Tbl[ Arrangement ];
 //			break;
 //		case 0x01 :
-//			OffsetAngle = (double)( 0.0f + DegreeGap ) * 3.141592653589793238 / 180.0f ;
+//			OffsetAngle = (long)( 0.0f + DegreeGap ) * 3.141592653589793238 / 180.0f ;
 //			UcCnvF = PACT1Tbl[ Arrangement ];
 //			break;
 //		case 0x02 :
@@ -3065,8 +3065,8 @@ UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement
 //		case 0x07 :
 //		case 0x08 :
 		default :
-//			OffsetAngle = (double)( DegreeGap ) * 3.141592653589793238 / 180.0f ;
-			OffsetAngle = (double)( DegreeGap ) * (double)77633864123 / (double)24711626453 / (double)180 ;
+//			OffsetAngle = (long)( DegreeGap ) * 3.141592653589793238 / 180.0f ;
+			OffsetAngle = (long)( DegreeGap ) * (long)77633864123 / (long)24711626453 / (long)180 ;
 			UcCnvF = PACT1Tbl[ Arrangement ];
 			break;
 //		default :
@@ -3093,11 +3093,11 @@ UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement
 	RamWrite32A( Accl45Filter_YAsub  , 				(UINT_32)Slgy45x );
 	
 	if(SelectAct == 0x00) {
-//		OffsetAngleV_slt = (double)( 45.0f ) * 3.141592653589793238 / 180.0f ;
-		OffsetAngleV_slt = (double)( 45 ) * (double)77633864123 / (double)24711626453 / (double)180;
+//		OffsetAngleV_slt = (long)( 45.0f ) * 3.141592653589793238 / 180.0f ;
+		OffsetAngleV_slt = (long)( 45 ) * (long)77633864123 / (long)24711626453 / (long)180;
 	}else{
-//		OffsetAngleV_slt = (double)( 0.0f ) * 3.141592653589793238 / 180.0f ;
-		OffsetAngleV_slt = (double)( 0 ) * (double)77633864123 / (double)24711626453 / (double)180 ;
+//		OffsetAngleV_slt = (long)( 0.0f ) * 3.141592653589793238 / 180.0f ;
+		OffsetAngleV_slt = (long)( 0 ) * (long)77633864123 / (long)24711626453 / (long)180 ;
 	}
 //	Slagx45x = (INT_32)( cos( OffsetAngleV_slt )*2147483647.0);
 //	Slagx45y = (INT_32)(-sin( OffsetAngleV_slt )*2147483647.0);
@@ -3109,16 +3109,16 @@ UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement
 	RamWrite32A( Y_sub , 			(UINT_32)Slagy45x );
 
 #if(SEL_MODEL == 0x10)
-//	OffsetAngleS_slt = (double)( -90.0f ) * 3.141592653589793238 / 180.0f ;
-	OffsetAngleS_slt = (double)( -90 ) * (double)77633864123 / (double)24711626453 / (double)180 ;
+//	OffsetAngleS_slt = (long)( -90.0f ) * 3.141592653589793238 / 180.0f ;
+	OffsetAngleS_slt = (long)( -90 ) * (long)77633864123 / (long)24711626453 / (long)180 ;
 //	Slagx45x = (INT_32)( cos( OffsetAngleS_slt )*2147483647.0);
 //	Slagx45y = (INT_32)(-sin( OffsetAngleS_slt )*2147483647.0);
 //	Slagy45y = (INT_32)( cos( OffsetAngleS_slt )*2147483647.0);
 //	Slagy45x = (INT_32)( sin( OffsetAngleS_slt )*2147483647.0);
-//  Slagx45x = (INT_32)( cos( OffsetAngleS_slt )*(double)2147483647);
-//  Slagx45y = (INT_32)(-sin( OffsetAngleS_slt )*(double)2147483647);
-//  Slagy45y = (INT_32)( cos( OffsetAngleS_slt )*(double)2147483647);
-//  Slagy45x = (INT_32)( sin( OffsetAngleS_slt )*(double)2147483647);
+//  Slagx45x = (INT_32)( cos( OffsetAngleS_slt )*(long)2147483647);
+//  Slagx45y = (INT_32)(-sin( OffsetAngleS_slt )*(long)2147483647);
+//  Slagy45y = (INT_32)( cos( OffsetAngleS_slt )*(long)2147483647);
+//  Slagy45x = (INT_32)( sin( OffsetAngleS_slt )*(long)2147483647);
 
 	RamWrite32A( SX_main , 			(UINT_32)Slagx45x );
 	RamWrite32A( SX_sub , 			(UINT_32)Slagx45y );
@@ -3266,7 +3266,7 @@ UINT_8	TstActMov( UINT_8 UcDirSel )
 	INT_32	SlMeasureParameterNum ;
 	INT_32	SlMeasureParameterA , SlMeasureParameterB ;
 	UnllnVal	StMeasValueA  , StMeasValueB ;
-	float		SfLimit , Sfzoom , Sflenz , Sfshift ;
+	long		SfLimit , Sfzoom , Sflenz , Sfshift ;
 	UINT_32		UlLimit , Ulzoom , Ullenz , Ulshift , UlActChkLvl ;
 	UINT_8		i;
 	UINT_32		UlReturnVal;
@@ -3285,23 +3285,23 @@ UINT_8	TstActMov( UINT_8 UcDirSel )
 
 TRACE(" DIR = %d, lmt = %08x, zom = %08x , lnz = %08x ,sft = %08x \n", UcDirSel, (unsigned int)UlLimit , (unsigned int)Ulzoom , (unsigned int)Ullenz , (unsigned int)Ulshift  ) ;
 
-	SfLimit = (float)UlLimit / (float)0x7FFFFFFF;
+	SfLimit = (long)UlLimit / (long)0x7FFFFFFF;
 	if( Ulzoom == 0){
 		Sfzoom = 0;
 	}else{
-		Sfzoom = (float)abs(Ulzoom) / (float)0x7FFFFFFF;
+		Sfzoom = (long)abs(Ulzoom) / (long)0x7FFFFFFF;
 	}
 	if( Ullenz == 0){
 		Sflenz = 0;
 	}else{
-		Sflenz = (float)Ullenz / (float)0x7FFFFFFF;
+		Sflenz = (long)Ullenz / (long)0x7FFFFFFF;
 	}
 	Ulshift = ( Ulshift & 0x0000FF00) >> 8 ;	
 	Sfshift = 1;
 	for( i = 0 ; i < Ulshift ; i++ ){
 		Sfshift *= 2;
 	}
-	UlActChkLvl = (UINT_32)( (float)0x7FFFFFFF * SfLimit * Sfzoom * Sflenz * Sfshift * ACT_MARGIN );
+	UlActChkLvl = (UINT_32)( (long)0x7FFFFFFF * SfLimit * Sfzoom * Sflenz * Sfshift * ACT_MARGIN );
 TRACE(" lvl = %08x \n", (unsigned int)UlActChkLvl  ) ;
 
 	SlMeasureParameterNum	=	ACT_CHK_NUM ;

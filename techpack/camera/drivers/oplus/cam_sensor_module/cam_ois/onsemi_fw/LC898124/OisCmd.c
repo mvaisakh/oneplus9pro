@@ -880,7 +880,7 @@ TRACE("	No = %04d", UcTmeOut ) ;
 void TneBia( UnDwdVal StTneVal, UINT8 UcTneAxs, UINT16 UsHalAdjRange, UINT8 UcSrvSwitch  )
 {
 	UINT32			UlSetBia, UlOldBias ;
-	float			SfAmp ;
+	long			SfAmp ;
 
 TRACE("TneBia\n " ) ;
 	if( UcTneAxs == X_DIR ) {
@@ -904,11 +904,11 @@ TRACE("		UlSetBia = %08x\n ", (unsigned int)UlSetBia ) ;
 #else		
 		if( UcSrvSwitch != OFF ) {
 #endif
-//			SfAmp	= ( ( float )UlSetBia / ( float )UlOldBias - 1.0f ) ;
+//			SfAmp	= ( ( long )UlSetBia / ( long )UlOldBias - 1.0f ) ;
 //			SfAmp	= ( SfAmp / 2.0f ) + 1.0f ;
-			SfAmp	= ( ( float )UlSetBia / ( float )UlOldBias - (float)1 ) ;
-			SfAmp	= ( SfAmp / (float)2 ) + (float)1 ;
-			UlSetBia	= ( UINT32 )( ( float )UlOldBias * SfAmp ) ;
+			SfAmp	= ( ( long )UlSetBia / ( long )UlOldBias - (long)1 ) ;
+			SfAmp	= ( SfAmp / (long)2 ) + (long)1 ;
+			UlSetBia	= ( UINT32 )( ( long )UlOldBias * SfAmp ) ;
 		}
 		if( UlSetBia > (UINT32)0x0000FFFF )		UlSetBia = 0x0000FFFF ;
 		UlSetBia = ( UlSetBia << 16 ) ;
@@ -1325,8 +1325,8 @@ TRACE("    YadofFin = %04xh \n", StAdjPar124.StHalAdj.UsAdyOff ) ;
 #define		LENS_MARGIN		(0x0800)
 //#define		PIXEL_SIZE		(1.12f)							// pixel size 1.12um
 //#define		SPEC_RANGE		(120.0f)						// spec need movable range 130um
-#define		PIXEL_SIZE		(double)(112)/(double)100							// pixel size 1.12um
-#define		SPEC_RANGE		(double)(120)						// spec need movable range 130um
+#define		PIXEL_SIZE		(long)(112)/(long)100							// pixel size 1.12um
+#define		SPEC_RANGE		(long)(120)						// spec need movable range 130um
 #define		SPEC_PIXEL		(PIXEL_SIZE / SPEC_RANGE)		// spec need movable range pixel
 /***************************************/
 //********************************************************************************
@@ -1490,8 +1490,8 @@ UINT16	TneADO( )
 	    if ((0x7FFF - abs(y_min)) < abs(y_off)) y_min_after = 0x8001 ;
 	}
 
-	gout_x = (INT16)((INT32)(((float)gxgain / 0x7FFFFFFF) * limit * 4) >> 16);
-	gout_y = (INT16)((INT32)(((float)gygain / 0x7FFFFFFF) * limit * 4) >> 16);
+	gout_x = (INT16)((INT32)(((long)gxgain / 0x7FFFFFFF) * limit * 4) >> 16);
+	gout_y = (INT16)((INT32)(((long)gygain / 0x7FFFFFFF) * limit * 4) >> 16);
 
 //TRACE( "ADOFF X\t=\t0x%04X\r\n", x_off ) ;
 //TRACE( "ADOFF Y\t=\t0x%04X\r\n", y_off ) ;
@@ -1565,22 +1565,22 @@ UINT16	TneADO( )
 	// *******************************
 	if (UsSts == 0) {
 		UINT16 UsReadVal ;
-		float flDistanceX, flDistanceY ;
-		float flDistanceAD = SLT_OFFSET * 6 ;
+		long flDistanceX, flDistanceY ;
+		long flDistanceAD = SLT_OFFSET * 6 ;
 
 		// effective range check
 		_GET_UINT16( UsReadVal,	DISTANCE_X	) ;
-//		flDistanceX = (float)UsReadVal / 10.0f ;
-		flDistanceX = (float)UsReadVal / (float)10 ;
+//		flDistanceX = (long)UsReadVal / 10.0f ;
+		flDistanceX = (long)UsReadVal / (long)10 ;
 //TRACE("DISTANCE (X, Y) pixel = (%04X", UsReadVal );
 
 		_GET_UINT16( UsReadVal,	DISTANCE_Y	) ;
-//		flDistanceY = (float)UsReadVal / 10.0f ;
-		flDistanceY = (float)UsReadVal / (float)10 ;
+//		flDistanceY = (long)UsReadVal / 10.0f ;
+		flDistanceY = (long)UsReadVal / (long)10 ;
 //TRACE(", %04X)\r\n", UsReadVal );
 
 //TRACE("DISTANCE (X, Y) pixel = (%x, %x)\r\n", (int)(flDistanceX * 10.0), (int)(flDistanceY * 10.0) );
-//TRACE("DISTANCE (X, Y) pixel = (%x, %x)\r\n", (int)(flDistanceX * (float)10), (int)(flDistanceY * (float)10) );
+//TRACE("DISTANCE (X, Y) pixel = (%x, %x)\r\n", (int)(flDistanceX * (long)10), (int)(flDistanceY * (long)10) );
 //TRACE("X MAX um = %d\r\n", (int)((x_max_after * (flDistanceX / flDistanceAD)) * PIXEL_SIZE) ) ;
 //TRACE("Y MAX um = %d\r\n", (int)((y_max_after * (flDistanceY / flDistanceAD)) * PIXEL_SIZE) ) ;
 //TRACE("X MIN um = %d\r\n", (int)((abs(x_min_after) * (flDistanceX / flDistanceAD)) * PIXEL_SIZE) ) ;
@@ -1680,17 +1680,17 @@ UINT8 FrqDet( void )
 // History			: First edition
 //********************************************************************************
 #define 	ZERO_SERVO_NUM		4096				// 4096times
-UINT32	TneZeroServo( UINT8 ucposture , float DegreeGap )
+UINT32	TneZeroServo( UINT8 ucposture , long DegreeGap )
 {
 	UINT32			UlRsltSts;
 	INT32			SlMeasureParameterA , SlMeasureParameterB ;
 	INT32			SlMeasureParameterNum ;
 	UnllnVal		StMeasValueA , StMeasValueB ;
 	INT32			SlMeasureAveValueA , SlMeasureAveValueB ;
-	double			dTemp;
+	long			dTemp;
 	UINT8			i;
 	UINT32			UlRdVal;
-	double			OffsetAngle;
+	long			OffsetAngle;
 	
 	UlRsltSts = EXE_END ;
 	if( ucposture < 0x80 ){
@@ -1794,40 +1794,40 @@ TRACE("VAL(H,A) pos = \t%08xh\t%08xh\t%d \n",(int)SlMeasureAveValueA, (int)SlMea
 			if( UlPostureSt == 0x05L ){
 				// ( Xhp ) / ( Xap)
 				StZeroServoMesX.SlAcclP -= StZeroServoX.SlOffset;
-//				dTemp = (double)2147483647.0  / (double)( StZeroServoMesX.SlAcclP );
-				dTemp = (double)2147483647  / (double)( StZeroServoMesX.SlAcclP );
+//				dTemp = (long)2147483647.0  / (long)( StZeroServoMesX.SlAcclP );
+				dTemp = (long)2147483647  / (long)( StZeroServoMesX.SlAcclP );
 				for( StZeroServoX.SlShift = 0 ; StZeroServoX.SlShift <= 5;  StZeroServoX.SlShift++){
 					if( fabs(dTemp) <= 1 ){
 						break;
 					}
-					dTemp = dTemp / (double)2 ;
+					dTemp = dTemp / (long)2 ;
 				}
-//				StZeroServoX.SlGcora = (INT32)(dTemp * (double)2147483647.0);
-				StZeroServoX.SlGcora = (INT32)(dTemp * (double)2147483647);
+//				StZeroServoX.SlGcora = (INT32)(dTemp * (long)2147483647.0);
+				StZeroServoX.SlGcora = (INT32)(dTemp * (long)2147483647);
 				StZeroServoX.SlShift = StZeroServoX.SlShift << 8;
 
 				// ( Yhp ) / ( Yap )
 				StZeroServoMesY.SlAcclP -= StZeroServoY.SlOffset;
-//				dTemp = (double)2147483647.0 / (double)( StZeroServoMesY.SlAcclP );
-				dTemp = (double)2147483647 / (double)( StZeroServoMesY.SlAcclP );
+//				dTemp = (long)2147483647.0 / (long)( StZeroServoMesY.SlAcclP );
+				dTemp = (long)2147483647 / (long)( StZeroServoMesY.SlAcclP );
 				for( StZeroServoY.SlShift = 0 ; StZeroServoY.SlShift <= 5;  StZeroServoY.SlShift++){
 					if( fabs(dTemp) <= 1 ){
 						break;
 					}
 					dTemp = dTemp / 2 ;
 				}
-//				StZeroServoY.SlGcora = (INT32)(dTemp * (double)2147483647.0);
-				StZeroServoY.SlGcora = (INT32)(dTemp * (double)2147483647);
+//				StZeroServoY.SlGcora = (INT32)(dTemp * (long)2147483647.0);
+				StZeroServoY.SlGcora = (INT32)(dTemp * (long)2147483647);
 				StZeroServoY.SlShift = StZeroServoY.SlShift << 8;
 				
-//				OffsetAngle = (double)( DegreeGap ) * 3.141592653589793238 / 180.0f ;
-				OffsetAngle = (double)( DegreeGap ) * (double)77633864123 / (double)24711626453 / (double)180 ;
+//				OffsetAngle = (long)( DegreeGap ) * 3.141592653589793238 / 180.0f ;
+				OffsetAngle = (long)( DegreeGap ) * (long)77633864123 / (long)24711626453 / (long)180 ;
 
 
 
 				
-				StZeroServoX.SlGaina = (INT32)( (float)StZeroServoMesX.SlHallP / cos( OffsetAngle ) ) ;
-				StZeroServoY.SlGaina = (INT32)( (float)StZeroServoMesY.SlHallP / cos( OffsetAngle ) ) ;
+				StZeroServoX.SlGaina = (INT32)( (long)StZeroServoMesX.SlHallP / cos( OffsetAngle ) ) ;
+				StZeroServoY.SlGaina = (INT32)( (long)StZeroServoMesY.SlHallP / cos( OffsetAngle ) ) ;
 				
 TRACE("   X    ,   Y    ,   angle = %f \n", DegreeGap ) ;
 TRACE("%08xh,%08xh(Offset)\n",(int)StZeroServoX.SlOffset, (int)StZeroServoY.SlOffset) ;
@@ -1873,9 +1873,9 @@ UINT8	ZeroServoLmt( UINT8 UCMODE )
 {
 	UINT32			UlRsltSts;
 #if (EP3_ES == 2)
-	double			dTemp1;
+	long			dTemp1;
 #else
-	double			dTemp1, dTemp2;
+	long			dTemp1, dTemp2;
 	UINT32			UlFilCoef;
 	UINT16			Usshift , UsShiftx , UsShifty;
 	UINT32			Ulcoef , Ulgainx , Ulgainy;
@@ -1889,8 +1889,8 @@ TRACE(" 	error \n" ) ;
 	}
 
 #if (EP3_ES == 2)
-//	dTemp1 = (double)UCMODE /(double)100.0 * (double)2147483647;
-	dTemp1 = (double)UCMODE /(double)100 * (double)2147483647;
+//	dTemp1 = (long)UCMODE /(long)100.0 * (long)2147483647;
+	dTemp1 = (long)UCMODE /(long)100 * (long)2147483647;
 	
 	RamWrite32A( ZS_LMT_limitx 	, (INT32)dTemp1 );
 	RamWrite32A( ZS_LMT_limity 	, (INT32)dTemp1 );
@@ -1904,23 +1904,23 @@ TRACE(" 	error \n" ) ;
 	
 TRACE("		before X (gain , shift , coeff) = ( %08x , %08x , %08x )\n",(int)StZeroServoX.SlGcora ,(int)StZeroServoX.SlShift ,(int)UlFilCoef   ) ;
 TRACE("		before Y (gain , shift , coeff) = ( %08x , %08x , %08x )\n",(int)StZeroServoY.SlGcora ,(int)StZeroServoY.SlShift ,(int)UlFilCoef   ) ;
-//	dTemp1 = (double)100.0 / (double)UCMODE;
-//	dTemp2 = (double)UCMODE / (double)100.0;
-	dTemp1 = (double)100 / (double)UCMODE;
-	dTemp2 = (double)UCMODE / (double)100;
+//	dTemp1 = (long)100.0 / (long)UCMODE;
+//	dTemp2 = (long)UCMODE / (long)100.0;
+	dTemp1 = (long)100 / (long)UCMODE;
+	dTemp2 = (long)UCMODE / (long)100;
 	
 	for( Usshift = 0 ; Usshift <= 4;  Usshift++){
 		if( fabs(dTemp1) <= 1 ){
 			break;
 		}
-		dTemp1 = dTemp1 / (double)2 ;
+		dTemp1 = dTemp1 / (long)2 ;
 	}
 	
-	Ulgainx = (INT32)(dTemp1 * (double)StZeroServoX.SlGcora);
-	Ulgainy = (INT32)(dTemp1 * (double)StZeroServoY.SlGcora);
+	Ulgainx = (INT32)(dTemp1 * (long)StZeroServoX.SlGcora);
+	Ulgainy = (INT32)(dTemp1 * (long)StZeroServoY.SlGcora);
 	UsShiftx = (UINT16)StZeroServoX.SlShift + (UINT16)(Usshift<<8);
 	UsShifty = (UINT16)StZeroServoY.SlShift + (UINT16)(Usshift<<8);
-	Ulcoef = (INT32)(dTemp2 * (double)UlFilCoef);
+	Ulcoef = (INT32)(dTemp2 * (long)UlFilCoef);
 TRACE("		after  X (gain , shift , coeff) = ( %08x , %08x , %08x )\n",(int)Ulgainx ,(int)UsShiftx ,(int)Ulcoef   ) ;
 TRACE("		after  Y (gain , shift , coeff) = ( %08x , %08x , %08x )\n",(int)Ulgainy ,(int)UsShifty ,(int)Ulcoef   ) ;
 	
@@ -1977,7 +1977,7 @@ UINT32	TneAvc( UINT8 ucposture )
 	UINT8			j , k;
 //	UINT8			i , j , k;
 //	INT32			mtrx[9] , imtrx[9];
-//	float			detA;
+//	long			detA;
 	INT32			SlDiff[3] ;
 
 	UlRsltSts = EXE_END ;
@@ -2376,7 +2376,7 @@ UINT8	CircleTest( UINT8 uc_freq, UINT8 us_amp )
 	// Measurement initialize
 	MesFil124( NOISE ) ;
 	
-	sl_sample_num	= ( INT32 )( FS_FREQ / ( float )uc_freq ) ;
+	sl_sample_num	= ( INT32 )( FS_FREQ / ( long )uc_freq ) ;
 	
 	// Start peak to peak measurement
 	MeasureStart124( sl_sample_num, HALL_RAM_HXOUT0, HALL_RAM_HYOUT0 ) ;
@@ -2737,9 +2737,9 @@ void	OIS_Pos_Correction_by_AF( UINT16	us_af_code )
 UINT8	CalcSetMizxAndLinearityData( mlLinearityValue *linval ,  mlMixingValue *mixval )
 {
 	int i;
- 	double Xa = 0, Ya = 0;
-  	double Xsum_xy = 0, Xsum_x = 0, Xsum_y = 0, Xsum_x2 = 0;
-  	double Ysum_xy = 0, Ysum_x = 0, Ysum_y = 0, Ysum_x2 = 0;
+ 	long Xa = 0, Ya = 0;
+  	long Xsum_xy = 0, Xsum_x = 0, Xsum_y = 0, Xsum_x2 = 0;
+  	long Ysum_xy = 0, Ysum_x = 0, Ysum_y = 0, Ysum_x2 = 0;
 	UINT8		ans;
 	
 	// **************************************************
@@ -2792,8 +2792,8 @@ TRACE("Ya = %f\n", Ya);
 	// **************************************************
 //TRACE("degreeX  = %f\n", -atan(Xa)*180/3.14159265358979323846 );
 //TRACE("degreeY  = %f\n", +atan(Ya)*180/3.14159265358979323846 );
-TRACE("degreeX  = %f\n", -atan(Xa)*180/(double)77633864123 / (double)24711626453);
-TRACE("degreeY  = %f\n", +atan(Ya)*180/(double)77633864123 / (double)24711626453);
+TRACE("degreeX  = %f\n", -atan(Xa)*180/(long)77633864123 / (long)24711626453);
+TRACE("degreeY  = %f\n", +atan(Ya)*180/(long)77633864123 / (long)24711626453);
 #if (SLT_XY_SWAP ==1)
 	mixval->radianX = +atan(Ya);
 	mixval->radianY = -atan(Xa);
@@ -2814,8 +2814,8 @@ TRACE("degreeY  = %f\n", +atan(Ya)*180/(double)77633864123 / (double)24711626453
 	mixval->hxsx = (unsigned char)abs(mixval->hx45x);                                     // >1ならばシフト数として設定
 	mixval->hysx = (unsigned char)abs(mixval->hy45y);                                     // >1ならばシフト数として設定
 
-    mixval->hx45x = mixval->hx45x / pow(2, (double)mixval->hxsx);        // シフトを加味して再計算
-    mixval->hy45y = mixval->hy45y / pow(2, (double)mixval->hysx);        // シフトを加味して再計算
+    mixval->hx45x = mixval->hx45x / pow(2, (long)mixval->hxsx);        // シフトを加味して再計算
+    mixval->hy45y = mixval->hy45y / pow(2, (long)mixval->hysx);        // シフトを加味して再計算
 
 TRACE("hx45x  = %f\n", mixval->hx45x);
 TRACE("hx45y  = %f\n", mixval->hx45y);

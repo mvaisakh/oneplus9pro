@@ -52,7 +52,7 @@ extern void	WitTim( UINT_16 );
 //**************************
 UINT_8	FlashSingleRead( UINT_8 SelMat, UINT_32 UlAddress, UINT_32 *PulData );
 UINT_8	FlashMultiRead( UINT_8 SelMat, UINT_32 UlAddress, UINT_32 *PulData , UINT_8 UcLength );
-INT_32	lstsq( double x[], double y[], INT_32 , INT_32 , double c[] );
+INT_32	lstsq( long x[], long y[], INT_32 , INT_32 , long c[] );
 
 extern  UINT_8 GetInfomationAfterStartUp( DSPVER* Info );
 
@@ -1206,7 +1206,7 @@ UINT_8 WrLinCalData( UINT_8 UcMode, mlLinearityValue *linval )
 	UINT_32	UlMAT0[32];
 	UINT_8 ans = 0, i;
 	UINT_16	UsCkVal,UsCkVal_Bk ;
-	double		*pPosX, *pPosY;
+	long		*pPosX, *pPosY;
 	UINT_32	PosDifX, PosDifY;
 	DSPVER Info;
 	LINCRS* LnCsPtr;
@@ -1425,7 +1425,7 @@ UINT_8 WrLinMixCalData( UINT_8 UcMode, mlMixingValue *mixval , mlLinearityValue 
 	UINT_32	UlMAT0[32];
 	UINT_8 ans = 0 , i ;
 	UINT_16	UsCkVal,UsCkVal_Bk ;
-	double		*pPosX, *pPosY;
+	long		*pPosX, *pPosY;
 	UINT_32	PosDifX, PosDifY;
 	DSPVER Info;
 	LINCRS* LnCsPtr;
@@ -1635,19 +1635,19 @@ TRACE( "WrOptCenerData____COMPLETE\n" );
 
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
 /* function name    : lstsq								 							  	 */
-/* input parameter  : double x[] X軸の配列データ                                         */
-/*                    double y[] Y軸の配列データ                                         */
+/* input parameter  : long x[] X軸の配列データ                                         */
+/*                    long y[] Y軸の配列データ                                         */
 /*                    int n      データ個数                                              */
 /*                    int m      近似多項式次数                                          */
-/* output parameter : double c[] 近似した各項の係数配列                                  */
+/* output parameter : long c[] 近似した各項の係数配列                                  */
 /*                    戻り値は、0で正常、-1で収束失敗                                    */
 /* comment          : 最小2乗近似法                                                      */
 /*				   	   	    			      								  2018.03.07 */
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
-INT_32 lstsq( double x[], double y[], INT_32 n, INT_32 m, double c[] )
+INT_32 lstsq( long x[], long y[], INT_32 n, INT_32 m, long c[] )
 {
 	INT_32 i, j, k, m2, mp1, mp2;
-	double *a, aik, pivot, *w, w1, w2, w3;
+	long *a, aik, pivot, *w, w1, w2, w3;
 
 	if(m >= n || m < 1) {
 		return -1;
@@ -1656,11 +1656,11 @@ INT_32 lstsq( double x[], double y[], INT_32 n, INT_32 m, double c[] )
 	mp1 = m + 1;
 	mp2 = m + 2;
 	m2 = 2 * m;
-	a = (double *)kzalloc(mp1 * mp2 * sizeof(double), GFP_KERNEL);
+	a = (long *)kzalloc(mp1 * mp2 * sizeof(long), GFP_KERNEL);
 	if(a == NULL) {
 		return -1;
 	}
-	w = (double *)kzalloc(mp1 * 2 * sizeof(double), GFP_KERNEL);
+	w = (long *)kzalloc(mp1 * 2 * sizeof(long), GFP_KERNEL);
 	if(w == NULL) {
 		kfree(a);
 		return  -1;

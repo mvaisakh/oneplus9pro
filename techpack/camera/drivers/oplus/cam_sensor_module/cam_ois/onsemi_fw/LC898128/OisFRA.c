@@ -220,15 +220,15 @@ void ResetThroughParameter(void)
 #define	Q23 	( 0x007FFFFF )
 #define	Q21 	( 0x001FFFFF )
 //#define	PAI 	( 3.14159265358979323846 )
-#define	PAI 	( (double)77633864123 / (double)24711626453 )
+#define	PAI 	( (long)77633864123 / (long)24711626453 )
 #define N 		( 2048 )
 int     nDivision;
 
-void CoeffGenerate( double fc )
+void CoeffGenerate( long fc )
 {
-	double  df, fs; 
+	long  df, fs; 
 	int     point, C0, S0, CN, SN;
-	double  theta;			// theta = 2*Pi*f/Fs
+	long  theta;			// theta = 2*Pi*f/Fs
 
 	if 		( fc > 40 ){ nDivision = 0; fs = (FS_FREQ    ); }
 	else if ( fc > 20 ){ nDivision = 1; fs = (FS_FREQ / 2); }
@@ -237,20 +237,20 @@ void CoeffGenerate( double fc )
 	else 			   { nDivision = 4; fs = (FS_FREQ /16); }
 
 	//***** 取得した周波数テーブルから判定ポイントと判定thetaの算出 *****
-	df = fs / (double)N;									// FFTの1ポイント当たりの周波数
+	df = fs / (long)N;									// FFTの1ポイント当たりの周波数
 //	point = (int)(fc / df + 0.5);							// 判定ポイントの算出
-//	theta = 2.0 * PAI * (double)point * df / fs;			// 判定ポイントでの位相の算出
-	point = (int)(fc / df + (float)5/(float)10);							// 判定ポイントの算出
-	theta = (float)2 * PAI * (double)point * df / fs;			// 判定ポイントでの位相の算出
+//	theta = 2.0 * PAI * (long)point * df / fs;			// 判定ポイントでの位相の算出
+	point = (int)(fc / df + (long)5/(long)10);							// 判定ポイントの算出
+	theta = (long)2 * PAI * (long)point * df / fs;			// 判定ポイントでの位相の算出
 
-//	C0 = (int)((double)Q31 * cos(theta) + 0.5);
-//	S0 = (int)((double)Q31 * sin(theta) + 0.5);
-//	CN = (int)((double)Q31 * cos(((double)N - 1.0) * theta) + 0.5);
-//	SN = (int)((double)Q31 * sin(((double)N - 1.0) * theta) + 0.5);
-//  C0 = (int)((double)Q31 * cos(theta) + (float)5/(float)10);
-//  S0 = (int)((double)Q31 * sin(theta) + (float)5/(float)10);
-//  CN = (int)((double)Q31 * cos(((double)N - (double)1) * theta) + (float)5/(float)10);
-//  SN = (int)((double)Q31 * sin(((double)N - (double)1) * theta) + (float)5/(float)10);
+//	C0 = (int)((long)Q31 * cos(theta) + 0.5);
+//	S0 = (int)((long)Q31 * sin(theta) + 0.5);
+//	CN = (int)((long)Q31 * cos(((long)N - 1.0) * theta) + 0.5);
+//	SN = (int)((long)Q31 * sin(((long)N - 1.0) * theta) + 0.5);
+//  C0 = (int)((long)Q31 * cos(theta) + (long)5/(long)10);
+//  S0 = (int)((long)Q31 * sin(theta) + (long)5/(long)10);
+//  CN = (int)((long)Q31 * cos(((long)N - (long)1) * theta) + (long)5/(long)10);
+//  SN = (int)((long)Q31 * sin(((long)N - (long)1) * theta) + (long)5/(long)10);
 
 	RamWrite32A( FRA_DMA_DeciShift, nDivision );	
 	RamWrite32A( FRA_DMB_C0, C0 ) ;
@@ -268,12 +268,12 @@ TRACE("0x%08X, 0x%08X, 0x%08X, 0x%08X,\n", C0, S0, CN, SN);
 // Explanation		: Convert Frequency
 // History			: First edition
 //********************************************************************************
-UINT_32	Freq_Convert( float SfFreq )
+UINT_32	Freq_Convert( long SfFreq )
 {
 	UINT_32	UlPhsStep;
 	
-//	UlPhsStep	= ( UINT_32 )( ( SfFreq * ( float )0x100000000 / FS_FREQ + 0.5F ) / 2.0F ) ;
-	UlPhsStep	= ( UINT_32 )( ( SfFreq * ( float )0x100000000 / FS_FREQ + (float)5/(float)10 ) / (float)2 ) ;
+//	UlPhsStep	= ( UINT_32 )( ( SfFreq * ( long )0x100000000 / FS_FREQ + 0.5F ) / 2.0F ) ;
+	UlPhsStep	= ( UINT_32 )( ( SfFreq * ( long )0x100000000 / FS_FREQ + (long)5/(long)10 ) / (long)2 ) ;
 
 	return( UlPhsStep ) ;
 }
@@ -288,7 +288,7 @@ UINT_32	Freq_Convert( float SfFreq )
 //********************************************************************************
 void	MesStart_FRA_Single( UINT_8	UcDirSel )
 {
-	float			SfTmp ;
+	long			SfTmp ;
 	INT_32	GainQ23, PhaseQ21 ;
 	UINT_32	UlReadVal ;	
 
@@ -297,8 +297,8 @@ void	MesStart_FRA_Single( UINT_8	UcDirSel )
 	RamWrite32A( SinWave_Offset,	Freq_Convert( StFRAParam.StHostCom.SfFrqCom.SfFltVal ) ) ;		// Freq Setting = Freq * 80000000h / Fs	: 10Hz
 
 //	SfTmp	= StFRAParam.StHostCom.SfAmpCom.SfFltVal / 1400.0F ;									// AVDD 2800mV / 2 = 1400mV
-	SfTmp	= StFRAParam.StHostCom.SfAmpCom.SfFltVal / (float)1400 ;									// AVDD 2800mV / 2 = 1400mV
-	RamWrite32A( SinWave_Gain,		( UINT_32 )( ( float )0x7FFFFFFF * SfTmp ) ) ;					// Set Sine Wave Gain
+	SfTmp	= StFRAParam.StHostCom.SfAmpCom.SfFltVal / (long)1400 ;									// AVDD 2800mV / 2 = 1400mV
+	RamWrite32A( SinWave_Gain,		( UINT_32 )( ( long )0x7FFFFFFF * SfTmp ) ) ;					// Set Sine Wave Gain
 
 	if ( StFRAParam.StHostCom.UcAvgCycl == 10) 	{  		// Actuator Through
 #ifdef ACT_THROUGH_CLOSE
@@ -370,8 +370,8 @@ void	MesStart_FRA_Single( UINT_8	UcDirSel )
 	// Read answer
 	RamRead32A( FRA_DMA_Gain	, &GainQ23 ) ;		// Gain
 	RamRead32A( FRA_DMA_Phase	, &PhaseQ21 ) ;		// Phase
-	StFRAParam.StMesRslt.SfGainAvg = (float)GainQ23 / Q23; //0x007FFFFF;
-	StFRAParam.StMesRslt.SfPhaseAvg = (float)PhaseQ21 / Q21; //0x001FFFFF;	
+	StFRAParam.StMesRslt.SfGainAvg = (long)GainQ23 / Q23; //0x007FFFFF;
+	StFRAParam.StMesRslt.SfPhaseAvg = (long)PhaseQ21 / Q21; //0x001FFFFF;	
 
 	TRACE("Phase %f deg : Gain %f dB\n", StFRAParam.StMesRslt.SfPhaseAvg, StFRAParam.StMesRslt.SfGainAvg );
 }
@@ -409,8 +409,8 @@ void	MesStart_FRA_Continue( void )
 	// Read answer
 	RamRead32A( FRA_DMA_Gain	, &GainQ23 ) ;		// Gain
 	RamRead32A( FRA_DMA_Phase	, &PhaseQ21 ) ;		// Phase
-	StFRAParam.StMesRslt.SfGainAvg = (float)GainQ23 / Q23;
-	StFRAParam.StMesRslt.SfPhaseAvg = (float)PhaseQ21 / Q21;	
+	StFRAParam.StMesRslt.SfGainAvg = (long)GainQ23 / Q23;
+	StFRAParam.StMesRslt.SfPhaseAvg = (long)PhaseQ21 / Q21;	
 
 	TRACE("Phase %f deg : Gain %f dB\n", StFRAParam.StMesRslt.SfPhaseAvg, StFRAParam.StMesRslt.SfGainAvg );
 }

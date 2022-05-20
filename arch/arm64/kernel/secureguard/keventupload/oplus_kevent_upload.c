@@ -248,7 +248,7 @@ exit:
 }
 
 
-static void __exit oplus_security_keventupload_exit()
+static void __exit oplus_security_keventupload_exit(void)
 {
 #ifdef CONFIG_OPLUS_KERNEL_SECURE_GUARD
 	if (oplus_security_trace_flag) {

@@ -15,14 +15,14 @@
 
 // Constants
 //#define		PI			3.14159		// ƒÎ
-#define		PI			(double)314159/(double)100000	// ƒÎ
+#define		PI			(long)314159/(long)100000	// ƒÎ
 
 
 typedef struct tag_Dual_Axis
 {
-	float xpos;
-	float xhall;
-	float ypos;
-	float yhall;
+	long xpos;
+	long xhall;
+	long ypos;
+	long yhall;
 }Dual_Axis_t;
 

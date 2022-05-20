@@ -28,12 +28,12 @@ typedef struct STFRA_PARAM {
 		unsigned char	UcAvgCycl ;
 	} StHostCom ;
 
-	float				SfGain[ 10 ] ;
-	float				SfPhase[ 10 ] ;
+	long				SfGain[ 10 ] ;
+	long				SfPhase[ 10 ] ;
 
 	struct {
-		float			SfGainAvg ;
-		float			SfPhaseAvg ;
+		long			SfGainAvg ;
+		long			SfPhaseAvg ;
 	} StMesRslt ;
 } StFRAParam_t ;
 

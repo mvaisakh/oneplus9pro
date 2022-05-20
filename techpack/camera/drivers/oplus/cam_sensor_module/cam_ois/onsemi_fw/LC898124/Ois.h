@@ -275,9 +275,9 @@ union	ULLNVAL {
 } ;
 
 
-// Float Data Union
+// long Data Union
 union	FLTVAL {
-	float			SfFltVal ;
+	long			SfFltVal ;
 	UINT32	UlLngVal ;
 	UINT16	UsDwdVal[ 2 ] ;
 	struct {
@@ -324,9 +324,9 @@ union	ULLNVAL {
 	} StUllnVal ;
 } ;
 
-// Float Data Union
+// long Data Union
 union	FLTVAL {
-	float			SfFltVal ;
+	long			SfFltVal ;
 	UINT32	UlLngVal ;
 	UINT16	UsDwdVal[ 2 ] ;
 	struct {
@@ -492,13 +492,13 @@ typedef struct STACLVAL {
 
 struct tagMlMixingValue
 {
-	double	radianX;
-	double	radianY;
+	long	radianX;
+	long	radianY;
 
-	double	hx45x;
-	double	hy45x;
-	double	hy45y;
-	double	hx45y;
+	long	hx45x;
+	long	hy45x;
+	long	hy45y;
+	long	hx45y;
 
 	UINT8	hxsx;
 	UINT8	hysx;
@@ -508,10 +508,10 @@ struct tagMlMixingValue
 	INT32	hy45yL;		//! for Fixed point
 	INT32	hx45yL;		//! for Fixed point
 
-	double XonXmove[7];
-	double YonXmove[7];
-	double XonYmove[7];
-	double YonYmove[7];
+	long XonXmove[7];
+	long YonXmove[7];
+	long XonYmove[7];
+	long YonYmove[7];
 };
 typedef	struct tagMlMixingValue		mlMixingValue;
 
@@ -521,8 +521,8 @@ struct tagMlLinearityValue
 	UINT32	*dacX;			//! input parameter
 	UINT32	*dacY;			//! input parameter
 
-	double	*positionX;
-	double	*positionY;
+	long	*positionX;
+	long	*positionY;
 	UINT16	*thresholdX;
 	UINT16	*thresholdY;
 

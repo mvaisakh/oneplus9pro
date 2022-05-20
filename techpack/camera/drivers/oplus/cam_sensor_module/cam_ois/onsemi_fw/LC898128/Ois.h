@@ -86,14 +86,14 @@
 								// 1 : SLOW
 #if FS_MODE == 0
 //#define	FS_FREQ			18044.61942F
-#define	FS_FREQ			((double)1804461942 / (double)100000)
+#define	FS_FREQ			((long)1804461942 / (long)100000)
 #else
 //#define	FS_FREQ			15027.3224F
-#define	FS_FREQ			((double)150273224 / (double)10000)
+#define	FS_FREQ			((long)150273224 / (long)10000)
 #endif
 
 //#define	GYRO_SENSITIVITY	65.5		//!< Gyro sensitivity LSB/dps
-#define	GYRO_SENSITIVITY	((float)655 / (float)10)		//!< Gyro sensitivity LSB/dps
+#define	GYRO_SENSITIVITY	((long)655 / (long)10)		//!< Gyro sensitivity LSB/dps
 
 // Command Status
 #define		EXE_END		0x00000002L		//!< Execute End (Adjust OK)
@@ -270,9 +270,9 @@ union	ULLNVAL {
 } ;
 
 
-// Float Data Union
+// long Data Union
 union	FLTVAL {
-	float	SfFltVal ;
+	long	SfFltVal ;
 	UINT_32	UlLngVal ;
 	UINT_16	UsDwdVal[ 2 ] ;
 	struct {
@@ -324,9 +324,9 @@ union	ULLNVAL {
 typedef union ULLNVAL	UnllnVal;
 
 
-// Float Data Union
+// long Data Union
 union	FLTVAL {
-	float	SfFltVal ;
+	long	SfFltVal ;
 	UINT_32	UlLngVal ;
 	UINT_16	UsDwdVal[ 2 ] ;
 	struct {
@@ -445,7 +445,7 @@ __OIS_CMD_HEADER__	stAclVal	StAclVal ;				//!< Execute Command Parameter
 #define		ACT_CHK_NUM		3756		
 #define		ACT_THR			0x000003E8	
 //#define		ACT_MARGIN		0.75f
-#define		ACT_MARGIN		((float)75 / (float)100)
+#define		ACT_MARGIN		((long)75 / (long)100)
 //	for RunGea
 #define		GEA_NUM			512				
 #define		GEA_DIF_HIG		0x0083			

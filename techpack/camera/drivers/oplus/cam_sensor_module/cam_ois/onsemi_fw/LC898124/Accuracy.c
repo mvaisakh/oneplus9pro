@@ -19,26 +19,26 @@ extern void	WitTim( unsigned short	UsWitTim );
 /* Raw data buffers */	
 //Dual_Axis_t xy_raw_data[360/DEGSTEP + 1];
 Dual_Axis_t xy_raw_data[360/3 + 1];
-float xMaxAcc, yMaxAcc;
-float xLimit, yLimit;
+long xMaxAcc, yMaxAcc;
+long xLimit, yLimit;
 
-static float fix2float(unsigned int fix)
+static long fix2long(unsigned int fix)
 {
     if((fix & 0x80000000) > 0)
     {
-        return ((float)fix-(float)0x100000000)/(float)0x7FFFFFFF;
+        return ((long)fix-(long)0x100000000)/(long)0x7FFFFFFF;
     } else {
-        return (float)fix/(float)0x7FFFFFFF;
+        return (long)fix/(long)0x7FFFFFFF;
     }
 }
 
-static unsigned int float2fix(float f)
+static unsigned int long2fix(long f)
 {
     if(f < 0)
     {
-        return (unsigned int)(f * (float)0x7FFFFFFF + 0x100000000);
+        return (unsigned int)(f * (long)0x7FFFFFFF + 0x100000000);
     } else {
-        return (unsigned int)(f * (float)0x7FFFFFFF);
+        return (unsigned int)(f * (long)0x7FFFFFFF);
     }
 }
 
@@ -50,14 +50,14 @@ static unsigned int float2fix(float f)
 					   Low byte: Y total NG points)	
 --------------------------------------------------------------------*/
 //unsigned short Accuracy()
-unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
+unsigned short Accuracy(long ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
 {
-	float xpos, ypos;
+	long xpos, ypos;
 	unsigned int xhall_value, yhall_value;
-	float xMaxHall, yMaxHall;
+	long xMaxHall, yMaxHall;
     unsigned short xng = 0, yng = 0;
     unsigned short deg;
-    float xRadius, yRadius;
+    long xRadius, yRadius;
 	unsigned int xGyrogain, yGyrogain;
     unsigned int xGLenz, yGLenz;
     unsigned int xG2x4xb, yG2x4xb;
@@ -75,10 +75,10 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 	RamRead32A(Gyro_ShiftY_RG, &yG2x4xb);
 	
 	// Calculate Radius (100um)
-//	xRadius = 0.10546843F * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 ));
-//	yRadius = 0.10546843F * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 ));
-	xRadius = (double)10546843/(double)100000000 * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 ));
-	yRadius = (double)10546843/(double)100000000 * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 ));
+//	xRadius = 0.10546843F * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 ));
+//	yRadius = 0.10546843F * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 ));
+	xRadius = (long)10546843/(long)100000000 * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 ));
+	yRadius = (long)10546843/(long)100000000 * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 ));
 	TRACE("xRadius = %d, yRadius = %d", (int)(xRadius*1000), (int)(yRadius*1000));
 
 	// Calculate Limit
@@ -95,16 +95,16 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 	// Circle check
 	xpos = xRadius * cos(0);
 	ypos = yRadius * sin(0);
-	RamWrite32A(HALL_RAM_HXOFF1, float2fix(xpos));
-	RamWrite32A(HALL_RAM_HYOFF1, float2fix(ypos));
+	RamWrite32A(HALL_RAM_HXOFF1, long2fix(xpos));
+	RamWrite32A(HALL_RAM_HYOFF1, long2fix(ypos));
 	WitTim(WAIT_MSEC1);
 
 	for( deg = 0; deg <= 360; deg += DEGSTEP ) // 0-360 degree
 	{
 		xpos = xRadius * cos(deg * PI/180);
 		ypos = yRadius * sin(deg * PI/180);
-    	RamWrite32A(HALL_RAM_HXOFF1, float2fix(xpos));
-		RamWrite32A(HALL_RAM_HYOFF1, float2fix(ypos));
+    	RamWrite32A(HALL_RAM_HXOFF1, long2fix(xpos));
+		RamWrite32A(HALL_RAM_HYOFF1, long2fix(ypos));
 
 		if(deg ==0)
 			WitTim(500);
@@ -118,10 +118,10 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 			WitTim(WAIT_MSEC3);
 			RamRead32A( HALL_RAM_HXOUT0, &xhall_value );
 			RamRead32A( HALL_RAM_HYOUT0, &yhall_value );
-			if(fabsf(fix2float(xhall_value) - xpos) > fabsf(xMaxHall))	
-				xMaxHall = fix2float(xhall_value) - xpos;
-			if(fabsf(fix2float(yhall_value) - ypos) > fabsf(yMaxHall))	
-				yMaxHall = fix2float(yhall_value) - ypos;
+			if(fabsf(fix2long(xhall_value) - xpos) > fabsf(xMaxHall))	
+				xMaxHall = fix2long(xhall_value) - xpos;
+			if(fabsf(fix2long(yhall_value) - ypos) > fabsf(yMaxHall))	
+				yMaxHall = fix2long(yhall_value) - ypos;
 		}
 
 		if(fabsf(xMaxHall) > xMaxAcc)	xMaxAcc = fabsf(xMaxHall);
@@ -144,7 +144,7 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 }
 
 //unsigned short HallCheck(void)
-unsigned short HallCheck(float ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
+unsigned short HallCheck(long ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
 {
 	short i;
 //	unsigned short ret = Accuracy();

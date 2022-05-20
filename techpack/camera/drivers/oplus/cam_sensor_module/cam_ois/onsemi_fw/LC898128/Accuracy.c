@@ -21,29 +21,29 @@ extern UINT_8	FlashMultiRead( UINT_8 , UINT_32 , UINT_32 * , UINT_8 );
 /* Raw data buffers */	
 //Dual_Axis_t xy_raw_data[360/DEGSTEP + 1];
 //Dual_Axis_t xy_raw_data[360/3 + 1];
-//float xMaxAcc, yMaxAcc;
-//float xLimit, yLimit;
+//long xMaxAcc, yMaxAcc;
+//long xLimit, yLimit;
 #if 0
 //#define		ANGLE_LIMIT	0.105929591F
 //#define		LIMIT_RANGE	190.0F
-#define		ANGLE_LIMIT	(double)105929591/(double)1000000000
-#define		LIMIT_RANGE	(float)190
+#define		ANGLE_LIMIT	(long)105929591/(long)1000000000
+#define		LIMIT_RANGE	(long)190
 #else
 //#define		ANGLE_LIMIT	0.091805644F
 //#define		LIMIT_RANGE	170.0F
 //#define		ANGLE_LIMIT_SMA	0.098867618F
-#define		ANGLE_LIMIT	(double)91805644/(double)1000000000
-#define		LIMIT_RANGE	(double)170
-#define		ANGLE_LIMIT_SMA	(double)98867618/(double)1000000000
+#define		ANGLE_LIMIT	(long)91805644/(long)1000000000
+#define		LIMIT_RANGE	(long)170
+#define		ANGLE_LIMIT_SMA	(long)98867618/(long)1000000000
 #endif
 
 // Checking radius
 //#define		DEGREE		0.65F						// 0.65 degree
-#define		DEGREE		(float)65/(float)100						// 0.65 degree
+#define		DEGREE		(long)65/(long)100						// 0.65 degree
 //#define		ACCURACY	0.02F						// Accuracy (2.6% of LMTDEG) 100um * 2% = 2um
-//#define		ACCURACY	(float)2/(float)100						// Accuracy (2.6% of LMTDEG) 100um * 2% = 2um
+//#define		ACCURACY	(long)2/(long)100						// Accuracy (2.6% of LMTDEG) 100um * 2% = 2um
 //#define		ACCURACY	0.015F						// Accuracy  0.75deg(100um)/50 = 2um
-#define		ACCURACY	(float)15/(float)1000						// Accuracy  0.75deg(100um)/50 = 2um
+#define		ACCURACY	(long)15/(long)1000						// Accuracy  0.75deg(100um)/50 = 2um
 
 // Parameter define
 #define		DEGSTEP		3							// Degree of one step (3°)
@@ -52,39 +52,39 @@ extern UINT_8	FlashMultiRead( UINT_8 , UINT_32 , UINT_32 * , UINT_8 );
 
 // Loop Gain Up
 //#define		LPGSET		1.40						// 1.40(+3dB); 0.158(+4dB); 0.177(+5dB)
-#define		LPGSET		(float)14/(float)10						// 1.40(+3dB); 0.158(+4dB); 0.177(+5dB)
+#define		LPGSET		(long)14/(long)10						// 1.40(+3dB); 0.158(+4dB); 0.177(+5dB)
 
 
 // Constants
 //#define		PI			3.14159						// π
-#define		PI			(double)314159/(double)100000						// π
+#define		PI			(long)314159/(long)100000						// π
 //#define		LMTDEG		0.75F						// Limit degree by LGYROLMT
-#define		LMTDEG		(float)75/(float)100						// Limit degree by LGYROLMT
+#define		LMTDEG		(long)75/(long)100						// Limit degree by LGYROLMT
 
 #define		HallX_hs			0x81F8
 #define		HallY_hs			0x8200
 
-static float fix2float(unsigned int fix)
+static long fix2long(unsigned int fix)
 {
     if((fix & 0x80000000) > 0)
     {
-        return ((float)fix-(float)0x100000000)/(float)0x7FFFFFFF;
+        return ((long)fix-(long)0x100000000)/(long)0x7FFFFFFF;
     } else {
-        return (float)fix/(float)0x7FFFFFFF;
+        return (long)fix/(long)0x7FFFFFFF;
     }
 }
 
-static unsigned int float2fix(float f)
+static unsigned int long2fix(long f)
 {
     if(f < 0)
     {
-        return (unsigned int)(f * (float)0x7FFFFFFF + 0x100000000);
+        return (unsigned int)(f * (long)0x7FFFFFFF + 0x100000000);
     } else {
-        return (unsigned int)(f * (float)0x7FFFFFFF);
+        return (unsigned int)(f * (long)0x7FFFFFFF);
     }
 }
 
-void LoopGainSet(unsigned char flag, float db)
+void LoopGainSet(unsigned char flag, long db)
 {
     static UINT_32 xHs, yHs;
     static UINT_32 xLpGan, yLpGan;
@@ -103,8 +103,8 @@ void LoopGainSet(unsigned char flag, float db)
 	    RamRead32A(HallFilterCoeffX_hxgain1, &xLpGan);
 	    RamRead32A(HallFilterCoeffY_hygain1, &yLpGan);
 
-		RamWrite32A(HallFilterCoeffX_hxgain1, float2fix( fix2float(xLpGan) * db / 2));	// gain1 /2
-    	RamWrite32A(HallFilterCoeffY_hygain1, float2fix( fix2float(xLpGan) * db / 2));  // gain1 /2
+		RamWrite32A(HallFilterCoeffX_hxgain1, long2fix( fix2long(xLpGan) * db / 2));	// gain1 /2
+    	RamWrite32A(HallFilterCoeffY_hygain1, long2fix( fix2long(xLpGan) * db / 2));  // gain1 /2
 
     } else { //	0:Restore
 
@@ -127,14 +127,14 @@ void LoopGainSet(unsigned char flag, float db)
 --------------------------------------------------------------------*/
 //unsigned short Accuracy()
 #if 0
-unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
+unsigned short Accuracy(long ACCURACY, unsigned short RADIUS, unsigned short DEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
 {
-	float xpos, ypos;
+	long xpos, ypos;
 	unsigned int xhall_value, yhall_value;
-	float xMaxHall, yMaxHall;
+	long xMaxHall, yMaxHall;
     unsigned short xng = 0, yng = 0;
     unsigned short deg;
-    float xRadius, yRadius;
+    long xRadius, yRadius;
 	unsigned int xGyrogain, yGyrogain;
     unsigned int xGLenz, yGLenz;
     unsigned int xG2x4xb, yG2x4xb;
@@ -157,10 +157,10 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 	RamRead32A(HallFilterCoeffY_hygoutg, &yGoutG);
 
 	// Calculate Radius (LIMIT_RANGE) /* 不明 */
-//	xRadius = ANGLE_LIMIT * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * 8 * fabsf(fix2float(xGoutG));
-//	yRadius = ANGLE_LIMIT * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * 8 * fabsf(fix2float(yGoutG));
-	xRadius = ANGLE_LIMIT * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 )) * fabsf(fix2float(xGoutG));
-	yRadius = ANGLE_LIMIT * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 )) * fabsf(fix2float(yGoutG));
+//	xRadius = ANGLE_LIMIT * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * 8 * fabsf(fix2long(xGoutG));
+//	yRadius = ANGLE_LIMIT * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * 8 * fabsf(fix2long(yGoutG));
+	xRadius = ANGLE_LIMIT * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 )) * fabsf(fix2long(xGoutG));
+	yRadius = ANGLE_LIMIT * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 )) * fabsf(fix2long(yGoutG));
 
 	// Calculate Limit
 	xLimit = ACCURACY / LIMIT_RANGE * xRadius;
@@ -176,16 +176,16 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 	// Circle check
 	xpos = xRadius * cos(0);
 	ypos = yRadius * sin(0);
-	RamWrite32A(HALL_RAM_HXOFF1, float2fix(xpos));
-	RamWrite32A(HALL_RAM_HYOFF1, float2fix(ypos));
+	RamWrite32A(HALL_RAM_HXOFF1, long2fix(xpos));
+	RamWrite32A(HALL_RAM_HYOFF1, long2fix(ypos));
 	WitTim(WAIT_MSEC1);
 
 	for( deg = 0; deg <= 360; deg += DEGSTEP ) // 0-360 degree
 	{
 		xpos = xRadius * cos(deg * PI/180);
 		ypos = yRadius * sin(deg * PI/180);
-    	RamWrite32A(HALL_RAM_HXOFF1, float2fix(xpos));
-		RamWrite32A(HALL_RAM_HYOFF1, float2fix(ypos));
+    	RamWrite32A(HALL_RAM_HXOFF1, long2fix(xpos));
+		RamWrite32A(HALL_RAM_HYOFF1, long2fix(ypos));
 
 		xMaxHall = 0;
 		yMaxHall = 0;
@@ -196,10 +196,10 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 			WitTim(WAIT_MSEC3);
 			RamRead32A( HALL_RAM_HXOUT0, &xhall_value );
 			RamRead32A( HALL_RAM_HYOUT0, &yhall_value );
-			if(fabsf(fix2float(xhall_value) - xpos) > fabsf(xMaxHall))	
-				xMaxHall = fix2float(xhall_value) - xpos;
-			if(fabsf(fix2float(yhall_value) - ypos) > fabsf(yMaxHall))	
-				yMaxHall = fix2float(yhall_value) - ypos;
+			if(fabsf(fix2long(xhall_value) - xpos) > fabsf(xMaxHall))	
+				xMaxHall = fix2long(xhall_value) - xpos;
+			if(fabsf(fix2long(yhall_value) - ypos) > fabsf(yMaxHall))	
+				yMaxHall = fix2long(yhall_value) - ypos;
 		}
 
 		if(fabsf(xMaxHall) > xMaxAcc)	xMaxAcc = fabsf(xMaxHall);
@@ -223,12 +223,12 @@ unsigned short Accuracy(float ACCURACY, unsigned short RADIUS, unsigned short DE
 #endif
 unsigned short Accuracy()
 {
-	float xpos, ypos;
+	long xpos, ypos;
 	UINT_32 xhall_value, yhall_value;
-	float xMaxHall, yMaxHall;
+	long xMaxHall, yMaxHall;
     unsigned short xng = 0, yng = 0;
     unsigned short deg;
-    float xRadius, yRadius;
+    long xRadius, yRadius;
     UINT_32 xGyroLimit, yGyroLimit;
 	UINT_32 xGyrogain, yGyrogain;
     UINT_32 xGLenz, yGLenz;
@@ -255,8 +255,8 @@ unsigned short Accuracy()
     yShiftRG = 1 << ((yShiftRG & 0xFF00) >> 8);
 
 	// Calculate moving Range
-	xRadius = fabsf(fix2float(xGyroLimit)) * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * xShiftRG ;
-	yRadius = fabsf(fix2float(yGyroLimit)) * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * yShiftRG ;
+	xRadius = fabsf(fix2long(xGyroLimit)) * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * xShiftRG ;
+	yRadius = fabsf(fix2long(yGyroLimit)) * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * yShiftRG ;
 
 	// Calculate Limit
 	xLimit = ACCURACY * xRadius;
@@ -272,16 +272,16 @@ unsigned short Accuracy()
 	// Circle check
 //	xpos = xRadius * cos(0);
 //	ypos = yRadius * sin(0);
-	RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
-	RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+	RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
+	RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 	WitTim(100);
 
 	for( deg = 0; deg <= 360; deg += DEGSTEP ) // 0-360 degree
 	{
 //		xpos = xRadius * cos(deg * PI/180);
 //		ypos = yRadius * sin(deg * PI/180);
-    	RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
-		RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+    	RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
+		RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 
 		xMaxHall = 0;
 		yMaxHall = 0;
@@ -294,20 +294,20 @@ unsigned short Accuracy()
 			WitTim( WAIT_MSEC );
 			RamRead32A( HALL_RAM_HXOUT2, &xhall_value );
 			RamRead32A( HALL_RAM_HYOUT2, &yhall_value );
-			if(fabsf(fix2float(xhall_value) + fix2float(xHav2)) > fabsf(xMaxHall))	
-				xMaxHall = fix2float(xhall_value) + fix2float(xHav2);
-			if(fabsf(fix2float(yhall_value) + fix2float(yHav2)) > fabsf(yMaxHall))
-				yMaxHall = fix2float(yhall_value) + fix2float(yHav2);
+			if(fabsf(fix2long(xhall_value) + fix2long(xHav2)) > fabsf(xMaxHall))	
+				xMaxHall = fix2long(xhall_value) + fix2long(xHav2);
+			if(fabsf(fix2long(yhall_value) + fix2long(yHav2)) > fabsf(yMaxHall))
+				yMaxHall = fix2long(yhall_value) + fix2long(yHav2);
 		}
 
 		if(fabsf(xMaxHall) > xMaxAcc)	xMaxAcc = fabsf(xMaxHall);
 		if(fabsf(yMaxHall) > yMaxAcc)	yMaxAcc = fabsf(yMaxHall);
 		
         // Save raw data
-		xy_raw_data[deg/DEGSTEP].xpos = fix2float(xHav2);
-		xy_raw_data[deg/DEGSTEP].xhall = xMaxHall + fix2float(xHav2);
-		xy_raw_data[deg/DEGSTEP].ypos = fix2float(yHav2);
-		xy_raw_data[deg/DEGSTEP].yhall = yMaxHall + fix2float(yHav2);
+		xy_raw_data[deg/DEGSTEP].xpos = fix2long(xHav2);
+		xy_raw_data[deg/DEGSTEP].xhall = xMaxHall + fix2long(xHav2);
+		xy_raw_data[deg/DEGSTEP].ypos = fix2long(yHav2);
+		xy_raw_data[deg/DEGSTEP].yhall = yMaxHall + fix2long(yHav2);
 		
 		if(fabsf(xMaxHall) > xLimit)	xng++; 	// Have NG point;
 		if(fabsf(yMaxHall) > yLimit)	yng++; 	// Have NG point; 
@@ -356,14 +356,14 @@ UINT_16  HallCheck(void)
 	return(ret);
 }
 
-unsigned short AccuracyH(float flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
+unsigned short AccuracyH(long flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
 {
-	float xpos, ypos;
+	long xpos, ypos;
 	unsigned int xhall_value, yhall_value;
-	float xMaxHall, yMaxHall;
+	long xMaxHall, yMaxHall;
     unsigned short xng = 0, yng = 0;
     unsigned short deg;
-    float xRadius, yRadius;
+    long xRadius, yRadius;
 	unsigned int xGyrogain, yGyrogain;
     unsigned int xGLenz, yGLenz;
     unsigned int xG2x4xb, yG2x4xb;
@@ -386,10 +386,10 @@ unsigned short AccuracyH(float flACCURACY, unsigned short RADIUS, unsigned short
 	RamRead32A(HallFilterCoeffY_hygoutg, &yGoutG);
 
 	// Calculate Radius (LIMIT_RANGE) /* 不明 */
-//	xRadius = ANGLE_LIMIT * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * 8 * fabsf(fix2float(xGoutG));
-//	yRadius = ANGLE_LIMIT * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * 8 * fabsf(fix2float(yGoutG));
-	xRadius = ANGLE_LIMIT * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 )) * fabsf(fix2float(xGoutG));
-	yRadius = ANGLE_LIMIT * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 )) * fabsf(fix2float(yGoutG));
+//	xRadius = ANGLE_LIMIT * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * 8 * fabsf(fix2long(xGoutG));
+//	yRadius = ANGLE_LIMIT * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * 8 * fabsf(fix2long(yGoutG));
+	xRadius = ANGLE_LIMIT * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * (1 << (unsigned char)( xG2x4xb >> 8 )) * fabsf(fix2long(xGoutG));
+	yRadius = ANGLE_LIMIT * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * (1 << (unsigned char)( yG2x4xb >> 8 )) * fabsf(fix2long(yGoutG));
 
 	// Calculate Limit
 	xLimit = flACCURACY / LIMIT_RANGE * xRadius;
@@ -405,16 +405,16 @@ unsigned short AccuracyH(float flACCURACY, unsigned short RADIUS, unsigned short
 	// Circle check
 	xpos = xRadius * cos(0);
 	ypos = yRadius * sin(0);
-	RamWrite32A(HALL_RAM_HXOFF1, float2fix(xpos));
-	RamWrite32A(HALL_RAM_HYOFF1, float2fix(ypos));
+	RamWrite32A(HALL_RAM_HXOFF1, long2fix(xpos));
+	RamWrite32A(HALL_RAM_HYOFF1, long2fix(ypos));
 	WitTim(WAIT_MSEC1);
 
 	for( deg = 0; deg <= 360; deg += usDEGSTEP ) // 0-360 degree
 	{
 		xpos = xRadius * cos(deg * PI/180);
 		ypos = yRadius * sin(deg * PI/180);
-    	RamWrite32A(HALL_RAM_HXOFF1, float2fix(xpos));
-		RamWrite32A(HALL_RAM_HYOFF1, float2fix(ypos));
+    	RamWrite32A(HALL_RAM_HXOFF1, long2fix(xpos));
+		RamWrite32A(HALL_RAM_HYOFF1, long2fix(ypos));
 
 		xMaxHall = 0;
 		yMaxHall = 0;
@@ -425,10 +425,10 @@ unsigned short AccuracyH(float flACCURACY, unsigned short RADIUS, unsigned short
 			WitTim(WAIT_MSEC3);
 			RamRead32A( HALL_RAM_HXOUT0, &xhall_value );
 			RamRead32A( HALL_RAM_HYOUT0, &yhall_value );
-			if(fabsf(fix2float(xhall_value) - xpos) > fabsf(xMaxHall))	
-				xMaxHall = fix2float(xhall_value) - xpos;
-			if(fabsf(fix2float(yhall_value) - ypos) > fabsf(yMaxHall))	
-				yMaxHall = fix2float(yhall_value) - ypos;
+			if(fabsf(fix2long(xhall_value) - xpos) > fabsf(xMaxHall))	
+				xMaxHall = fix2long(xhall_value) - xpos;
+			if(fabsf(fix2long(yhall_value) - ypos) > fabsf(yMaxHall))	
+				yMaxHall = fix2long(yhall_value) - ypos;
 		}
 
 		if(fabsf(xMaxHall) > xMaxAcc)	xMaxAcc = fabsf(xMaxHall);
@@ -451,7 +451,7 @@ unsigned short AccuracyH(float flACCURACY, unsigned short RADIUS, unsigned short
 }
 
 //unsigned short HallCheck(void)
-UINT_16 HallCheckH(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
+UINT_16 HallCheckH(long flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
 {
 	INT_16	i;
 //	unsigned short ret = Accuracy();
@@ -482,14 +482,14 @@ UINT_16 HallCheckH(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 
 	return( ret );
 }
 
-unsigned short AccuracyG(float flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
+unsigned short AccuracyG(long flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3)
 {
-	float xpos, ypos;
+	long xpos, ypos;
 	unsigned int xhall_value, yhall_value;
-	float xMaxHall, yMaxHall;
+	long xMaxHall, yMaxHall;
     unsigned short xng = 0, yng = 0;
     unsigned short deg;
-    float xRadius, yRadius;
+    long xRadius, yRadius;
     unsigned int xGyroLimit, yGyroLimit;
 	unsigned int xGyrogain, yGyrogain;
     unsigned int xGLenz, yGLenz;
@@ -515,8 +515,8 @@ unsigned short AccuracyG(float flACCURACY, unsigned short RADIUS, unsigned short
     yShiftRG = 1 << ((yShiftRG & 0x0000FF00) >> 8);
 	
 	// Calculate Radius (LIMIT_RANGE) /* 不明 */
-	xRadius = fabsf(fix2float(xGyroLimit)) * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * xShiftRG ;
-	yRadius = fabsf(fix2float(yGyroLimit)) * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * yShiftRG ;
+	xRadius = fabsf(fix2long(xGyroLimit)) * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * xShiftRG ;
+	yRadius = fabsf(fix2long(yGyroLimit)) * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * yShiftRG ;
 
 	// Calculate Limit
 	xLimit = flACCURACY / LIMIT_RANGE * xRadius;
@@ -532,16 +532,16 @@ unsigned short AccuracyG(float flACCURACY, unsigned short RADIUS, unsigned short
 	// Circle check
 	xpos = xRadius * cos(0);
 	ypos = yRadius * sin(0);
-	RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
-	RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+	RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
+	RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 	WitTim(WAIT_MSEC1);
 
 	for( deg = 0; deg <= 360; deg += usDEGSTEP ) // 0-360 degree
 	{
 		xpos = xRadius * cos(deg * PI/180);
 		ypos = yRadius * sin(deg * PI/180);
-    	RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
-		RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+    	RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
+		RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 
 		xMaxHall = 0;
 		yMaxHall = 0;
@@ -554,22 +554,22 @@ unsigned short AccuracyG(float flACCURACY, unsigned short RADIUS, unsigned short
 			WitTim(WAIT_MSEC3);
 			RamRead32A( HALL_RAM_HXOUT2, &xhall_value );
 			RamRead32A( HALL_RAM_HYOUT2, &yhall_value );
-			if(fabsf(fix2float(xhall_value) + fix2float(xHav2)) > fabsf(xMaxHall))	
-				xMaxHall = fix2float(xhall_value) + fix2float(xHav2);
-			if(fabsf(fix2float(yhall_value) + fix2float(yHav2)) > fabsf(yMaxHall))
-				yMaxHall = fix2float(yhall_value) + fix2float(yHav2);
+			if(fabsf(fix2long(xhall_value) + fix2long(xHav2)) > fabsf(xMaxHall))	
+				xMaxHall = fix2long(xhall_value) + fix2long(xHav2);
+			if(fabsf(fix2long(yhall_value) + fix2long(yHav2)) > fabsf(yMaxHall))
+				yMaxHall = fix2long(yhall_value) + fix2long(yHav2);
 		}
-TRACE( "( xpos, xHax2, xhall, xMax ) = ( %f, %f, %f, %f)\n", xpos , fix2float(xHav2) , fix2float(xhall_value), xMaxHall );
-TRACE( "( ypos, yHax2, yhall, yMax ) = ( %f, %f, %f, %f)\n", ypos , fix2float(yHav2) , fix2float(yhall_value), yMaxHall );
+TRACE( "( xpos, xHax2, xhall, xMax ) = ( %f, %f, %f, %f)\n", xpos , fix2long(xHav2) , fix2long(xhall_value), xMaxHall );
+TRACE( "( ypos, yHax2, yhall, yMax ) = ( %f, %f, %f, %f)\n", ypos , fix2long(yHav2) , fix2long(yhall_value), yMaxHall );
 
 		if(fabsf(xMaxHall) > xMaxAcc)	xMaxAcc = fabsf(xMaxHall);
 		if(fabsf(yMaxHall) > yMaxAcc)	yMaxAcc = fabsf(yMaxHall);
 		
         // Save raw data
-		xy_raw_data[deg/usDEGSTEP].xpos = fix2float(xHav2);
-		xy_raw_data[deg/usDEGSTEP].xhall = xMaxHall + fix2float(xHav2);
-		xy_raw_data[deg/usDEGSTEP].ypos = fix2float(yHav2);
-		xy_raw_data[deg/usDEGSTEP].yhall = yMaxHall + fix2float(yHav2);
+		xy_raw_data[deg/usDEGSTEP].xpos = fix2long(xHav2);
+		xy_raw_data[deg/usDEGSTEP].xhall = xMaxHall + fix2long(xHav2);
+		xy_raw_data[deg/usDEGSTEP].ypos = fix2long(yHav2);
+		xy_raw_data[deg/usDEGSTEP].yhall = yMaxHall + fix2long(yHav2);
 		
 		if(fabsf(xMaxHall) > xLimit)	xng++; 	// Have NG point;
 		if(fabsf(yMaxHall) > yLimit)	yng++; 	// Have NG point; 
@@ -582,7 +582,7 @@ TRACE( "( ypos, yHax2, yhall, yMax ) = ( %f, %f, %f, %f)\n", ypos , fix2float(yH
 }
 
 //unsigned short HallCheck(void)
-UINT_16 HallCheckG(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
+UINT_16 HallCheckG(long flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
 {
 	INT_16	i;
 	UINT_16 ret;
@@ -624,14 +624,14 @@ UINT_16 HallCheckG(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 
 /*****			calculate by use linearity correction data			*****/
 /************************************************************************/
 #define	pixelsize	1.22f	// um/pixel
-UINT_16 AccuracyL(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
+UINT_16 AccuracyL(long flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
 {
-	float xpos, ypos;
+	long xpos, ypos;
 	UINT_32 xhall_value, yhall_value;
-	float xMaxHall, yMaxHall;
+	long xMaxHall, yMaxHall;
     UINT_16	xng = 0, yng = 0;
     UINT_16	deg;
-    float xRadius, yRadius;
+    long xRadius, yRadius;
 	UINT_32		uixpxl,uiypxl;
 	INT_32		sixstp,siystp;
 	UINT_32		linbuf[8];	/* pos1～pos7, step */
@@ -655,10 +655,10 @@ TRACE( "uixpxl %08x, uiypxl %08x \n", uixpxl , uiypxl );
 TRACE( "sixstp %08x, siystp %08x \n", sixstp , siystp );
 	
 	// Calculate Radius (100um)
-//	xRadius = ( fabsf(fix2float(sixstp)) * 10.0f) / ((float)uixpxl * pixelsize);
-//	yRadius = ( fabsf(fix2float(siystp)) * 10.0f) / ((float)uiypxl * pixelsize);
-	xRadius = ( fabsf(fix2float(sixstp)) * (float)10) / ((float)uixpxl * pixelsize);
-	yRadius = ( fabsf(fix2float(siystp)) * (float)10) / ((float)uiypxl * pixelsize);
+//	xRadius = ( fabsf(fix2long(sixstp)) * 10.0f) / ((long)uixpxl * pixelsize);
+//	yRadius = ( fabsf(fix2long(siystp)) * 10.0f) / ((long)uiypxl * pixelsize);
+	xRadius = ( fabsf(fix2long(sixstp)) * (long)10) / ((long)uixpxl * pixelsize);
+	yRadius = ( fabsf(fix2long(siystp)) * (long)10) / ((long)uiypxl * pixelsize);
 TRACE( "xRadiusA %f, yRadiusA %f \n", xRadius , yRadius );
 
 	// Calculate Limit
@@ -669,7 +669,7 @@ TRACE( "xRadiusA %f, yRadiusA %f \n", xRadius , yRadius );
 	xRadius = xRadius * RADIUS ;
 	yRadius = yRadius * RADIUS ;
 TRACE( "xRadiusM %f, yRadiusM %f \n", xRadius , yRadius );
-TRACE( "xRadiusM %08x, yRadiusM %08x \n", float2fix(xRadius) , float2fix(yRadius) );
+TRACE( "xRadiusM %08x, yRadiusM %08x \n", long2fix(xRadius) , long2fix(yRadius) );
 
 	xMaxAcc = 0;
 	yMaxAcc = 0;
@@ -677,16 +677,16 @@ TRACE( "xRadiusM %08x, yRadiusM %08x \n", float2fix(xRadius) , float2fix(yRadius
 	// Circle check
 	xpos = xRadius * cos(0);
 	ypos = yRadius * sin(0);
-	RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
-	RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+	RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
+	RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 	WitTim(WAIT_MSEC1);
 
 	for( deg = 0; deg <= 360; deg += usDEGSTEP ) // 0-360 degree
 	{
 		xpos = xRadius * cos(deg * PI/180);
 		ypos = yRadius * sin(deg * PI/180);
-    	RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
-		RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+    	RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
+		RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 
 		xMaxHall = 0;
 		yMaxHall = 0;
@@ -697,10 +697,10 @@ TRACE( "xRadiusM %08x, yRadiusM %08x \n", float2fix(xRadius) , float2fix(yRadius
 			WitTim(WAIT_MSEC3);
 			RamRead32A( HALL_RAM_HXOUT0, &xhall_value );
 			RamRead32A( HALL_RAM_HYOUT0, &yhall_value );
-			if(fabsf(fix2float(xhall_value)) > fabsf(xMaxHall))	
-				xMaxHall = fix2float(xhall_value);
-			if(fabsf(fix2float(yhall_value)) > fabsf(yMaxHall))	
-				yMaxHall = fix2float(yhall_value);
+			if(fabsf(fix2long(xhall_value)) > fabsf(xMaxHall))	
+				xMaxHall = fix2long(xhall_value);
+			if(fabsf(fix2long(yhall_value)) > fabsf(yMaxHall))	
+				yMaxHall = fix2long(yhall_value);
 		}
 
 		if(fabsf(xMaxHall) > xMaxAcc)	xMaxAcc = fabsf(xMaxHall);
@@ -723,7 +723,7 @@ TRACE( "xRadiusM %08x, yRadiusM %08x \n", float2fix(xRadius) , float2fix(yRadius
 }
 
 //unsigned short HallCheck(void)
-UINT_16 HallCheckL(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
+UINT_16 HallCheckL(long flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3)
 {
 	INT_16 i;
 	UINT_16 ret = AccuracyL(flACCURACY, RADIUS, usDEGSTEP, WAIT_MSEC1, WAIT_MSEC2, WAIT_MSEC3);
@@ -753,14 +753,14 @@ UINT_16 HallCheckL(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 
 	return( ret );
 }
 
-unsigned short AccuracyS(float flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3 , unsigned char ACT_AXIS)
+unsigned short AccuracyS(long flACCURACY, unsigned short RADIUS, unsigned short usDEGSTEP, unsigned short WAIT_MSEC1, unsigned short WAIT_MSEC2, unsigned short WAIT_MSEC3 , unsigned char ACT_AXIS)
 {
-	float xpos, ypos;
+	long xpos, ypos;
 	unsigned int xhall_value, yhall_value;
-	float xMaxHall, yMaxHall;
+	long xMaxHall, yMaxHall;
     unsigned short xng = 0, yng = 0;
     unsigned short deg;
-    float xRadius, yRadius;
+    long xRadius, yRadius;
     unsigned int xGyroLimit, yGyroLimit;
 	unsigned int xGyrogain, yGyrogain;
     unsigned int xGLenz, yGLenz;
@@ -786,8 +786,8 @@ unsigned short AccuracyS(float flACCURACY, unsigned short RADIUS, unsigned short
     yShiftRG = 1 << ((yShiftRG & 0x0000FF00) >> 8);
 	
 	// Calculate Radius (LIMIT_RANGE) /* 不明 */
-	xRadius = fabsf(fix2float(xGyroLimit)) * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * xShiftRG ;
-	yRadius = fabsf(fix2float(yGyroLimit)) * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * yShiftRG ;
+	xRadius = fabsf(fix2long(xGyroLimit)) * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * xShiftRG ;
+	yRadius = fabsf(fix2long(yGyroLimit)) * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * yShiftRG ;
 
 	// Calculate Limit
 	xLimit = flACCURACY / LIMIT_RANGE * xRadius;
@@ -804,9 +804,9 @@ unsigned short AccuracyS(float flACCURACY, unsigned short RADIUS, unsigned short
 	xpos = xRadius * sin(0);
 	ypos = yRadius * sin(0);
 	if(ACT_AXIS == X_DIR){
-		RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
+		RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
 	}else{
-		RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+		RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 	}
 	WitTim(WAIT_MSEC1);
 
@@ -816,9 +816,9 @@ unsigned short AccuracyS(float flACCURACY, unsigned short RADIUS, unsigned short
 		xpos = xRadius * sin(deg * PI/180);
 		ypos = yRadius * sin(deg * PI/180);
 		if(ACT_AXIS == X_DIR){
-	    	RamWrite32A(HALL_RAM_GYROX_OUT, float2fix(xpos));
+	    	RamWrite32A(HALL_RAM_GYROX_OUT, long2fix(xpos));
 		}else{
-			RamWrite32A(HALL_RAM_GYROY_OUT, float2fix(ypos));
+			RamWrite32A(HALL_RAM_GYROY_OUT, long2fix(ypos));
 		}
 
 		xMaxHall = 0;
@@ -832,27 +832,27 @@ unsigned short AccuracyS(float flACCURACY, unsigned short RADIUS, unsigned short
 			WitTim(WAIT_MSEC3);
 			if(ACT_AXIS == X_DIR){
 				RamRead32A( HALL_RAM_HXOUT2, &xhall_value );
-				if(fabsf(fix2float(xhall_value) + fix2float(xHav2)) > fabsf(xMaxHall))	
-					xMaxHall = fix2float(xhall_value) + fix2float(xHav2);
+				if(fabsf(fix2long(xhall_value) + fix2long(xHav2)) > fabsf(xMaxHall))	
+					xMaxHall = fix2long(xhall_value) + fix2long(xHav2);
 			}else{
 				RamRead32A( HALL_RAM_HYOUT2, &yhall_value );
-				if(fabsf(fix2float(yhall_value) + fix2float(yHav2)) > fabsf(yMaxHall))
-					yMaxHall = fix2float(yhall_value) + fix2float(yHav2);
+				if(fabsf(fix2long(yhall_value) + fix2long(yHav2)) > fabsf(yMaxHall))
+					yMaxHall = fix2long(yhall_value) + fix2long(yHav2);
 			}
 		}
 
 		if(ACT_AXIS == X_DIR){
 			if(fabsf(xMaxHall) > xMaxAcc)	xMaxAcc = fabsf(xMaxHall);
-			xy_raw_data[deg/usDEGSTEP].xpos = fix2float(xHav2);
-			xy_raw_data[deg/usDEGSTEP].xhall = xMaxHall + fix2float(xHav2);
+			xy_raw_data[deg/usDEGSTEP].xpos = fix2long(xHav2);
+			xy_raw_data[deg/usDEGSTEP].xhall = xMaxHall + fix2long(xHav2);
 			xy_raw_data[deg/usDEGSTEP].ypos = 0;
 			xy_raw_data[deg/usDEGSTEP].yhall = 0;
 			if(fabsf(xMaxHall) > xLimit)	xng++; 	// Have NG point;
 		}else{
 			if(fabsf(yMaxHall) > yMaxAcc)	yMaxAcc = fabsf(yMaxHall);
 	        // Save raw data
-			xy_raw_data[deg/usDEGSTEP].ypos = fix2float(yHav2);
-			xy_raw_data[deg/usDEGSTEP].yhall = yMaxHall + fix2float(yHav2);
+			xy_raw_data[deg/usDEGSTEP].ypos = fix2long(yHav2);
+			xy_raw_data[deg/usDEGSTEP].yhall = yMaxHall + fix2long(yHav2);
 			xy_raw_data[deg/usDEGSTEP].xpos = 0;
 			xy_raw_data[deg/usDEGSTEP].xhall = 0;
 			if(fabsf(yMaxHall) > yLimit)	yng++; 	// Have NG point; 
@@ -867,7 +867,7 @@ unsigned short AccuracyS(float flACCURACY, unsigned short RADIUS, unsigned short
 }
 
 //unsigned short HallCheck(void)
-UINT_16 HallCheckS(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3 , UINT_8 ACT_AXIS)
+UINT_16 HallCheckS(long flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 WAIT_MSEC1, UINT_16 WAIT_MSEC2, UINT_16 WAIT_MSEC3 , UINT_8 ACT_AXIS)
 {
 	INT_16	i;
 //	unsigned short ret = Accuracy();
@@ -901,8 +901,8 @@ UINT_16 HallCheckS(float flACCURACY, UINT_16 RADIUS, UINT_16 usDEGSTEP, UINT_16 
 #if 0
 unsigned char SMA_Sensitivity( unsigned short LIMIT_RANGE_SMA, unsigned short RADIUS, unsigned short DEGREE, unsigned short WAIT_MSEC1)
 {
-	float xpos, ypos;
-    float xRadius, yRadius;
+	long xpos, ypos;
+    long xRadius, yRadius;
 	unsigned int xGyrogain, yGyrogain;
     unsigned int xGLenz, yGLenz;
 
@@ -915,19 +915,19 @@ unsigned char SMA_Sensitivity( unsigned short LIMIT_RANGE_SMA, unsigned short RA
 	RamRead32A(0x88C8, &yGLenz);
 
 	// Calculate Radius (LIMIT_RANGE) /* 不明 */
-	xRadius = ANGLE_LIMIT_SMA * fabsf(fix2float(xGyrogain)) * fabsf(fix2float(xGLenz)) * 1 ;
-	yRadius = ANGLE_LIMIT_SMA * fabsf(fix2float(yGyrogain)) * fabsf(fix2float(yGLenz)) * 1 ;
+	xRadius = ANGLE_LIMIT_SMA * fabsf(fix2long(xGyrogain)) * fabsf(fix2long(xGLenz)) * 1 ;
+	yRadius = ANGLE_LIMIT_SMA * fabsf(fix2long(yGyrogain)) * fabsf(fix2long(yGLenz)) * 1 ;
 
 
 	// Radius change (by RADIUS value)
-	xRadius = xRadius * (float)RADIUS / (float)LIMIT_RANGE_SMA;
-	yRadius = yRadius * (float)RADIUS / (float)LIMIT_RANGE_SMA;
+	xRadius = xRadius * (long)RADIUS / (long)LIMIT_RANGE_SMA;
+	yRadius = yRadius * (long)RADIUS / (long)LIMIT_RANGE_SMA;
 
 	xpos = xRadius * cos(DEGREE * PI/180);
 	ypos = yRadius * sin(DEGREE * PI/180);
 
-	RamWrite32A(0x610, float2fix(xpos));
-	RamWrite32A(0x61C, float2fix(ypos));
+	RamWrite32A(0x610, long2fix(xpos));
+	RamWrite32A(0x61C, long2fix(ypos));
 
 	WitTim(WAIT_MSEC1);
 

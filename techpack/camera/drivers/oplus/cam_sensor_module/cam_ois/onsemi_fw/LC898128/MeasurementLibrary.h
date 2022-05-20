@@ -13,13 +13,13 @@
 */
 struct tagMlMixingValue
 {
-	double	radianX;
-	double	radianY;
+	long	radianX;
+	long	radianY;
 
-	double	hx45x;
-	double	hy45x;
-	double	hy45y;
-	double	hx45y;
+	long	hx45x;
+	long	hy45x;
+	long	hy45y;
+	long	hx45y;
 
 	UINT_8	hxsx;
 	UINT_8	hysx;
@@ -44,8 +44,8 @@ struct tagMlLinearityValue
 	UINT_32	*dacX;			//! input parameter
 	UINT_32	*dacY;			//! input parameter
 
-	double	*positionX;
-	double	*positionY;
+	long	*positionX;
+	long	*positionY;
 	UINT_16	*thresholdX;
 	UINT_16	*thresholdY;
 
@@ -61,8 +61,8 @@ typedef	struct tagMlLinearityValue		mlLinearityValue;
 
 struct tagMlPoint
 {
-	double	X;
-	double	Y;
+	long	X;
+	long	Y;
 };
 /**
 *	@brief	Linearity correction（mlCalLinearCorr関数）用の入力値

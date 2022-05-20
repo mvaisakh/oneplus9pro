@@ -145,10 +145,10 @@ typedef struct STCRSPOINT {
 } stCrsPoint ;
 
 typedef struct {
-	double XonXmove[7];
-	double YonXmove[7];
-	double XonYmove[7];
-	double YonYmove[7];
+	long XonXmove[7];
+	long YonXmove[7];
+	long XonYmove[7];
+	long YonYmove[7];
 } stPixelCoordinate;
 
 typedef struct {
@@ -239,12 +239,12 @@ __OIS_CMD_HEADER__	UINT_8	MesRam( INT_32 , INT_32 , INT_32 , stMesRam* , stMesRa
  __OIS_CMD_HEADER__	UINT_8	WrLinMix2ndCalData( UINT_8 , mlMixingValue * , mlLinearityValue * , stCrsPoint * );
  
  __OIS_FLSH_HEADER__	UINT_8	CalcSetLinMix2ndData( UINT_8, stPixelCoordinate * );
- __OIS_FLSH_HEADER__	UINT_8	RotationCorrectCalData( UINT_8 , double );
+ __OIS_FLSH_HEADER__	UINT_8	RotationCorrectCalData( UINT_8 , long );
  __OIS_FLSH_HEADER__	UINT_8	AGGCorrectCalData( UINT_8 , stAGG * );
 
  __OIS_FLSH_HEADER__	UINT_8 WrOptCenerData( UINT_8 );
  
- __OIS_CMD_HEADER__	UINT_8 SetAngleCorrection( float , UINT_8 , UINT_8  );
+ __OIS_CMD_HEADER__	UINT_8 SetAngleCorrection( long , UINT_8 , UINT_8  );
 
  /* Flash Update */
  __OIS_FLSH_HEADER__	UINT_8	UnlockCodeSet( void ) ;					//!< <Flash Memory> Unlock Code Set

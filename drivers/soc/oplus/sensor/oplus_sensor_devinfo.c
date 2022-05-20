@@ -1348,7 +1348,7 @@ static struct file_operations dev_coef_fops = {
 };
 #endif
 
-static int oplus_als_cali_data_init()
+static int oplus_als_cali_data_init(void)
 {
 	int rc = 0;
 	struct proc_dir_entry *pentry;

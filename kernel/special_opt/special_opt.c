@@ -119,7 +119,7 @@ static void cpupri_find_fitness_handler(void *data, struct task_struct *p, struc
 	}
 }
 
-static int register_vendor_hooks()
+static int register_vendor_hooks(void)
 {
 	int rc = 0;
 	rc = register_trace_android_rvh_check_preempt_wakeup(

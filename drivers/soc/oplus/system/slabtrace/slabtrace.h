@@ -110,7 +110,7 @@ static struct list_head  pid_head;
 static struct pid_cnt_struct top_pid[5]; /* record the top 5 pid */
 static unsigned long sort_addrs[OPLUS_MEMCFG_SLABTRACE_CNT]; /*sort by caller address */
 static struct kmem_cache *pid_cnt_cachep;
-extern alloc_loc_track(struct loc_track *t, unsigned long max, gfp_t flags);
+extern int alloc_loc_track(struct loc_track *t, unsigned long max, gfp_t flags);
 extern void get_map(struct kmem_cache *s, struct page *page, unsigned long *map);
 extern void flush_all(struct kmem_cache *s);
 

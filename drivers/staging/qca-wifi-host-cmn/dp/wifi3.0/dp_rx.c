@@ -2436,7 +2436,7 @@ uint32_t dp_rx_process(struct dp_intr *int_ctx, hal_ring_handle_t hal_ring_hdl,
 	uint32_t num_pending;
 	uint32_t rx_bufs_used = 0, rx_buf_cookie;
 	uint16_t msdu_len = 0;
-	uint16_t peer_id;
+	uint16_t peer_id = 0;
 	uint8_t vdev_id;
 	struct dp_peer *peer;
 	struct dp_vdev *vdev;

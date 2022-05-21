@@ -721,7 +721,7 @@ wlan_ipa_rx_intrabss_fwd(struct wlan_ipa_priv *ipa_ctx,
 			 qdf_nbuf_t nbuf)
 {
 	uint8_t fw_desc = 0;
-	bool fwd_success;
+	bool fwd_success = 1;
 	int ret;
 
 	/* legacy intra-bss fowarding for WDI 1.0 and 2.0 */
@@ -748,7 +748,7 @@ wlan_ipa_rx_intrabss_fwd(struct wlan_ipa_priv *ipa_ctx,
 	}
 
 exit:
-	if (fwd_success)
+	if (fwd_success == 0)
 		ipa_ctx->stats.num_tx_fwd_ok++;
 	else
 		ipa_ctx->stats.num_tx_fwd_err++;

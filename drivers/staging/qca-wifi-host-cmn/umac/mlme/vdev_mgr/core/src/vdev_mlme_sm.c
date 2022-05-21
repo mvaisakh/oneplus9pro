@@ -430,7 +430,7 @@ static bool mlme_vdev_state_up_event(void *ctx, uint16_t event,
 	struct vdev_mlme_obj *vdev_mlme = (struct vdev_mlme_obj *)ctx;
 	enum QDF_OPMODE mode;
 	struct wlan_objmgr_vdev *vdev;
-	bool status;
+	bool status = false;
 
 	vdev = vdev_mlme->vdev;
 	mode = wlan_vdev_mlme_get_opmode(vdev);
@@ -457,7 +457,7 @@ static bool mlme_vdev_state_up_event(void *ctx, uint16_t event,
 		/* These events are not supported in STA mode */
 		if (mode == QDF_STA_MODE)
 			QDF_BUG(0);
-
+		break;
 	case WLAN_VDEV_SM_EV_DOWN:
 		mlme_vdev_sm_transition_to(vdev_mlme, WLAN_VDEV_S_SUSPEND);
 		mlme_vdev_sm_deliver_event(vdev_mlme, event,
@@ -604,7 +604,6 @@ static bool mlme_vdev_state_suspend_event(void *ctx, uint16_t event,
 		break;
 
 	default:
-		status = false;
 		break;
 	}
 

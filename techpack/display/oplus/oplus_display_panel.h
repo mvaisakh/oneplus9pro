@@ -49,7 +49,7 @@ static struct cdev panel_cdev;
 
 #define APOLLO_BACKLIGHT_LENS 4096*9 //units: bytes 9pages
 
-enum APOLLO_BL_ID : int {
+enum APOLLO_BL_ID {
 	APOLLO_BL_4096 = 4096,
 	APOLLO_BL_8192 = 8192,
 };

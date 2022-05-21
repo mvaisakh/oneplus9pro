@@ -480,6 +480,7 @@ static bool mlme_vdev_state_up_event(void *ctx, uint16_t event,
 		/* Reinit beacon, send template to FW(use ping-pong buffer) */
 		mlme_vdev_update_beacon(vdev_mlme, BEACON_UPDATE,
 					event_data_len, event_data);
+		/* fallthrough */
 	case WLAN_VDEV_SM_EV_START:
 		/* notify that UP command is completed */
 		mlme_vdev_notify_up_complete(vdev_mlme,

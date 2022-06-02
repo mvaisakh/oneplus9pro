@@ -3951,6 +3951,7 @@ static void route_set_opcode_matrix_id(
 			break;
 		}
 		/* fall through to set matrix id for non-listen case */
+                /* fallthrough */
 	case ADM_PATH_NONLIVE_REC:
 		route->hdr.opcode = ADM_CMD_MATRIX_MAP_ROUTINGS_V5;
 		route->matrix_id = ADM_MATRIX_ID_AUDIO_TX;

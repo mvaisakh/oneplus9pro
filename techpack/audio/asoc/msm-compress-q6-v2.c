@@ -938,7 +938,7 @@ static void compr_event_handler(uint32_t opcode,
 			prtd->sample_rate = sample_rate;
 		}
 	}
-		/* Fallthrough here */
+		/* fallthrough */
 	case APR_BASIC_RSP_RESULT: {
 		switch (payload[0]) {
 		case ASM_SESSION_CMD_RUN_V2:
@@ -2726,6 +2726,7 @@ static int msm_compr_trigger(struct snd_compr_stream *cstream, int cmd)
 #if !IS_ENABLED(CONFIG_AUDIO_QGKI)
 		spin_unlock_irqrestore(&prtd->lock, flags);
 #endif
+		/* fallthrough */
 	case SND_COMPR_TRIGGER_DRAIN:
 		pr_debug("%s: SNDRV_COMPRESS_DRAIN\n", __func__);
 		/* Make sure all the data is sent to DSP before sending EOS */

@@ -758,6 +758,12 @@ else ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS += -Os
 endif
 
+# According gcc docs when using computed gotos, disabling
+# gcse could result in better runtime performing
+ifneq ($(cc-name),clang)
+KBUILD_CFLAGS   += -fno-gcse
+endif
+
 # Optimise kernel binary for 888's CPU
 KBUILD_CFLAGS	+= -mcpu=cortex-x1
 KBUILD_AFLAGS	+= -mcpu=cortex-x1

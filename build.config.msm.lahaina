@@ -4,14 +4,23 @@
 [ -z "${CONFIG_TARGET}" ] && CONFIG_TARGET=msm.lahaina
 
 [ -z "${KERNEL_DIR}" ] && KERNEL_DIR=kernel
-
+[ -z "${COMPILER}" ] && COMPILER=clang
 ################################################################################
 ## Inheriting configs from ACK
-_KERNEL_DIR=${KERNEL_DIR}
-. ${KERNEL_DIR}/build.config.common
-KERNEL_DIR=${_KERNEL_DIR}
-. ${KERNEL_DIR}/build.config.aarch64
-
+case ${COMPILER} in
+gcc)
+    _KERNEL_DIR=${KERNEL_DIR}
+    . ${KERNEL_DIR}/build.config.common.gcc
+    KERNEL_DIR=${_KERNEL_DIR}
+    . ${KERNEL_DIR}/build.config.aarch64.gcc
+    ;;
+*)
+    _KERNEL_DIR=${KERNEL_DIR}
+    . ${KERNEL_DIR}/build.config.common
+    KERNEL_DIR=${_KERNEL_DIR}
+    . ${KERNEL_DIR}/build.config.aarch64
+    ;;
+esac
 ################################################################################
 ## Variant setup
 MSM_ARCH=lahaina

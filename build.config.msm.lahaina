@@ -21,6 +21,7 @@ gcc)
     . ${KERNEL_DIR}/build.config.aarch64
     ;;
 esac
+
 ################################################################################
 ## Variant setup
 MSM_ARCH=lahaina
@@ -49,3 +50,7 @@ gki-only)
 	echo "Unsupported variant '${VARIANT}'"
 	;;
 esac
+
+################################################################################
+## Inherit perf configs
+. ${KERNEL_DIR}/build.config.common.performance

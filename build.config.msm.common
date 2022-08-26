@@ -22,6 +22,10 @@ if [ ! -z $DT_OVERLAY_SUPPORT ] && [ ! $DT_OVERLAY_SUPPORT -eq "0" ]; then
 	append_cmd POST_DEFCONFIG_CMDS 'add_dt_overlay_defconfig'
 fi
 
+FILES+="
+arch/${ARCH}/boot/dtbo.img
+"
+
 ################################################################################
 ## Variant Selection
 if [ -z "${VARIANT}" ] || [ "${VARIANT}" == "default" ]; then

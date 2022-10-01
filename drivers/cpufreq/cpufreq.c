@@ -753,6 +753,9 @@ static ssize_t store_##file_name					\
 	if (&policy->object == &policy->min)				\
 		return count;						\
 									\
+	if (&policy->object == &policy->max)				\
+		return count;						\
+									\
 	ret = sscanf(buf, "%lu", &val);					\
 	if (ret != 1)							\
 		return -EINVAL;						\

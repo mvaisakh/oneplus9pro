@@ -65,7 +65,7 @@
 				qcom,mdss-dsi-v-pulse-width = <2>;
 
 				/* SDC ADFR */
-				qcom,mdss-dsi-h-sync-skew = <0>;
+				qcom,mdss-dsi-h-sync-skew = <1>;
 				oplus,adfr-fakeframe-config = <3>;
 				oplus,adfr-fakeframe-deferred-time = <6>;		/* period*0.7 */
 				qcom,mdss-dsi-qsync-min-fps-0 = <1314>;
@@ -5143,5 +5143,17 @@
 			qcom,display-topology = <1 1 1>,<2 2 1>;
 			qcom,default-topology-index = <1>;
 		};
+		/delete-node/ timing@fhd_sdc_60;
+		/delete-node/ timing@fhd_sdc_90;
+		/delete-node/ timing@fhd_sdc_120;
+		/delete-node/ timing@fhd_oplus_60;
+		/delete-node/ timing@fhd_oplus_72;
+		/delete-node/ timing@fhd_oplus_90;
+		/delete-node/ timing@fhd_oplus_120;
+		/delete-node/ timing@wqhd_oplus_60;
+		/delete-node/ timing@wqhd_oplus_72;
+		/delete-node/ timing@wqhd_oplus_90;
+		/delete-node/ timing@wqhd_oplus_120;
+		/delete-node/ timing@wqhd_memc_60;
 	};
 };

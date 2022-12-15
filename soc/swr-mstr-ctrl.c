@@ -54,6 +54,7 @@
 
 #define ERR_AUTO_SUSPEND_TIMER_VAL 0x1
 
+#define SWRM_INTERRUPT_STATUS_MASK 0x1FDFD
 #define SWRM_LINK_STATUS_RETRY_CNT 100
 
 #define SWRM_ROW_48    48
@@ -2205,7 +2206,7 @@ handle_irq:
 				dev_err_ratelimited(swrm->dev,
 					"%s: SWR wokeup during clock stop\n",
 					__func__);
-				/* It might be possible the slave device gets
+				/* It might be possible the slave device gets reset
 				 * reset and slave interrupt gets missed. So
 				 * re-enable Host IRQ and process slave pending
 				 * interrupts, if any.

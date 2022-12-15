@@ -3092,6 +3092,7 @@ static int msm_lsm_close(struct snd_pcm_substream *substream)
 						__func__, ret);
 				prtd->lsm_client->lab_started = false;
 			}
+			#ifndef OPLUS_BUG_STABILITY
 			if (prtd->lsm_client->lab_buffer) {
 				ret = msm_lsm_lab_buffer_alloc(prtd,
 						LAB_BUFFER_DEALLOC);
@@ -3100,6 +3101,7 @@ static int msm_lsm_close(struct snd_pcm_substream *substream)
 						"%s: lab buffer dealloc failed ret %d\n",
 						__func__, ret);
 			}
+			#endif /* OPLUS_BUG_STABILITY */
 		}
 
 		if (!atomic_read(&prtd->read_abort)) {
@@ -3119,7 +3121,18 @@ static int msm_lsm_close(struct snd_pcm_substream *substream)
 
 		prtd->lsm_client->started = false;
 	}
-
+	#ifdef OPLUS_BUG_STABILITY
+	pr_err("%s:: lab_enable= %d \n", __func__, prtd->lsm_client->lab_enable);
+	if (prtd->lsm_client->lab_enable && prtd->lsm_client->lab_buffer) {
+		ret = msm_lsm_lab_buffer_alloc(prtd,
+				LAB_BUFFER_DEALLOC);
+		pr_err("%s:: lab buffer dealloc ret %d\n", __func__, ret);
+		if (ret)
+			dev_err(rtd->dev,
+				"%s: lab buffer dealloc failed ret %d\n",
+				__func__, ret);
+	}
+	#endif /* OPLUS_BUG_STABILITY */
 	/*
 	 * De-register existing sound models
 	 * to free SM and CAL buffer, even if

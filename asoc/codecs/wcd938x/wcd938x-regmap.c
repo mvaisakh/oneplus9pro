@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2018-2019, 2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/regmap.h>
@@ -191,7 +191,11 @@ static const struct reg_default wcd938x_defaults[] = {
 	{WCD938X_SLEEP_WATCHDOG_CTL,                           0x00},
 	{WCD938X_MBHC_NEW_ELECT_REM_CLAMP_CTL,                 0x00},
 	{WCD938X_MBHC_NEW_CTL_1,                               0x02},
+	#ifndef OPLUS_ARCH_EXTENDS
 	{WCD938X_MBHC_NEW_CTL_2,                               0x05},
+	#else /*OPLUS_ARCH_EXTENDS*/
+	{WCD938X_MBHC_NEW_CTL_2,                               0x01},
+	#endif /*OPLUS_ARCH_EXTENDS*/
 	{WCD938X_MBHC_NEW_PLUG_DETECT_CTL,                     0xE9},
 	{WCD938X_MBHC_NEW_ZDET_ANA_CTL,                        0x0F},
 	{WCD938X_MBHC_NEW_ZDET_RAMP_CTL,                       0x00},
@@ -512,5 +516,4 @@ struct regmap_config wcd938x_regmap_config = {
 	.writeable_reg = wcd938x_writeable_register,
 	.volatile_reg = wcd938x_volatile_register,
 	.can_multi_write = true,
-	.use_single_read = true,
 };

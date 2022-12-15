@@ -443,6 +443,9 @@ static int fw_decompress_xz(struct device *dev, struct fw_priv *fw_priv,
 /* direct firmware loading support */
 static char fw_path_para[256];
 static const char * const fw_path[] = {
+	"/mnt/vendor/persist/copy",
+	"/mnt/vendor/persist",
+	"/odm/etc/wifi",
 	fw_path_para,
 	"/lib/firmware/updates/" UTS_RELEASE,
 	"/lib/firmware/updates",
@@ -496,6 +499,17 @@ fw_get_filesystem_firmware(struct device *device, struct fw_priv *fw_priv,
 			rc = -ENAMETOOLONG;
 			break;
 		}
+
+                if (!strcmp(fw_priv->fw_name, "iris5.fw")
+                        || !strcmp(fw_priv->fw_name, "iris5_ccf1.fw")
+                        || !strcmp(fw_priv->fw_name, "iris5_ccf2.fw")) {
+                        snprintf(path, PATH_MAX, "%s/%s", "/odm/vendor/firmware", fw_priv->fw_name);
+                }
+
+                if (!strcmp(fw_priv->fw_name, "iris5_ccf1b.fw")
+                        || !strcmp(fw_priv->fw_name, "iris5_ccf2b.fw")) {
+                        snprintf(path, PATH_MAX, "%s/%s", "/data/vendor/display", fw_priv->fw_name);
+                }
 
 		fw_priv->size = 0;
 		rc = kernel_read_file_from_path(path, &buffer, &size,
@@ -836,6 +850,20 @@ request_firmware(const struct firmware **firmware_p, const char *name,
 	return ret;
 }
 EXPORT_SYMBOL(request_firmware);
+
+int request_firmware_no_cache(const struct firmware **firmware_p, const char *name,
+		 struct device *device)
+{
+	int ret;
+
+	/* Need to pin this module until return */
+	__module_get(THIS_MODULE);
+	ret = _request_firmware(firmware_p, name, device, NULL, 0,
+				FW_OPT_UEVENT | FW_OPT_NOCACHE);
+	module_put(THIS_MODULE);
+	return ret;
+}
+EXPORT_SYMBOL(request_firmware_no_cache);
 
 /**
  * firmware_request_nowarn() - request for an optional fw module

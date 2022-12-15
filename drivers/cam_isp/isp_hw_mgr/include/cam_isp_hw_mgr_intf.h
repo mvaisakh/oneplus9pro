@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * Copyright (c) 2016-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
  */
 
 #ifndef _CAM_ISP_HW_MGR_INTF_H_
@@ -20,6 +20,11 @@
 #define CAM_TFE_HW_NUM_MAX   3
 #define CAM_TFE_RDI_NUM_MAX  3
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+//lanhe add
+#define CAM_IFE_CTX_RDI_SOF_EN BIT(31)
+#endif
+
 /* maximum context numbers for TFE */
 #define CAM_TFE_CTX_MAX      4
 
@@ -28,12 +33,6 @@
 
 /* Appliacble vote paths for dual ife, based on no. of UAPI definitions */
 #define CAM_ISP_MAX_PER_PATH_VOTES 40
-
-/*
- * Maximum configuration entry size  - This is based on the
- * worst case DUAL IFE use case plus some margin.
- */
-#define CAM_ISP_CTX_CFG_MAX                     25
 
 /**
  *  enum cam_isp_hw_event_type - Collection of the ISP hardware events
@@ -48,18 +47,19 @@ enum cam_isp_hw_event_type {
 	CAM_ISP_HW_EVENT_MAX
 };
 
+
 /**
  * enum cam_isp_hw_err_type - Collection of the ISP error types for
  *                         ISP hardware event CAM_ISP_HW_EVENT_ERROR
  */
 enum cam_isp_hw_err_type {
-	CAM_ISP_HW_ERROR_NONE = 0x0001,
-	CAM_ISP_HW_ERROR_OVERFLOW = 0x0002,
-	CAM_ISP_HW_ERROR_P2I_ERROR = 0x0004,
-	CAM_ISP_HW_ERROR_VIOLATION = 0x0008,
-	CAM_ISP_HW_ERROR_BUSIF_OVERFLOW = 0x0010,
-	CAM_ISP_HW_ERROR_CSID_FATAL = 0x0020,
-	CAM_ISP_HW_ERROR_CSID_OVERFLOW = 0x0040,
+	CAM_ISP_HW_ERROR_NONE,
+	CAM_ISP_HW_ERROR_OVERFLOW,
+	CAM_ISP_HW_ERROR_P2I_ERROR,
+	CAM_ISP_HW_ERROR_VIOLATION,
+	CAM_ISP_HW_ERROR_BUSIF_OVERFLOW,
+	CAM_ISP_HW_ERROR_CSID_FATAL,
+	CAM_ISP_HW_ERROR_MAX,
 };
 
 /**
@@ -161,6 +161,9 @@ struct cam_isp_prepare_hw_update_data {
  *
  */
 struct cam_isp_hw_sof_event_data {
+#ifdef OPLUS_FEATURE_CAMERA_COMMON//lanhe todo
+	uint32_t       res_id;
+#endif
 	uint64_t       timestamp;
 	uint64_t       boot_time;
 };
@@ -194,7 +197,7 @@ struct cam_isp_hw_epoch_event_data {
  * @resource_handle:       Resource handle array
  * @last_consumed_addr:    Last consumed addr
  * @timestamp:             Timestamp for the buf done event
- * @evt_param:             Specific info about the frame
+ *
  */
 struct cam_isp_hw_done_event_data {
 	uint32_t             num_handles;
@@ -202,8 +205,7 @@ struct cam_isp_hw_done_event_data {
 				CAM_NUM_OUT_PER_COMP_IRQ_MAX];
 	uint32_t             last_consumed_addr[
 				CAM_NUM_OUT_PER_COMP_IRQ_MAX];
-	uint64_t             timestamp;
-	uint32_t             evt_param;
+	uint64_t       timestamp;
 };
 
 /**
@@ -241,7 +243,7 @@ enum cam_isp_hw_mgr_command {
 	CAM_ISP_HW_MGR_CMD_CTX_TYPE,
 	CAM_ISP_HW_MGR_GET_PACKET_OPCODE,
 	CAM_ISP_HW_MGR_GET_LAST_CDM_DONE,
-	CAM_ISP_HW_MGR_CMD_UPDATE_CLOCK,
+    CAM_ISP_HW_MGR_GET_ANCHOR_CONFIG,
 	CAM_ISP_HW_MGR_CMD_MAX,
 };
 
@@ -258,6 +260,7 @@ enum cam_isp_ctx_type {
  * @cmd_type:              HW command type
  * @cmd_data:              Command data
  * @sof_irq_enable:        To debug if SOF irq is enabled
+ * @is_anchor_instance:    Indicate whether it is anchor instance
  * @ctx_type:              RDI_ONLY, PIX and RDI, or FS2
  * @packet_op_code:        Packet opcode
  * @last_cdm_done:         Last cdm done request
@@ -266,6 +269,7 @@ struct cam_isp_hw_cmd_args {
 	uint32_t                          cmd_type;
 	void                             *cmd_data;
 	union {
+		bool                          is_anchor_instance;
 		uint32_t                      sof_irq_enable;
 		uint32_t                      ctx_type;
 		uint32_t                      packet_op_code;

@@ -199,22 +199,10 @@ static int32_t cam_a5_download_fw(void *device_priv)
 	pdev = soc_info->pdev;
 	cam_a5_soc_info = soc_info->soc_private;
 
-	if (cam_a5_soc_info->fw_name) {
-		CAM_INFO(CAM_ICP, "Downloading firmware %s",
-			cam_a5_soc_info->fw_name);
-		rc = request_firmware(&core_info->fw_elf,
-				cam_a5_soc_info->fw_name, &pdev->dev);
-		if (rc) {
-			CAM_ERR(CAM_ICP, "Failed to locate fw: %d", rc);
-			return rc;
-		}
-	} else {
-		rc = request_firmware(&core_info->fw_elf,
-				"CAMERA_ICP.elf", &pdev->dev);
-		if (rc) {
-			CAM_ERR(CAM_ICP, "Failed to locate fw: %d", rc);
-			return rc;
-		}
+	rc = request_firmware(&core_info->fw_elf, "CAMERA_ICP.elf", &pdev->dev);
+	if (rc) {
+		CAM_ERR(CAM_ICP, "Failed to locate fw: %d", rc);
+		return rc;
 	}
 
 	if (!core_info->fw_elf) {
@@ -309,7 +297,6 @@ int cam_a5_init_hw(void *device_priv,
 	struct cam_a5_device_core_info *core_info = NULL;
 	struct a5_soc_info *a5_soc_info;
 	struct cam_icp_cpas_vote cpas_vote;
-	unsigned long flags;
 	int rc = 0;
 
 	if (!device_priv) {
@@ -369,10 +356,6 @@ int cam_a5_init_hw(void *device_priv,
 				ICP_SIERRA_A5_CSR_ACCESS);
 	}
 
-	spin_lock_irqsave(&a5_dev->hw_lock, flags);
-	a5_dev->hw_state = CAM_HW_STATE_POWER_UP;
-	spin_unlock_irqrestore(&a5_dev->hw_lock, flags);
-
 error:
 	return rc;
 }
@@ -383,7 +366,6 @@ int cam_a5_deinit_hw(void *device_priv,
 	struct cam_hw_info *a5_dev = device_priv;
 	struct cam_hw_soc_info *soc_info = NULL;
 	struct cam_a5_device_core_info *core_info = NULL;
-	unsigned long flags;
 	int rc = 0;
 
 	if (!device_priv) {
@@ -398,10 +380,6 @@ int cam_a5_deinit_hw(void *device_priv,
 			soc_info, core_info);
 		return -EINVAL;
 	}
-
-	spin_lock_irqsave(&a5_dev->hw_lock, flags);
-	a5_dev->hw_state = CAM_HW_STATE_POWER_DOWN;
-	spin_unlock_irqrestore(&a5_dev->hw_lock, flags);
 
 	rc = cam_a5_disable_soc_resources(soc_info);
 	if (rc)
@@ -492,14 +470,6 @@ irqreturn_t cam_a5_irq(int irq_num, void *data)
 		CAM_ERR(CAM_ICP, "Invalid cam_dev_info or query_cap args");
 		return IRQ_HANDLED;
 	}
-
-	spin_lock(&a5_dev->hw_lock);
-	if (a5_dev->hw_state == CAM_HW_STATE_POWER_DOWN) {
-		CAM_WARN(CAM_ICP, "ICP HW powered off");
-		spin_unlock(&a5_dev->hw_lock);
-		return IRQ_HANDLED;
-	}
-	spin_unlock(&a5_dev->hw_lock);
 
 	soc_info = &a5_dev->soc_info;
 	core_info = (struct cam_a5_device_core_info *)a5_dev->core_info;
@@ -718,9 +688,6 @@ int cam_a5_process_cmd(void *device_priv, uint32_t cmd_type,
 			if (*disable_ubwc_comp) {
 				ubwc_ipe_cfg[1] &= ~CAM_ICP_UBWC_COMP_EN;
 				ubwc_bps_cfg[1] &= ~CAM_ICP_UBWC_COMP_EN;
-				CAM_DBG(CAM_ICP,
-					"Force disable UBWC compression, ubwc_ipe_cfg: 0x%x, ubwc_bps_cfg: 0x%x",
-					ubwc_ipe_cfg[1], ubwc_bps_cfg[1]);
 			}
 			rc = hfi_cmd_ubwc_config_ext(&ubwc_ipe_cfg[0],
 					&ubwc_bps_cfg[0]);

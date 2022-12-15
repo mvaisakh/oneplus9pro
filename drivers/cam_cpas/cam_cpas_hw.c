@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2017-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/device.h>
@@ -77,30 +77,6 @@ static void cam_cpas_process_bw_overrides(
 		bus_client->common_data.name, *ab, *ib, curr_ab, curr_ib);
 }
 
-int cam_cpas_util_reg_read(struct cam_hw_info *cpas_hw,
-	enum cam_cpas_reg_base reg_base, struct cam_cpas_reg *reg_info)
-{
-	struct cam_cpas *cpas_core = (struct cam_cpas *) cpas_hw->core_info;
-	struct cam_hw_soc_info *soc_info = &cpas_hw->soc_info;
-	uint32_t value;
-	int reg_base_index;
-
-	if (!reg_info->enable)
-		return 0;
-
-	reg_base_index = cpas_core->regbase_index[reg_base];
-	if (reg_base_index == -1)
-		return -EINVAL;
-
-	value = cam_io_r_mb(
-		soc_info->reg_map[reg_base_index].mem_base + reg_info->offset);
-
-	CAM_INFO(CAM_CPAS, "Base[%d] Offset[0x%08x] Value[0x%08x]",
-		reg_base, reg_info->offset, value);
-
-	return 0;
-}
-
 int cam_cpas_util_reg_update(struct cam_hw_info *cpas_hw,
 	enum cam_cpas_reg_base reg_base, struct cam_cpas_reg *reg_info)
 {
@@ -110,10 +86,6 @@ int cam_cpas_util_reg_update(struct cam_hw_info *cpas_hw,
 	int reg_base_index;
 
 	if (reg_info->enable == false)
-		return 0;
-
-	if (reg_info->is_fuse_based &&
-		!cam_cpas_is_feature_supported(CAM_CPAS_RT_OT_FUSE, 0xFF, 0))
 		return 0;
 
 	reg_base_index = cpas_core->regbase_index[reg_base];
@@ -1117,6 +1089,10 @@ static int cam_cpas_hw_update_axi_vote(struct cam_hw_info *cpas_hw,
 	cam_cpas_dump_axi_vote_info(cpas_core->cpas_client[client_indx],
 		"Translated Vote", axi_vote);
 
+	/* Log an entry whenever there is an AXI update - before updating */
+	cam_cpas_update_monitor_array(cpas_hw, "CPAS AXI pre-update",
+		client_indx);
+
 	rc = cam_cpas_util_apply_client_axi_vote(cpas_hw,
 		cpas_core->cpas_client[client_indx], axi_vote);
 
@@ -1548,7 +1524,6 @@ static int cam_cpas_hw_stop(void *hw_priv, void *stop_args,
 	struct cam_cpas_private_soc *soc_private = NULL;
 	int rc = 0;
 	long result;
-	int retry_camnoc_idle = 0;
 
 	if (!hw_priv || !stop_args) {
 		CAM_ERR(CAM_CPAS, "Invalid arguments %pK %pK",
@@ -1602,18 +1577,6 @@ static int cam_cpas_hw_stop(void *hw_priv, void *stop_args,
 			}
 		}
 
-		if (cpas_core->internal_ops.qchannel_handshake) {
-			rc = cpas_core->internal_ops.qchannel_handshake(
-				cpas_hw, false);
-			if (rc) {
-				CAM_ERR(CAM_CPAS,
-					"failed in qchannel_handshake rc=%d",
-					rc);
-				retry_camnoc_idle = 1;
-				/* Do not return error, passthrough */
-			}
-		}
-
 		rc = cam_cpas_soc_disable_irq(&cpas_hw->soc_info);
 		if (rc) {
 			CAM_ERR(CAM_CPAS, "disable_irq failed, rc=%d", rc);
@@ -1627,19 +1590,6 @@ static int cam_cpas_hw_stop(void *hw_priv, void *stop_args,
 		if (result == 0) {
 			CAM_ERR(CAM_CPAS, "Wait failed: irq_count=%d",
 				atomic_read(&cpas_core->irq_count));
-		}
-
-		/* try again incase camnoc is still not idle */
-		if (cpas_core->internal_ops.qchannel_handshake &&
-			retry_camnoc_idle) {
-			rc = cpas_core->internal_ops.qchannel_handshake(
-				cpas_hw, false);
-			if (rc) {
-				CAM_ERR(CAM_CPAS,
-					"failed in qchannel_handshake rc=%d",
-					rc);
-				/* Do not return error, passthrough */
-			}
 		}
 
 		rc = cam_cpas_soc_disable_resources(&cpas_hw->soc_info,
@@ -1967,11 +1917,6 @@ static int cam_cpas_log_vote(struct cam_hw_info *cpas_hw)
 
 	cam_cpas_dump_monitor_array(cpas_core);
 
-	if (cpas_core->internal_ops.print_poweron_settings)
-		cpas_core->internal_ops.print_poweron_settings(cpas_hw);
-	else
-		CAM_DBG(CAM_CPAS, "No ops for print_poweron_settings");
-
 	return 0;
 }
 
@@ -1985,7 +1930,6 @@ static void cam_cpas_update_monitor_array(struct cam_hw_info *cpas_hw,
 	struct cam_cpas_monitor *entry;
 	int iterator;
 	int i;
-	int reg_camnoc = cpas_core->regbase_index[CAM_CPAS_REG_CAMNOC];
 
 	CAM_CPAS_INC_MONITOR_HEAD(&cpas_core->monitor_head, &iterator);
 
@@ -2031,6 +1975,9 @@ static void cam_cpas_update_monitor_array(struct cam_hw_info *cpas_hw,
 		uint32_t be_mnoc_offset =
 			soc_private->rpmh_info[CAM_RPMH_BCM_BE_OFFSET] +
 			(0x4 * soc_private->rpmh_info[CAM_RPMH_BCM_MNOC_INDEX]);
+		uint32_t be_shub_offset =
+			soc_private->rpmh_info[CAM_RPMH_BCM_BE_OFFSET] +
+			(0x4 * 1); /* i=1 for SHUB, hardcode for now */
 
 		/*
 		 * 0x4, 0x800 - DDR
@@ -2040,20 +1987,7 @@ static void cam_cpas_update_monitor_array(struct cam_hw_info *cpas_hw,
 		entry->fe_mnoc = cam_io_r_mb(rpmh_base + fe_mnoc_offset);
 		entry->be_ddr = cam_io_r_mb(rpmh_base + be_ddr_offset);
 		entry->be_mnoc = cam_io_r_mb(rpmh_base + be_mnoc_offset);
-	}
-
-	entry->camnoc_fill_level[0] = cam_io_r_mb(
-		soc_info->reg_map[reg_camnoc].mem_base + 0xA20);
-	entry->camnoc_fill_level[1] = cam_io_r_mb(
-		soc_info->reg_map[reg_camnoc].mem_base + 0x1420);
-	entry->camnoc_fill_level[2] = cam_io_r_mb(
-		soc_info->reg_map[reg_camnoc].mem_base + 0x1A20);
-
-	if (cpas_hw->soc_info.hw_version == CAM_CPAS_TITAN_580_V100) {
-		entry->camnoc_fill_level[3] = cam_io_r_mb(
-			soc_info->reg_map[reg_camnoc].mem_base + 0x7620);
-		entry->camnoc_fill_level[4] = cam_io_r_mb(
-			soc_info->reg_map[reg_camnoc].mem_base + 0x7420);
+		entry->be_shub = cam_io_r_mb(rpmh_base + be_shub_offset);
 	}
 }
 
@@ -2065,7 +1999,6 @@ static void cam_cpas_dump_monitor_array(
 	uint32_t index, num_entries, oldest_entry;
 	uint64_t ms, tmp, hrs, min, sec;
 	struct cam_cpas_monitor *entry;
-	struct timespec64 curr_timestamp;
 
 	if (!cpas_core->full_state_dump)
 		return;
@@ -2084,17 +2017,7 @@ static void cam_cpas_dump_monitor_array(
 			CAM_CPAS_MONITOR_MAX_ENTRIES, &oldest_entry);
 	}
 
-
-	ktime_get_real_ts64(&curr_timestamp);
-	tmp = curr_timestamp.tv_sec;
-	ms = (curr_timestamp.tv_nsec) / 1000000;
-	sec = do_div(tmp, 60);
-	min = do_div(tmp, 60);
-	hrs = do_div(tmp, 24);
-
-	CAM_INFO(CAM_CPAS,
-		"**** %llu:%llu:%llu.%llu : ======== Dumping monitor information ===========",
-		hrs, min, sec, ms);
+	CAM_INFO(CAM_CPAS, "======== Dumping monitor information ===========");
 
 	index = oldest_entry;
 
@@ -2124,23 +2047,10 @@ static void cam_cpas_dump_monitor_array(
 
 		if (cpas_core->regbase_index[CAM_CPAS_REG_RPMH] != -1) {
 			CAM_INFO(CAM_CPAS,
-				"fe_ddr=0x%x, fe_mnoc=0x%x, be_ddr=0x%x, be_mnoc=0x%x",
+				"fe_ddr=0x%x, fe_mnoc=0x%x, be_ddr=0x%x, be_mnoc=0x%x, be_shub=0x%x",
 				entry->fe_ddr, entry->fe_mnoc,
-				entry->be_ddr, entry->be_mnoc);
+				entry->be_ddr, entry->be_mnoc, entry->be_shub);
 		}
-
-		CAM_INFO(CAM_CPAS,
-			"CAMNOC REG[Queued Pending] linear[%d %d] rdi0_wr[%d %d] ubwc_stats0[%d %d] ubwc_stats1[%d %d] rdi1_wr[%d %d]",
-			(entry->camnoc_fill_level[0] & 0x7FF),
-			(entry->camnoc_fill_level[0] & 0x7F0000) >> 16,
-			(entry->camnoc_fill_level[1] & 0x7FF),
-			(entry->camnoc_fill_level[1] & 0x7F0000) >> 16,
-			(entry->camnoc_fill_level[2] & 0x7FF),
-			(entry->camnoc_fill_level[2] & 0x7F0000) >> 16,
-			(entry->camnoc_fill_level[3] & 0x7FF),
-			(entry->camnoc_fill_level[3] & 0x7F0000) >> 16,
-			(entry->camnoc_fill_level[4] & 0x7FF),
-			(entry->camnoc_fill_level[4] & 0x7F0000) >> 16);
 
 		index = (index + 1) % CAM_CPAS_MONITOR_MAX_ENTRIES;
 	}

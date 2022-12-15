@@ -6,8 +6,13 @@
 #ifndef __UAPI_OPE_H__
 #define __UAPI_OPE_H__
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include <media/cam_defs.h>
+#include <media/cam_cpas.h>
+#else
 #include <camera/media/cam_defs.h>
 #include <camera/media/cam_cpas.h>
+#endif
 
 #define OPE_DEV_NAME_SIZE                  128
 
@@ -104,7 +109,7 @@ struct ope_stripe_info {
  * @direction:     Direction of a buffer of a port(Input/Output)
  * @resource_type: Port type
  * @num_planes:    Number of planes for a port
- * @pix_pattern:   Pixel pattern for raw input
+ * @reserved:      Reserved
  * @num_stripes:   Stripes per plane
  * @mem_handle:    Memhandles of each Input/Output Port
  * @plane_offset:  Offsets of planes
@@ -120,7 +125,7 @@ struct ope_io_buf_info {
 	__u32 direction;
 	__u32 resource_type;
 	__u32 num_planes;
-	__u32 pix_pattern;
+	__u32 reserved;
 	__u32 num_stripes[OPE_MAX_PLANES];
 	__u32 mem_handle[OPE_MAX_PLANES];
 	__u32 plane_offset[OPE_MAX_PLANES];

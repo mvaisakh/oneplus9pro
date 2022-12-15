@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
 /*
- * Copyright (c) 2016-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
  */
 
 #ifndef __UAPI_CAM_SENSOR_H__
@@ -8,7 +8,11 @@
 
 #include <linux/types.h>
 #include <linux/ioctl.h>
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#include <media/cam_defs.h>
+#else
 #include <camera/media/cam_defs.h>
+#endif
 
 #define CAM_SENSOR_PROBE_CMD   (CAM_COMMON_OPCODE_MAX + 1)
 #define CAM_FLASH_MAX_LED_TRIGGERS 2
@@ -476,7 +480,6 @@ struct cam_flash_query_curr {
  * @max_current_flash   :  max supported current for flash
  * @max_duration_flash  :  max flash turn on duration
  * @max_current_torch   :  max supported current for torch
- * @flash_type          :  Indicates about the flash type -I2C,GPIO,PMIC
  *
  */
 struct cam_flash_query_cap_info {
@@ -484,7 +487,9 @@ struct cam_flash_query_cap_info {
 	__u32    max_current_flash[CAM_FLASH_MAX_LED_TRIGGERS];
 	__u32    max_duration_flash[CAM_FLASH_MAX_LED_TRIGGERS];
 	__u32    max_current_torch[CAM_FLASH_MAX_LED_TRIGGERS];
-	__u32    flash_type;
 } __attribute__ ((packed));
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	#include "oplus/media/oplus_cam_sensor.h"
+#endif
 #endif

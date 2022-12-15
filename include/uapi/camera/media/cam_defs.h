@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
 /*
- * Copyright (c) 2016-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
  */
 
 #ifndef __UAPI_CAM_DEFS_H__
@@ -9,7 +9,6 @@
 #include <linux/videodev2.h>
 #include <linux/types.h>
 #include <linux/ioctl.h>
-
 
 /* camera op codes */
 #define CAM_COMMON_OPCODE_BASE                  0x100
@@ -178,9 +177,7 @@ struct cam_iommu_handle {
 #define CAM_FORMAT_DPCM_12_10_12                46
 #define CAM_FORMAT_PLAIN32                      47
 #define CAM_FORMAT_ARGB_16                      48
-#define CAM_FORMAT_PLAIN16_10_LSB               49
-#define CAM_FORMAT_YUV422_10                    50
-#define CAM_FORMAT_MAX                          51
+#define CAM_FORMAT_MAX                          49
 
 /* Pixel Patterns */
 #define PIXEL_PATTERN_RGRGRG                    0x0
@@ -893,5 +890,8 @@ struct cam_dump_req_cmd {
 	__s32           link_hdl;
 	__s32           dev_handle;
 };
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	#include "oplus/media/oplus_cam_defs.h"
+#endif
 
 #endif /* __UAPI_CAM_DEFS_H__ */

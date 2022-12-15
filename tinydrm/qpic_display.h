@@ -132,6 +132,6 @@ struct qpic_display_data {
 
 };
 
-void get_ili_qvga_panel_config(struct qpic_display_data *qpic_display);
+int get_ili_qvga_panel_config(struct qpic_display_data *qpic_display);
 
 #endif

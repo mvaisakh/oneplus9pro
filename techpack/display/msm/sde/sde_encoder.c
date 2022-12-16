@@ -3234,14 +3234,6 @@ static void sde_encoder_underrun_callback(struct drm_encoder *drm_enc,
 	SDE_DBG_CTRL("panic_underrun");
 
 	SDE_ATRACE_END("encoder_underrun_callback");
-#ifdef OPLUS_BUG_STABILITY
-	SDE_MM_ERROR("DisplayDriverID@@422$$sde encoder underrun callback! Count=%d",
-			atomic_read(&phy_enc->underrun_cnt));
-
-	if (get_eng_version() == AGING) {
-		SDE_DBG_DUMP("all", "dbg_bus", "vbif_dbg_bus", "panic");
-	}
-#endif /* OPLUS_BUG_STABILITY */
 }
 
 void sde_encoder_register_vblank_callback(struct drm_encoder *drm_enc,

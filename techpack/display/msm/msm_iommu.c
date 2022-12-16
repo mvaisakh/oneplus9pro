@@ -17,9 +17,6 @@
 
 #include "msm_drv.h"
 #include "msm_mmu.h"
-#ifdef OPLUS_BUG_STABILITY
-#include <soc/oplus/system/oplus_mm_kevent_fb.h>
-#endif /*OPLUS_BUG_STABILITY*/
 
 struct msm_iommu {
 	struct msm_mmu base;

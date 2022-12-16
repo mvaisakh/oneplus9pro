@@ -28,7 +28,6 @@
 #ifdef OPLUS_BUG_STABILITY
 #include "oplus_adfr.h"
 #include <linux/workqueue.h>
-#include <soc/oplus/system/oplus_mm_kevent_fb.h>
 /* Add for panel esd cmd debug */
 #include "oplus_display_esd.h"
 #endif
@@ -933,7 +932,6 @@ static bool dsi_display_validate_reg_read(struct dsi_panel *panel)
 		for (i = 0; i < len; ++i)
 			cnt += scnprintf(payload + cnt, sizeof(payload) - cnt, "[%02x] ", config->return_buf[i]);
 		DRM_ERROR("ESD check failed: %s\n", payload);
-		mm_fb_display_kevent(payload, MM_FB_KEY_RATELIMIT_1H, "ESD check failed");
 	}
 #endif  /*OPLUS_BUG_STABILITY*/
 
@@ -8274,9 +8272,6 @@ int dsi_display_prepare(struct dsi_display *display)
 			if (rc) {
 				DSI_ERR("[%s] panel pre-switch failed, rc=%d\n",
 					display->name, rc);
-				#ifdef OPLUS_BUG_STABILITY
-				DSI_MM_ERR("[dsi error] [%s] panel pre-switch failed, rc=%d\n",display->name, rc);
-				#endif
 			}
 			goto error;
 		}

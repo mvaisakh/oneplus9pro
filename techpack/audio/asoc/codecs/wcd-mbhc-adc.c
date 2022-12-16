@@ -22,9 +22,6 @@
 #include "wcd-mbhc-adc.h"
 #include <asoc/wcd-mbhc-v2.h>
 #include <asoc/pdata.h>
-#ifdef OPLUS_FEATURE_MM_FEEDBACK
-#include <soc/oplus/system/oplus_mm_kevent_fb.h>
-#endif
 
 #define WCD_MBHC_ADC_HS_THRESHOLD_MV    1700
 #define WCD_MBHC_ADC_HPH_THRESHOLD_MV   75
@@ -879,10 +876,6 @@ static void wcd_correct_swch_plug(struct work_struct *work)
 	int output_mv_second = 0;
 	bool swap_type_cnt = false;
 	#endif /* OPLUS_ARCH_EXTENDS */
-	#ifdef OPLUS_FEATURE_MM_FEEDBACK
-	int retry = 0;
-	char buf[MM_KEVENT_MAX_PAYLOAD_SIZE] = {0};
-	#endif
 
 #ifdef OPLUS_ARCH_EXTENDS
 #undef pr_debug
@@ -1093,9 +1086,6 @@ correct_plug_type:
 			is_pa_on = mbhc->mbhc_cb->hph_pa_on_status(
 					mbhc->component);
 
-		#ifdef OPLUS_FEATURE_MM_FEEDBACK
-		retry++;
-		#endif /* OPLUS_FEATURE_MM_FEEDBACK */
 		#ifdef OPLUS_ARCH_EXTENDS
 		if (mbhc->need_cross_conn && swap_type_cnt) {
 		#endif /* OPLUS_ARCH_EXTENDS */
@@ -1408,15 +1398,6 @@ exit:
 
 	mbhc->mbhc_cb->lock_sleep(mbhc, false);
 
-	#ifdef OPLUS_FEATURE_MM_FEEDBACK
-	if ((plug_type != MBHC_PLUG_TYPE_HEADSET) &&
-	    (plug_type != MBHC_PLUG_TYPE_HEADPHONE) &&
-	    !((plug_type == MBHC_PLUG_TYPE_HIGH_HPH) && (retry == HIGH_HPH_DETECT_RETRY_CNT))) {
-		scnprintf(buf, sizeof(buf) - 1, "func@@%s$$plug_type@@%d$$output_mv@@%d$$retry@@%d",
-				__func__, plug_type, output_mv, retry);
-		upload_mm_fb_kevent_to_atlas_limit(OPLUS_AUDIO_EVENTID_HEADSET_DET, buf, MM_FB_KEY_RATELIMIT_1MIN);
-	}
-	#endif /* OPLUS_FEATURE_MM_FEEDBACK */
 	pr_debug("%s: leave\n", __func__);
 }
 

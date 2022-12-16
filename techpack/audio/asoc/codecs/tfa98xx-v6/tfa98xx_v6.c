@@ -62,10 +62,6 @@ extern bool g_speaker_resistance_fail;
 #include <linux/fs.h>
 #endif /* OPLUS_ARCH_EXTENDS */
 
-#ifdef OPLUS_FEATURE_MM_FEEDBACK
-#include <soc/oplus/system/oplus_mm_kevent_fb.h>
-#endif
-
 /* Change volume selection behavior:
  * Uncomment following line to generate a profile change when updating
  * a volume control (also changes to the profile of the modified  volume
@@ -2630,204 +2626,6 @@ static int tfa98xx_get_stereo_ctl(struct snd_kcontrol *kcontrol,
 
 #endif /* OPLUS_ARCH_EXTENDS */
 
-#ifdef OPLUS_FEATURE_MM_FEEDBACK
-#define OPLUS_AUDIO_EVENTID_SMARTPA_ERR    10041
-#define ERROR_INFO_MAX_LEN                 32
-#define CHECK_FB_LIMIT_TIME                (60*1000) //60s
-
-#define TFA9874_STATUS_NORMAL_VALUE                0x16 //reg 0x10, normal value=0x16
-#define TFA9874_STATUS_CHECK_MASK                  0x9C //mask bit2~4, bit7 (bit1 reserve 1)
-
-#define TFA9873_STATUS_NORMAL_VALUE                0x56  //reg 0x10, normal value=0x56
-#define TFA9873_STATUS_CHECK_MASK                  0x15C //mask bit2~4, bit6, bit8
-
-static bool g_chk_err = false;
-static char const *tfa98xx_check_feedback_text_[] = {"Off", "On"};
-static const struct soc_enum tfa98xx_check_feedback_enum =
-	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(tfa98xx_check_feedback_text_), tfa98xx_check_feedback_text_);
-
-enum {
-	PA_TFA9874 = 0,
-	PA_TFA9873,
-	PA_MAX
-};
-
-static int g_pa_type = PA_MAX;
-
-struct check_status_err {
-	int bit;
-	uint16_t err_val;
-	char info[ERROR_INFO_MAX_LEN];
-};
-static const struct check_status_err check_err_tfa9874[] = {
-	{2, 0, "OverTemperature"},
-	{3, 1, "CurrentHigh"},
-	{4, 0, "VbatLow"},
-	/*{6, 1, "TdmErr"},*/
-	{7, 1, "NoClock"},
-};
-
-static const struct check_status_err check_err_tfa9873[] = {
-	{2, 0, "OverTemperature"},
-	{3, 1, "CurrentHigh"},
-	{4, 0, "VbatLow"},
-	{6, 0, "UnstableClk"},
-	{8, 1, "NoClock"},
-};
-
-
-static int tfa98xx_check_status_reg(void )
-{
-	struct tfa98xx *tfa98xx;
-	uint16_t reg_val;
-	char fd_buf[MM_KEVENT_MAX_PAYLOAD_SIZE] = {0};
-	char info[MM_KEVENT_MAX_PAYLOAD_SIZE] = {0};
-	int offset = 0;
-	enum Tfa98xx_Error err;
-	int i, num = 0;
-
-	if ((g_pa_type != PA_TFA9874) && (g_pa_type != PA_TFA9873)) {
-		return 0;
-	}
-
-	mutex_lock(&tfa98xx_mutex);
-	/* check status register 0x10 value */
-	list_for_each_entry(tfa98xx, &tfa98xx_device_list, list) {
-		num++;
-		err = tfa98xx_read_register16_v6(tfa98xx->tfa, 0x10, &reg_val);
-
-		if (Tfa98xx_Error_Ok == err) {
-			if ((g_pa_type == PA_TFA9874) &&
-					((TFA9874_STATUS_NORMAL_VALUE&TFA9874_STATUS_CHECK_MASK) != (reg_val&TFA9874_STATUS_CHECK_MASK))) {
-				pr_err("%s: TFA9874 SPK%d status error, reg[0x10] = 0x%x\n", __func__, num, reg_val);
-				offset = strlen(info);
-				scnprintf(info + offset, sizeof(info) - offset - 1, "TFA9874 SPK%d:reg[0x10]=0x%x,", num, reg_val);
-				for (i = 0; i < ARRAY_SIZE(check_err_tfa9874); i++) {
-					if (check_err_tfa9874[i].err_val == (1 & (reg_val>>check_err_tfa9874[i].bit))) {
-						offset = strlen(info);
-						scnprintf(info + offset, sizeof(info) - offset - 1, "%s,", check_err_tfa9874[i].info);
-					}
-				}
-			} else if ((g_pa_type == PA_TFA9873) &&
-					((TFA9873_STATUS_NORMAL_VALUE&TFA9873_STATUS_CHECK_MASK) != (reg_val&TFA9873_STATUS_CHECK_MASK))) {
-				pr_err("%s: TFA9873 SPK%d status error, reg[0x10] = 0x%x\n", __func__, num, reg_val);
-				offset = strlen(info);
-				scnprintf(info + offset, sizeof(info) - offset - 1, "TFA9873 SPK%d:reg[0x10]=0x%x,", num, reg_val);
-				for (i = 0; i < ARRAY_SIZE(check_err_tfa9873); i++) {
-					if (check_err_tfa9873[i].err_val == (1 & (reg_val>>check_err_tfa9873[i].bit))) {
-						offset = strlen(info);
-						scnprintf(info + offset, sizeof(info) - offset - 1, "%s,", check_err_tfa9873[i].info);
-					}
-				}
-			}
-		}
-	}
-	mutex_unlock(&tfa98xx_mutex);
-
-	/* feedback the check error */
-	offset = strlen(info);
-	if ((offset > 0) && (offset < MM_KEVENT_MAX_PAYLOAD_SIZE)) {
-		fd_buf[offset] = '\0';
-		scnprintf(fd_buf, sizeof(fd_buf) - 1, "payload@@%s", info);
-		mm_fb_audio_kevent_named(OPLUS_AUDIO_EVENTID_SMARTPA_ERR,
-				MM_FB_KEY_RATELIMIT_1MIN, fd_buf);
-		pr_err("%s: fd_buf=%s\n", __func__, fd_buf);
-	}
-
-	return 1;
-}
-
-static int tfa98xx_set_check_feedback(struct snd_kcontrol *kcontrol,
-			       struct snd_ctl_elem_value *ucontrol)
-{
-	int need_chk = ucontrol->value.integer.value[0];
-/*	static ktime_t last_time = 0;
-
-	if (need_chk) {
-		if (ktime_before(ktime_get(), ktime_add_ms(last_time, CHECK_FB_LIMIT_TIME))) {
-			printk(KERN_INFO "%s: too often, not check\n", __func__);
-			return 1;
-		}
-	}
-*/
-	pr_info("%s: need_chk = %d\n", __func__, need_chk);
-	g_chk_err = need_chk;
-
-	if (0 == need_chk) {
-		return 1;
-	}
-
-//	last_time = ktime_get();
-
-	return tfa98xx_check_status_reg();
-}
-
-static int tfa98xx_get_check_feedback(struct snd_kcontrol *kcontrol,
-							struct snd_ctl_elem_value *ucontrol)
-{
-	ucontrol->value.integer.value[0] = g_chk_err;
-	pr_info("%s: g_chk_err = %d\n", __func__, g_chk_err);
-
-	return 0;
-}
-
-static const struct snd_kcontrol_new tfa98xx_check_feedback[] = {
-	SOC_ENUM_EXT("TFA_CHECK_FEEDBACK", tfa98xx_check_feedback_enum,
-			   tfa98xx_get_check_feedback, tfa98xx_set_check_feedback),
-};
-
-static int tfa98xx_check_speaker_status(struct tfa98xx *tfa98xx)
-{
-	char fd_buf[MM_KEVENT_MAX_PAYLOAD_SIZE] = {0};
-	enum Tfa98xx_Error err = Tfa98xx_Error_Ok;
-	char buffer[6] = {0};
-
-	if ((g_pa_type != PA_TFA9874) && (g_pa_type != PA_TFA9873)) {
-		return 0;
-	}
-
-	if (g_chk_err) {
-		g_chk_err = false;
-
-		mutex_lock(&tfa98xx->dsp_lock);
-		//Get the GetStatusChange results
-		err = tfa_dsp_cmd_id_write_read_v6(tfa98xx->tfa, MODULE_FRAMEWORK,
-					FW_PAR_ID_GET_STATUS_CHANGE, 6, (unsigned char *)buffer);
-		mutex_unlock(&tfa98xx->dsp_lock);
-
-		pr_info("%s: ret=%d, get value=%d\n", __func__, err, buffer[2]);
-
-		if (err == Tfa98xx_Error_Ok) {
-			if (buffer[2] & 0x6) {
-				scnprintf(fd_buf, sizeof(fd_buf) - 1, "payload@@");
-				if (buffer[2] & 0x2) {
-					pr_err("%s: ##ERROR## Primary SPK damaged event detected 0x%x\n",
-							__func__, buffer[2]);
-					scnprintf(fd_buf + strlen(fd_buf),
-							sizeof(fd_buf) - strlen(fd_buf), " SPK1-detected-damaged");
-				}
-				if (buffer[2] & 0x4) {
-					pr_err("%s: ##ERROR## Second SPK damaged event detected 0x%x\n",
-							__func__, buffer[2]);
-					scnprintf(fd_buf + strlen(fd_buf),
-							sizeof(fd_buf) - strlen(fd_buf), " SPK2-detected-damaged");
-				}
-				mm_fb_audio_kevent_named(OPLUS_AUDIO_EVENTID_SMARTPA_ERR,
-						MM_FB_KEY_RATELIMIT_1MIN, fd_buf);
-				pr_err("%s: fd_buf=%s\n", __func__, fd_buf);
-			}
-		} else {
-			scnprintf(fd_buf, sizeof(fd_buf) - 1, "payload@@spk protection algorithm error, ret=%d", err);
-			mm_fb_audio_kevent_named(OPLUS_AUDIO_EVENTID_SMARTPA_ERR,
-					MM_FB_KEY_RATELIMIT_1MIN, fd_buf);
-			pr_err("%s: tfa_dsp_cmd_id_write_read_v6 err = %d\n", __func__, err);
-		}
-	}
-
-	return err;
-}
-#endif /*OPLUS_FEATURE_MM_FEEDBACK*/
-
 static int tfa98xx_create_controls(struct tfa98xx *tfa98xx)
 {
 	int prof, nprof, mix_index = 0;
@@ -4332,10 +4130,6 @@ static int tfa98xx_mute(struct snd_soc_dai *dai, int mute, int stream)
 		 * are deactivated
 		 */
 
-		#ifdef OPLUS_FEATURE_MM_FEEDBACK
-		tfa98xx_check_speaker_status(tfa98xx);
-		#endif /* OPLUS_FEATURE_MM_FEEDBACK */
-
 		if (stream == SNDRV_PCM_STREAM_PLAYBACK)
 			tfa98xx->pstream = 0;
 		else
@@ -4512,11 +4306,6 @@ static int tfa98xx_probe(struct snd_soc_component *component)
 	snd_soc_add_component_controls(tfa98xx->component,
 		tfadsp_volume_controls, ARRAY_SIZE(tfadsp_volume_controls));
 	#endif /* OPLUS_FEATURE_FADE_IN */
-
-	#ifdef OPLUS_FEATURE_MM_FEEDBACK
-	snd_soc_add_component_controls(tfa98xx->component,
-				   tfa98xx_check_feedback, ARRAY_SIZE(tfa98xx_check_feedback));
-	#endif
 
 	#ifdef OPLUS_FEATURE_SMARTPA_PM
 	add_smartpa_pm_controls(tfa98xx->component);
@@ -4897,18 +4686,12 @@ static int tfa98xx_i2c_probe(struct i2c_client *i2c,
 			tfa98xx->flags |= TFA98XX_FLAG_CALIBRATION_CTL;
 			tfa98xx->flags |= TFA98XX_FLAG_TDM_DEVICE;
 			tfa98xx->flags |= TFA98XX_FLAG_ADAPT_NOISE_MODE; /***MCH_TO_TEST***/
-#ifdef OPLUS_FEATURE_MM_FEEDBACK
-			g_pa_type = PA_TFA9873;
-#endif
 			break;
 		case 0x74: /* tfa9874 */
 			pr_info("TFA9874 detected\n");
 			tfa98xx->flags |= TFA98XX_FLAG_MULTI_MIC_INPUTS;
 			tfa98xx->flags |= TFA98XX_FLAG_CALIBRATION_CTL;
 			tfa98xx->flags |= TFA98XX_FLAG_TDM_DEVICE;
-#ifdef OPLUS_FEATURE_MM_FEEDBACK
-			g_pa_type = PA_TFA9874;
-#endif
 			break;
 		case 0x88: /* tfa9888 */
 			pr_info("TFA9888 detected\n");

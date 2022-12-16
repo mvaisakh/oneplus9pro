@@ -23,18 +23,6 @@
 #include "adsp_err.h"
 #include "q6afecal-hwdep.h"
 
-#ifdef CONFIG_OPLUS_FEATURE_MM_FEEDBACK
-#include <soc/oplus/system/oplus_mm_kevent_fb.h>
-#define AFE_MODULE_FEEDBACK_ABNORMAL_INFO		(0x1000BA00)
-#define AFE_PARAM_ID_UNDERRUN_AND_SIGNAL_MISS		(0x1000BA10)
-#define OPLUS_AUDIO_EVENTID_QCOM_AFE_UNDERRUN_ERR		(10043)
-#define UNDERRUN_MIN_TIMES_REPORT		(2)
-
-typedef struct afe_abn_info {
-    uint32_t underrun;
-    uint32_t signal_miss;
-} afe_abn_info_t;
-#endif /* CONFIG_OPLUS_FEATURE_MM_FEEDBACK */
 #ifdef OPLUS_FEATURE_TFA98XX_VI_FEEDBACK
 #define TOPOLOGY_TFADSP_ID_TX		(0x1000B909)
 #define AFE_MODULE_ID_TFADSP_RX		(0x1000B911)

@@ -21,7 +21,7 @@
 #include "genl.h"
 
 #ifdef OPLUS_FEATURE_WIFI_MAC
-#include <soc/oplus/boot_mode.h>
+#include <soc/oplus/system/boot_mode.h>
 #endif /* OPLUS_FEATURE_WIFI_MAC */
 
 #define CNSS_DUMP_FORMAT_VER		0x11

@@ -87,6 +87,7 @@ u32 oplus_backlight_delta = 0;
 int oplus_dimlayer_hbm = 0;
 extern int oplus_dimlayer_hbm_saved;
 
+extern int oplus_dimlayer_aod;
 #ifdef OPLUS_FEATURE_TP_BASIC
 int shutdown_flag = 0;
 #endif /*OPLUS_FEATURE_TP_BASIC*/
@@ -2876,6 +2877,7 @@ int dsi_display_oplus_set_power(struct drm_connector *connector,
 		case OPLUS_DISPLAY_NORMAL_SCENE:
 		case OPLUS_DISPLAY_NORMAL_HBM_SCENE:
 			oplus_dimlayer_hbm = 0;
+			oplus_dimlayer_aod = 1;
 			oplus_dimlayer_vblank(connector->state->crtc);
 			rc = dsi_panel_set_lp1(display->panel);
 			rc = dsi_panel_set_lp2(display->panel);
@@ -2946,8 +2948,9 @@ int dsi_display_oplus_set_power(struct drm_connector *connector,
 		set_oplus_display_power_status(OPLUS_DISPLAY_POWER_ON);
 		if (oplus_dimlayer_hbm != oplus_dimlayer_hbm_saved) {
 			oplus_dimlayer_hbm = oplus_dimlayer_hbm_saved;
-			oplus_dimlayer_vblank(connector->state->crtc);
 		}
+		oplus_dimlayer_aod = 0;
+		oplus_dimlayer_vblank(connector->state->crtc);
 		msm_drm_notifier_call_chain(MSM_DRM_EVENT_BLANK,
 						&notifier_data);
 		drm_panel_notifier_call_chain(&display->panel->drm_panel,

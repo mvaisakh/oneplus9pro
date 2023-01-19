@@ -4866,6 +4866,7 @@ static int _sde_crtc_check_secure_state(struct drm_crtc *crtc,
 extern int oplus_onscreenfp_status;
 extern int lcd_closebl_flag_fp;
 extern int oplus_dimlayer_hbm;
+extern int oplus_dimlayer_aod;
 extern int oplus_dimlayer_bl_alpha_value;
 extern int oplus_dimlayer_bl_enable;
 extern bool oplus_ffl_trigger_finish;
@@ -4882,9 +4883,9 @@ static int sde_crtc_onscreenfinger_atomic_check(struct sde_crtc_state *cstate,
 	int aod_index = -1;
 	int zpos = INT_MAX;
 	int mode;
-	int panel_power_mode;
 	int fp_mode = oplus_onscreenfp_status;
 	int dimlayer_hbm = oplus_dimlayer_hbm;
+	int dimlayer_aod = oplus_dimlayer_aod;
 	int dimlayer_bl = 0;
 	int i;
 	//#ifdef OPLUS_BUG_STABILITY
@@ -5000,18 +5001,8 @@ static int sde_crtc_onscreenfinger_atomic_check(struct sde_crtc_state *cstate,
 			cstate->fingerprint_mode = false;
 
 		SDE_DEBUG("debug for get cstate->fingerprint_mode = %d\n", cstate->fingerprint_mode);
-		panel_power_mode = oplus_get_panel_power_mode();
-
-		/* set dimlayer alpha transparent if in LP1/LP2 mode since HBM isn't active */
-		if ((panel_power_mode == SDE_MODE_DPMS_LP1) || (panel_power_mode == SDE_MODE_DPMS_LP2)) {
-			oplus_set_aod_dim_alpha(CUST_A_TRANS);
-		} else { /* when screen on, restore dimlayer alpha */
-			if (oplus_get_panel_brightness() != 0)
-				oplus_set_aod_dim_alpha(CUST_A_NO);
-		}
-
-		SDE_DEBUG("aod_index = %d, fp_index= %d, fppressed_index = %d, fp_mode=%d, panel_power_mode = %d, bl=%d\n",
-			aod_index, fp_index, fppressed_index, fp_mode, panel_power_mode, oplus_get_panel_brightness());
+		SDE_DEBUG("aod_index = %d, fp_index= %d, fppressed_index = %d, fp_mode=%d, bl=%d\n",
+			aod_index, fp_index, fppressed_index, fp_mode, oplus_get_panel_brightness());
 
 		/* find the min zpos in fp_index/fppressed_index stage to dim layer, then fp_index/fppressed_index stage increase one */
 		if (fp_index >= 0) {
@@ -5030,7 +5021,7 @@ static int sde_crtc_onscreenfinger_atomic_check(struct sde_crtc_state *cstate,
 			}
 		}
 
-		/* when no aod_index/fppressed_index/fp_index layer, dim layer's zpos is the most stage */
+		/* when no fppressed_index/fp_index layer, dim layer's zpos is the most stage */
 		if (zpos == INT_MAX) {
 			zpos = 0;
 			for (i = 0; i < cnt; i++) {
@@ -5052,12 +5043,21 @@ static int sde_crtc_onscreenfinger_atomic_check(struct sde_crtc_state *cstate,
 			cstate->fingerprint_pressed = false;
 
 		SDE_DEBUG("debug for get cstate->fingerprint_pressed = %d\n", cstate->fingerprint_pressed);
+	} else if (dimlayer_aod) {
+		zpos = 0;
+		/* look for highest stage for dimlayer's zpos */
+		for (i = 0; i < cnt; i++) {
+			if (pstates[i].stage > zpos)
+				zpos = pstates[i].stage;
+		}
+		zpos++;
+		if (sde_crtc_config_fingerprint_dim_layer(&cstate->base, zpos)) {
+			//SDE_ERROR("Failed to config dim layer\n");
+			SDE_EVT32(zpos, fp_index, aod_index, fppressed_index, cstate->num_dim_layers);
+			return -EINVAL;
+		}
 	} else {
 		oplus_underbrightness_alpha = 0;
-		oplus_set_aod_dim_alpha(CUST_A_NO);
-		cstate->fingerprint_dim_layer = NULL;
-		cstate->fingerprint_mode = false;
-		cstate->fingerprint_pressed = false;
 	}
 	SDE_EVT32(cstate->fingerprint_dim_layer);
 

@@ -25,4 +25,5 @@ int oplus_update_aod_light_mode(void);
 int oplus_panel_set_aod_light_mode(void *buf);
 int oplus_panel_get_aod_light_mode(void *buf);
 int __oplus_display_set_aod_light_mode(int mode);
+void dsi_panel_parse_oplus_aod_config(struct dsi_panel *panel);
 #endif /* _OPLUS_AOD_H_ */

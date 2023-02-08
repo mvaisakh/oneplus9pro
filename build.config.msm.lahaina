@@ -24,6 +24,8 @@ BOOT_IMAGE_HEADER_VERSION=3
 BASE_ADDRESS=0x80000000
 PAGE_SIZE=4096
 
+export BRAND_SHOW_FLAG=oneplus
+
 ################################################################################
 ## Inheriting MSM configs
 . ${KERNEL_DIR}/build.config.msm.common

@@ -12,7 +12,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/timer.h>
 #include <linux/err.h>
-#include <soc/oplus/system/oplus_project.h>
+#include <soc/oplus/oplus_project.h>
 
 #include "gf_spi.h"
 

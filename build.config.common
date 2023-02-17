@@ -8,6 +8,7 @@ OBJCOPY=llvm-objcopy
 CLANG_PREBUILT_BIN=prebuilts-master/clang/host/linux-x86/clang-r416183b/bin
 DEPMOD=depmod
 BUILDTOOLS_PREBUILT_BIN=build/build-tools/path/linux-x86
+MKDTBO_EXT=${ROOT_DIR}/tools/libufdt/utils/src/mkdtboimg.py
 
 STOP_SHIP_TRACEPRINTK=1
 IN_KERNEL_MODULES=1

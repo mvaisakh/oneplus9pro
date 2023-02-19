@@ -16,6 +16,10 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <drm/drm_panel.h>
+#ifdef OPLUS_BUG_STABILITY
+#include <linux/msm_drm_notify.h>
+#include <linux/notifier.h>
+#endif /* OPLUS_BUG_STABILITY */
 
 #include "msm_drv.h"
 #include "msm_gem.h"
@@ -55,7 +59,7 @@ static inline bool _msm_seamless_for_crtc(struct drm_device *dev,
 	if (msm_is_mode_seamless_dms(&crtc_state->adjusted_mode) && !enable)
 		return true;
 
-	if (!crtc_state->mode_changed && crtc_state->connectors_changed && crtc_state->active) {
+	if (!crtc_state->mode_changed && crtc_state->connectors_changed) {
 		for_each_old_connector_in_state(state, connector,
 				conn_state, i) {
 			if ((conn_state->crtc == crtc_state->crtc) ||
@@ -282,9 +286,6 @@ msm_crtc_set_mode(struct drm_device *dev, struct drm_atomic_state *old_state)
 		mode = &new_crtc_state->mode;
 		adjusted_mode = &new_crtc_state->adjusted_mode;
 
-		if (!new_crtc_state->active)
-			continue;
-
 		if (!new_crtc_state->mode_changed &&
 				new_crtc_state->connectors_changed) {
 			if (_msm_seamless_for_conn(connector,
@@ -502,6 +503,10 @@ static void complete_commit(struct msm_commit *c)
 	struct msm_drm_private *priv = dev->dev_private;
 	struct msm_kms *kms = priv->kms;
 
+#ifdef OPLUS_BUG_STABILITY
+	mutex_lock(&priv->dspp_lock);
+#endif /* OPLUS_BUG_STABILITY */
+
 	drm_atomic_helper_wait_for_fences(dev, state, false);
 
 	kms->funcs->prepare_commit(kms, state);
@@ -510,6 +515,9 @@ static void complete_commit(struct msm_commit *c)
 
 	drm_atomic_helper_commit_planes(dev, state,
 				DRM_PLANE_COMMIT_ACTIVE_ONLY);
+#ifdef OPLUS_BUG_STABILITY
+	mutex_unlock(&priv->dspp_lock);
+#endif /* OPLUS_BUG_STABILITY */
 
 	msm_atomic_helper_commit_modeset_enables(dev, state);
 

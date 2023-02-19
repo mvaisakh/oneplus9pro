@@ -190,11 +190,13 @@ struct sde_connector_ops {
 	 * @display: Pointer to private display structure
 	 * @params: Parameter bundle of connector-stored information for
 	 *	kickoff-time programming into the display
+	 * @force_update_dsi_clocks: Bool to force update dsi clocks
 	 * Returns: Zero on success
 	 */
 	int (*pre_kickoff)(struct drm_connector *connector,
 			void *display,
-			struct msm_display_kickoff_params *params);
+			struct msm_display_kickoff_params *params,
+			bool force_update_dsi_clocks);
 
 	/**
 	 * clk_ctrl - perform clk enable/disable on the connector
@@ -470,7 +472,6 @@ struct sde_connector_dyn_hdr_metadata {
  * @esd_status_interval: variable to change ESD check interval in millisec
  * @panel_dead: Flag to indicate if panel has gone bad
  * @esd_status_check: Flag to indicate if ESD thread is scheduled or not
- * @twm_en: Flag to indicate if TWM mode is enabled or not
  * @bl_scale_dirty: Flag to indicate PP BL scale value(s) is changed
  * @bl_scale: BL scale value for ABA feature
  * @bl_scale_sv: BL scale value for sunlight visibility feature
@@ -512,7 +513,6 @@ struct sde_connector {
 	int dpms_mode;
 	int lp_mode;
 	int last_panel_power_mode;
-	struct device *sysfs_dev;
 
 	struct msm_property_info property_info;
 	struct msm_property_data property_data[CONNECTOR_PROP_COUNT];
@@ -534,7 +534,6 @@ struct sde_connector {
 	u32 esd_status_interval;
 	bool panel_dead;
 	bool esd_status_check;
-	bool twm_en;
 
 	bool bl_scale_dirty;
 	u32 bl_scale;
@@ -550,12 +549,17 @@ struct sde_connector {
 	bool hdr_supported;
 
 	u32 color_enc_fmt;
-	u32 lm_mask;
 
 	u8 hdr_plus_app_ver;
 	u32 qsync_mode;
 	bool qsync_updated;
-
+#ifdef OPLUS_BUG_STABILITY
+	u32 qsync_dynamic_min_fps;
+	/* store the min fps value for next window setting */
+	u32 qsync_curr_dynamic_min_fps;
+	/* deferred min fps window setting status */
+	u32 qsync_deferred_window_status;
+#endif
 	bool colorspace_updated;
 
 	bool last_cmd_tx_sts;
@@ -566,6 +570,18 @@ struct sde_connector {
 
 	struct edid *cached_edid;
 };
+
+#ifdef OPLUS_BUG_STABILITY
+struct dc_apollo_pcc_sync {
+	wait_queue_head_t bk_wait;
+	int dc_pcc_updated;
+	__u32 pcc;
+	__u32 pcc_last;
+	__u32 pcc_current;
+	struct mutex lock;
+	int backlight_pending;
+};
+#endif
 
 /**
  * to_sde_connector - convert drm_connector pointer to sde connector pointer
@@ -605,6 +621,16 @@ struct sde_connector {
  */
 #define sde_connector_get_qsync_mode(C) \
 	((C) ? to_sde_connector((C))->qsync_mode : 0)
+
+#ifdef OPLUS_BUG_STABILITY
+/**
+ * sde_connector_get_qsync_dynamic_min_fps - get sde connector's qsync_dynamic_min_fps
+ * @C: Pointer to drm connector structure
+ * Returns: Current cached qsync_dynamic_min_fps for given connector
+ */
+#define sde_connector_get_qsync_dynamic_min_fps(C) \
+	((C) ? to_sde_connector((C))->qsync_dynamic_min_fps : 0)
+#endif
 
 /**
  * sde_connector_get_propinfo - get sde connector's property info pointer
@@ -757,15 +783,6 @@ int sde_connector_set_property_for_commit(struct drm_connector *connector,
 		uint32_t property_idx, uint64_t value);
 
 /**
- * sde_connector_post_init - update connector object with post initialization.
- * It can update the debugfs, sysfs, entries
- * @dev: Pointer to drm device struct
- * @conn: Pointer to drm connector
- * Returns: Zero on success
- */
-int sde_connector_post_init(struct drm_device *dev, struct drm_connector *conn);
-
-/**
  * sde_connector_init - create drm connector object for a given display
  * @dev: Pointer to drm device struct
  * @encoder: Pointer to associated encoder
@@ -914,11 +931,21 @@ int sde_connector_register_custom_event(struct sde_kms *kms,
 		struct drm_connector *conn_drm, u32 event, bool en);
 
 /**
- * sde_connector_pre_kickoff - trigger kickoff time feature programming
+ * sde_connector_update_complete_commit - trigger post kickoff time feature programming
  * @connector: Pointer to drm connector object
+ * @force_update_dsi_clocks: Bool to force update dsi clocks
  * Returns: Zero on success
  */
-int sde_connector_pre_kickoff(struct drm_connector *connector);
+int sde_connector_update_complete_commit(struct drm_connector *connector,
+		bool force_update_dsi_clocks);
+/**
+ * sde_connector_pre_kickoff - trigger kickoff time feature programming
+ * @connector: Pointer to drm connector object
+ * @force_update_dsi_clocks: Bool to force update dsi clocks
+ * Returns: Zero on success
+ */
+int sde_connector_pre_kickoff(struct drm_connector *connector,
+			bool force_update_dsi_clocks);
 
 /**
  * sde_connector_prepare_commit - trigger commit time feature programming
@@ -1115,5 +1142,15 @@ int sde_connector_get_panel_vfp(struct drm_connector *connector,
  * @connector: Pointer to DRM connector object
  */
 int sde_connector_esd_status(struct drm_connector *connector);
+
+/**
+ * sde_connector_helper_post_kickoff - helper function for drm connector post kickoff
+ * @connector: Pointer to DRM connector object
+ */
+void sde_connector_helper_post_kickoff(struct drm_connector *connector);
+
+#ifdef OPLUS_BUG_STABILITY
+int _sde_connector_update_bl_scale_(struct sde_connector *c_conn);
+#endif
 
 #endif /* _SDE_CONNECTOR_H_ */

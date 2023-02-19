@@ -331,11 +331,7 @@ static u32 sde_rsc_timer_calculate(struct sde_rsc_priv *rsc,
 	line_time_ns = div_u64(line_time_ns, rsc->cmd_config.vtotal);
 	prefill_time_ns = line_time_ns * rsc->cmd_config.prefill_lines;
 
-	/* only take jitter into account for CMD mode */
-	if (state == SDE_RSC_CMD_STATE)
-		total = frame_time_ns - frame_jitter - prefill_time_ns;
-	else
-		total = frame_time_ns - prefill_time_ns;
+	total = frame_time_ns - frame_jitter - prefill_time_ns;
 
 	if (total < 0) {
 		pr_err("invalid total time period time:%llu jiter_time:%llu blanking time:%llu\n",
@@ -351,8 +347,6 @@ static u32 sde_rsc_timer_calculate(struct sde_rsc_priv *rsc,
 	pr_debug("line time:%llu prefill time ps:%llu\n",
 			line_time_ns, prefill_time_ns);
 	pr_debug("static wakeup time:%lld cxo:%u\n", total, cxo_period_ns);
-
-	SDE_EVT32(rsc->cmd_config.fps, rsc->cmd_config.vtotal, total);
 
 	pdc_backoff_time_ns = rsc_backoff_time_ns;
 	rsc_backoff_time_ns = div_u64(rsc_backoff_time_ns, cxo_period_ns);
@@ -1109,7 +1103,7 @@ end:
 }
 EXPORT_SYMBOL(sde_rsc_client_trigger_vote);
 
-#if defined(CONFIG_DEBUG_FS)
+//#if defined(CONFIG_DEBUG_FS)
 void sde_rsc_debug_dump(u32 mux_sel)
 {
 	struct sde_rsc_priv *rsc;
@@ -1123,6 +1117,7 @@ void sde_rsc_debug_dump(u32 mux_sel)
 		rsc->hw_ops.debug_dump(rsc, mux_sel);
 }
 
+#if defined(CONFIG_DEBUG_FS)
 static int _sde_debugfs_status_show(struct seq_file *s, void *data)
 {
 	struct sde_rsc_priv *rsc;

@@ -15,6 +15,9 @@
 #include "sde_dbg.h"
 #include "sde_dsc_helper.h"
 #include "sde_vdc_helper.h"
+#if defined(OPLUS_FEATURE_PXLW_IRIS5)
+bool iris_is_chip_supported(void);
+#endif
 
 #define MMSS_MISC_CLAMP_REG_OFF           0x0014
 #define DSI_CTRL_DYNAMIC_FORCE_ON         (0x23F|BIT(8)|BIT(9)|BIT(11)|BIT(21))
@@ -41,9 +44,9 @@ static bool dsi_compression_enabled(struct dsi_mode_info *mode)
 
 /* Unsupported formats default to RGB888 */
 static const u8 cmd_mode_format_map[DSI_PIXEL_FORMAT_MAX] = {
-	0x6, 0x7, 0x8, 0x8, 0x0, 0x3, 0x4, 0x9 };
+	0x6, 0x7, 0x8, 0x8, 0x0, 0x3, 0x4 };
 static const u8 video_mode_format_map[DSI_PIXEL_FORMAT_MAX] = {
-	0x0, 0x1, 0x2, 0x3, 0x3, 0x3, 0x3, 0x4 };
+	0x0, 0x1, 0x2, 0x3, 0x3, 0x3, 0x3 };
 
 /**
  * dsi_split_link_setup() - setup dsi split link configurations
@@ -421,12 +424,9 @@ void dsi_ctrl_hw_cmn_setup_cmd_stream(struct dsi_ctrl_hw *ctrl,
 	u32 reg = 0, offset = 0;
 	int pic_width = 0, this_frame_slices = 0, intf_ip_w = 0;
 	u32 pkt_per_line = 0, eol_byte_num = 0, bytes_in_slice = 0;
-	u32 bpp;
 
 	if (roi && (!roi->w || !roi->h))
 		return;
-
-	bpp = dsi_pixel_format_to_bpp(cfg->dst_format);
 
 	if (dsi_dsc_compression_enabled(mode)) {
 		struct msm_display_dsc_info dsc;
@@ -461,11 +461,11 @@ void dsi_ctrl_hw_cmn_setup_cmd_stream(struct dsi_ctrl_hw *ctrl,
 		bytes_in_slice = vdc.bytes_in_slice;
 	} else if (roi) {
 		width_final = roi->w;
-		stride_final = DIV_ROUND_UP(roi->w * bpp, 8);
+		stride_final = roi->w * 3;
 		height_final = roi->h;
 	} else {
 		width_final = mode->h_active;
-		stride_final = DIV_ROUND_UP(mode->h_active * bpp, 8);
+		stride_final = mode->h_active * 3;
 		height_final = mode->v_active;
 	}
 
@@ -582,7 +582,7 @@ void dsi_ctrl_hw_cmn_video_engine_setup(struct dsi_ctrl_hw *ctrl,
 	reg |= (cfg->bllp_lp11_en ? BIT(12) : 0);
 	reg |= (cfg->traffic_mode & 0x3) << 8;
 	reg |= (cfg->vc_id & 0x3);
-	reg |= (video_mode_format_map[common_cfg->dst_format] & 0x7) << 4;
+	reg |= (video_mode_format_map[common_cfg->dst_format] & 0x3) << 4;
 	DSI_W32(ctrl, DSI_VIDEO_MODE_CTRL, reg);
 
 	reg = (common_cfg->swap_mode & 0x7) << 12;
@@ -753,6 +753,11 @@ void dsi_ctrl_hw_cmn_kickoff_command(struct dsi_ctrl_hw *ctrl,
 	reg = DSI_R32(ctrl, DSI_DMA_FIFO_CTRL);
 	reg |= BIT(20);/* Disable write watermark*/
 	reg |= BIT(16);/* Disable read watermark */
+#if defined(OPLUS_FEATURE_PXLW_IRIS5)
+	/* set DMA FIFO read watermark to 15/16 full */
+	if (iris_is_chip_supported())
+		reg = 0x33;
+#endif
 
 	DSI_W32(ctrl, DSI_DMA_FIFO_CTRL, reg);
 	DSI_W32(ctrl, DSI_DMA_CMD_OFFSET, cmd->offset);

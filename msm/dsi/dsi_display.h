@@ -19,6 +19,9 @@
 #include "dsi_ctrl.h"
 #include "dsi_phy.h"
 #include "dsi_panel.h"
+#ifdef OPLUS_BUG_STABILITY
+#include "oplus_dsi_support.h"
+#endif /*OPLUS_BUG_STABILITY*/
 
 #define MAX_DSI_CTRLS_PER_DISPLAY             2
 #define DSI_CLIENT_NAME_SIZE		20
@@ -283,6 +286,11 @@ struct dsi_display {
 
 	u32 te_source;
 	u32 clk_gating_config;
+#if defined(OPLUS_FEATURE_PXLW_IRIS5)
+	u32 off;
+	u32 cnt;
+	u8 cmd_data_type;
+#endif
 	bool queue_cmd_waits;
 	struct workqueue_struct *dma_cmd_workq;
 
@@ -291,12 +299,22 @@ struct dsi_display {
 	bool is_active;
 
 	bool trusted_vm_env;
+
 	bool hw_ownership;
 
 	int tx_cmd_buf_ndx;
 	struct dsi_panel_cmd_set cmd_set;
 
 	bool enabled;
+#ifdef OPLUS_BUG_STABILITY
+	/* save qsync info, then restore qsync status after panel enable*/
+	bool need_qsync_restore;
+	/* force close qysnc window when qsync mode is on before panel enable */
+	bool force_qsync_mode_off;
+	uint32_t current_qsync_mode;
+	uint32_t current_qsync_dynamic_min_fps;
+	struct completion switch_te_gate;
+#endif
 };
 
 int dsi_display_dev_probe(struct platform_device *pdev);
@@ -628,7 +646,7 @@ int dsi_pre_clkon_cb(void *priv, enum dsi_clk_type clk_type,
  * Return: error code.
  */
 int dsi_display_unprepare(struct dsi_display *display);
-int dsi_display_set_ulp_load(struct dsi_display *display, bool enable);
+
 int dsi_display_set_tpg_state(struct dsi_display *display, bool enable);
 
 int dsi_display_clock_gate(struct dsi_display *display, bool enable);
@@ -734,11 +752,13 @@ int dsi_display_set_power(struct drm_connector *connector,
  * @connector: Pointer to drm connector structure
  * @display: Pointer to private display structure
  * @params: Parameters for kickoff-time programming
+ * @force_update_dsi_clocks: Bool to force clock update
  * Returns: Zero on success
  */
 int dsi_display_pre_kickoff(struct drm_connector *connector,
 		struct dsi_display *display,
-		struct msm_display_kickoff_params *params);
+		struct msm_display_kickoff_params *params,
+		bool force_update_dsi_clocks);
 
 /*
  * dsi_display_pre_commit - program pre commit features
@@ -767,6 +787,18 @@ enum dsi_pixel_format dsi_display_get_dst_format(
  * Return: Zero on Success
  */
 int dsi_display_cont_splash_config(void *display);
+
+#ifdef OPLUS_BUG_STABILITY
+struct dsi_display *get_main_display(void);
+struct dsi_display *get_sec_display(void);
+struct dsi_display *get_current_display(void);
+void set_current_display(struct dsi_display *display);
+
+/* Add for implement panel register read */
+int dsi_host_alloc_cmd_tx_buffer(struct dsi_display *display);
+int dsi_display_cmd_engine_enable(struct dsi_display *display);
+int dsi_display_cmd_engine_disable(struct dsi_display *display);
+#endif
 
 /**
  * dsi_display_cont_splash_res_disable() - Disable resource votes added in probe

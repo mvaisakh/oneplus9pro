@@ -544,7 +544,6 @@ struct ipa_smmu_cb_ctx {
 	u32 va_end;
 	bool shared;
 	bool is_cache_coherent;
-	bool done;
 };
 
 /**
@@ -2156,8 +2155,6 @@ struct ipa3_context {
 	bool modem_load_ipa_fw;
 	bool fnr_stats_not_supported;
 	bool is_device_crashed;
-	int ipa_pil_load;
-
 };
 
 struct ipa3_plat_drv_res {
@@ -2870,7 +2867,7 @@ int ipa3_inc_client_enable_clks_no_block(struct ipa_active_client_logging_info
 void ipa3_dec_client_disable_clks_no_block(
 	struct ipa_active_client_logging_info *id);
 void ipa3_dec_client_disable_clks_delay_wq(
-		struct ipa_active_client_logging_info *id, unsigned long delay);
+	struct ipa_active_client_logging_info *id, unsigned long delay);
 void ipa3_active_clients_log_dec(struct ipa_active_client_logging_info *id,
 		bool int_ctx);
 void ipa3_active_clients_log_inc(struct ipa_active_client_logging_info *id,

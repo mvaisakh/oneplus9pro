@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2020, The Linux Foundation. All rights reserved.
  */
 
 #ifndef _CAM_CSIPHY_1_2_5_HWREG_H_
@@ -15,7 +15,7 @@ struct csiphy_reg_parms_t csiphy_v1_2_5 = {
 	.csiphy_interrupt_status_size = 11,
 	.csiphy_common_array_size = 6,
 	.csiphy_reset_array_size = 5,
-	.csiphy_2ph_config_array_size = 21,
+	.csiphy_2ph_config_array_size = 23,
 	.csiphy_3ph_config_array_size = 30,
 	.csiphy_2ph_clock_lane = 0x1,
 	.csiphy_2ph_combo_ck_ln = 0x10,
@@ -74,6 +74,8 @@ csiphy_reg_t csiphy_2ph_v1_2_5_reg[MAX_LANES][MAX_SETTINGS_PER_LANE] = {
 		{0x0008, 0x10, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
 		{0x0010, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0038, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x005C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0060, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x02, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
 	},
@@ -122,6 +124,8 @@ csiphy_reg_t csiphy_2ph_v1_2_5_reg[MAX_LANES][MAX_SETTINGS_PER_LANE] = {
 		{0x0208, 0x04, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
 		{0x0210, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0238, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x025C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0260, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x02, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
 	},
@@ -145,6 +149,8 @@ csiphy_reg_t csiphy_2ph_v1_2_5_reg[MAX_LANES][MAX_SETTINGS_PER_LANE] = {
 		{0x0408, 0x04, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
 		{0x0410, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0438, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x045C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0460, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x02, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
 	},
@@ -168,6 +174,8 @@ csiphy_reg_t csiphy_2ph_v1_2_5_reg[MAX_LANES][MAX_SETTINGS_PER_LANE] = {
 		{0x0608, 0x04, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
 		{0x0610, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0638, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x065C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0660, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x02, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
 	},
@@ -194,6 +202,8 @@ struct csiphy_reg_t
 		{0x0008, 0x10, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
 		{0x0010, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0038, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x005C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0060, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
@@ -219,6 +229,8 @@ struct csiphy_reg_t
 		{0x070c, 0xFF, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0710, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0738, 0x1F, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x075C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0760, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
 	},
 	{
@@ -240,6 +252,8 @@ struct csiphy_reg_t
 		{0x0208, 0x04, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
 		{0x0210, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0238, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x025C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0260, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
@@ -264,6 +278,8 @@ struct csiphy_reg_t
 		{0x0408, 0x04, 0x00, CSIPHY_SETTLE_CNT_LOWER_BYTE},
 		{0x0410, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0438, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x045C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0460, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0000, 0x00, 0x00, CSIPHY_DNP_PARAMS},
 	},
@@ -288,6 +304,8 @@ struct csiphy_reg_t
 		{0x060c, 0xFF, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0610, 0x52, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0638, 0xFE, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x065C, 0xC0, 0x00, CSIPHY_DEFAULT_PARAMS},
+		{0x0660, 0x0D, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x00, 0x00, CSIPHY_DEFAULT_PARAMS},
 	},
 };
@@ -389,174 +407,6 @@ csiphy_reg_t csiphy_3ph_v1_2_5_reg[MAX_LANES][MAX_SETTINGS_PER_LANE] = {
 		{0x0BB0, 0x01, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0BB4, 0x02, 0x00, CSIPHY_DEFAULT_PARAMS},
 		{0x0800, 0x0E, 0x00, CSIPHY_DEFAULT_PARAMS},
-	},
-};
-
-struct data_rate_settings_t data_rate_delta_table_1_2_5 = {
-	.num_data_rate_settings = 3,
-	.data_rate_settings = {
-		{
-			/* (2.5 * 10**3 * 2.28) rounded value*/
-			.bandwidth = 5700000000,
-			.data_rate_reg_array_size = 4,
-			.per_lane_info = {
-				{
-					.lane_identifier = CPHY_LANE_0,
-					.csiphy_data_rate_regs = {
-						{0x010C, 0x12, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0108, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x144, 0x22, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0x9B4, 0x03, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-				{
-					.lane_identifier = CPHY_LANE_1,
-					.csiphy_data_rate_regs = {
-						{0x030C, 0x12, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0308, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x344, 0x22, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xAB4, 0x03, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-				{
-					.lane_identifier = CPHY_LANE_2,
-					.csiphy_data_rate_regs = {
-						{0x050C, 0x12, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0508, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x544, 0x22, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xBB4, 0x03, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-			},
-		},
-		{
-			/* (3.5 * 10**3 * 2.28) rounded value */
-			.bandwidth = 7980000000,
-			.data_rate_reg_array_size = 6,
-			.per_lane_info = {
-				{
-					.lane_identifier = CPHY_LANE_0,
-					.csiphy_data_rate_regs = {
-						{0x010C, 0x08, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0108, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x144, 0xB2, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0x988, 0x05, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0x980, 0x60, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0x9B4, 0x02, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-				{
-					.lane_identifier = CPHY_LANE_1,
-					.csiphy_data_rate_regs = {
-						{0x030C, 0x08, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0308, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x344, 0xB2, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xA88, 0x05, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xA80, 0x60, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xAB4, 0x02, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-				{
-					.lane_identifier = CPHY_LANE_2,
-					.csiphy_data_rate_regs = {
-						{0x050C, 0x08, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0508, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x544, 0xB2, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xB88, 0x05, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xB80, 0x60, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xBB4, 0x02, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-			},
-		},
-		{
-			/* (4.5 * 10**3 * 2.28) rounded value */
-			.bandwidth = 10260000000,
-			.data_rate_reg_array_size = 6,
-			.per_lane_info = {
-				{
-					.lane_identifier = CPHY_LANE_0,
-					.csiphy_data_rate_regs = {
-						{0x010C, 0x08, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0108, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x144, 0xB2, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0x988, 0x05, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0x980, 0x60, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0x9B4, 0x01, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-				{
-					.lane_identifier = CPHY_LANE_1,
-					.csiphy_data_rate_regs = {
-						{0x030C, 0x08, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0308, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x344, 0xB2, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xA88, 0x05, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xA80, 0x60, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xAB4, 0x01, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-				{
-					.lane_identifier = CPHY_LANE_2,
-					.csiphy_data_rate_regs = {
-						{0x050C, 0x08, 0x00,
-						CSIPHY_SETTLE_CNT_LOWER_BYTE},
-						{0x0508, 0x00, 0x00,
-						CSIPHY_SETTLE_CNT_HIGHER_BYTE},
-						{0x544, 0xB2, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xB88, 0x05, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xB80, 0x60, 0x00,
-							CSIPHY_DEFAULT_PARAMS},
-						{0xBB4, 0x01, 0x0A,
-							CSIPHY_DEFAULT_PARAMS},
-					},
-				},
-			},
-		},
 	},
 };
 

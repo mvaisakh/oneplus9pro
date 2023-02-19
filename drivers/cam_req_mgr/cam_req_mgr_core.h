@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * Copyright (c) 2016-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
  */
 #ifndef _CAM_REQ_MGR_CORE_H_
 #define _CAM_REQ_MGR_CORE_H_
@@ -13,7 +13,11 @@
 #define CAM_REQ_MGR_MAX_LINKED_DEV     16
 #define MAX_REQ_SLOTS                  48
 
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+#define CAM_REQ_MGR_WATCHDOG_TIMEOUT          2000
+#else
 #define CAM_REQ_MGR_WATCHDOG_TIMEOUT          1000
+#endif
 #define CAM_REQ_MGR_WATCHDOG_TIMEOUT_DEFAULT  5000
 #define CAM_REQ_MGR_WATCHDOG_TIMEOUT_MAX      50000
 #define CAM_REQ_MGR_SCHED_REQ_TIMEOUT         1000
@@ -34,7 +38,7 @@
 
 #define MAXIMUM_LINKS_PER_SESSION  4
 
-#define MAXIMUM_RETRY_ATTEMPTS 2
+#define MAXIMUM_RETRY_ATTEMPTS 5
 
 #define MINIMUM_WORKQUEUE_SCHED_TIME_IN_MS 5
 
@@ -177,6 +181,10 @@ struct cam_req_mgr_traverse {
 	struct cam_req_mgr_apply          *apply_data;
 	struct cam_req_mgr_req_queue      *in_q;
 	bool                               validate_only;
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	//lanhe add for use RDI for sensor apply
+	bool                               rdi_traverse;
+#endif
 	int32_t                            open_req_cnt;
 };
 
@@ -198,34 +206,40 @@ struct cam_req_mgr_apply {
  * struct crm_tbl_slot_special_ops
  * @dev_hdl         : Device handle who requested for special ops
  * @apply_at_eof    : Boolean Identifier for request to be applied at EOF
+ * @skip_next_frame : Flag to drop the frame after skip_before_apply frame
  * @is_applied      : Flag to identify if request is already applied to device
  *                    in previous frame
  */
 struct crm_tbl_slot_special_ops {
 	int32_t dev_hdl;
 	bool apply_at_eof;
+	bool skip_next_frame;
 	bool is_applied;
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	//lanhe add for use RDI for sensor apply
+	uint32_t use_rdi_sof_apply;  //set by devices which need use RDI SOF for apply
+	uint32_t rdi_sof_applied;	 //set while device was apply by RDI SOF
+#endif
+
 };
 
 /**
  * struct cam_req_mgr_tbl_slot
- * @idx                 : slot index
- * @req_ready_map       : mask tracking which all devices have request ready
- * @state               : state machine for life cycle of a slot
- * @inject_delay_at_sof : insert extra bubbling for flash type of use cases
- * @inject_delay_at_eof : insert extra bubbling for flash type of use cases
- * @ops                 : special operation for the table slot
- *                        e.g.
- *                        skip_next frame: in case of applying one device
- *                        and skip others
- *                        apply_at_eof: device that needs to apply at EOF
+ * @idx             : slot index
+ * @req_ready_map   : mask tracking which all devices have request ready
+ * @state           : state machine for life cycle of a slot
+ * @inject_delay    : insert extra bubbling for flash type of use cases
+ * @ops             : special operation for the table slot
+ *                    e.g.
+ *                    skip_next frame: in case of applying one device
+ *                    and skip others
+ *                    apply_at_eof: device that needs to apply at EOF
  */
 struct cam_req_mgr_tbl_slot {
 	int32_t                                idx;
 	uint32_t                               req_ready_map;
 	enum crm_req_state                     state;
-	uint32_t                               inject_delay_at_sof;
-	uint32_t                               inject_delay_at_eof;
+	uint32_t                               inject_delay;
 	struct  crm_tbl_slot_special_ops       ops;
 };
 
@@ -289,6 +303,10 @@ struct cam_req_mgr_req_queue {
 	int32_t                     num_slots;
 	struct cam_req_mgr_slot     slot[MAX_REQ_SLOTS];
 	int32_t                     rd_idx;
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	//lanhe add
+	int32_t                     rdi_rd_idx;
+#endif
 	int32_t                     wr_idx;
 	int32_t                     last_applied_idx;
 };
@@ -309,6 +327,10 @@ struct cam_req_mgr_req_data {
 	int32_t                       num_tbl;
 	struct cam_req_mgr_apply      apply_data[CAM_PIPELINE_DELAY_MAX];
 	struct cam_req_mgr_apply      prev_apply_data[CAM_PIPELINE_DELAY_MAX];
+#ifdef OPLUS_FEATURE_CAMERA_COMMON
+	//lanhe add
+	struct cam_req_mgr_apply      rdi_apply_data[CAM_PIPELINE_DELAY_MAX];
+#endif
 	struct mutex                  lock;
 };
 
@@ -379,7 +401,6 @@ struct cam_req_mgr_connected_device {
  * @dual_trigger         : Links needs to wait for two triggers prior to
  *                         applying the settings
  * @trigger_cnt          : trigger count value per device initiating the trigger
- * @eof_event_cnt        : Atomic variable to track the number of EOF requests
  * @skip_init_frame      : skip initial frames crm_wd_timer validation in the
  *                         case of long exposure use case
  * @last_sof_trigger_jiffies : Record the jiffies of last sof trigger jiffies
@@ -415,9 +436,7 @@ struct cam_req_mgr_core_link {
 	uint64_t                             sof_timestamp;
 	uint64_t                             prev_sof_timestamp;
 	bool                                 dual_trigger;
-	uint32_t trigger_cnt[CAM_REQ_MGR_MAX_TRIGGERS]
-				[CAM_TRIGGER_MAX_POINTS + 1];
-	atomic_t                             eof_event_cnt;
+	uint32_t trigger_cnt[CAM_REQ_MGR_MAX_TRIGGERS][CAM_TRIGGER_MAX_TYPES];
 	bool                                 skip_init_frame;
 	uint64_t                             last_sof_trigger_jiffies;
 	bool                                 wq_congestion;

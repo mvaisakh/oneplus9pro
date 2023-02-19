@@ -685,6 +685,7 @@ inline void update_log_ctxt(u32 sid, u32 session_type, u32 fourcc)
 }
 
 /* Mock all the missing parts for successful compilation starts here */
+
 void do_gettimeofday(struct timeval *__ddl_tv)
 {
 }

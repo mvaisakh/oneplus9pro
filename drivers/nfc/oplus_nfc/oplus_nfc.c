@@ -26,7 +26,7 @@ static bool support_nfc = false;
 #if IS_MODULE(CONFIG_OPLUS_NFC)
 extern char prj_name[];
 
-int get_project_in_gki_mode() {
+int get_project_in_gki_mode(void) {
         pr_err("prj_name from cmdline : %s\n", prj_name);
 
 	return simple_strtol(prj_name, NULL, 10);
@@ -34,7 +34,7 @@ int get_project_in_gki_mode() {
 #endif
 
 
-bool is_nfc_support()
+bool is_nfc_support(void)
 {
 	return support_nfc;
 }

@@ -1,17 +1,10 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
- */
-
-
-/** Filename: tfa9896_tfafieldnames.h
- *  This file was generated automatically on 08/15/16 at 09:43:38. 
- *  Source file: TFA9896_N1B1_I2C_regmap_V16.xlsx
  */
 
 #ifndef _TFA9896_TFAFIELDNAMES_H
@@ -20,7 +13,7 @@
 
 #define TFA9896_I2CVERSION    16
 
-typedef enum TFA9896BfEnumList {
+typedef enum nxpTFA9896BfEnumList {
     TFA9896_BF_VDDS  = 0x0000,    /*!< Power-on-reset flag (auto clear by reading)        */
     TFA9896_BF_PLLS  = 0x0010,    /*!< PLL lock to programmed frequency                   */
     TFA9896_BF_OTDS  = 0x0020,    /*!< Over Temperature Protection alarm                  */
@@ -200,7 +193,7 @@ typedef enum TFA9896BfEnumList {
     TFA9896_BF_ACK   = 0x7387,    /*!< CF acknowledgement of the requests channels        */
     TFA9896_BF_MTPOTC= 0x8000,    /*!< Calibration schedule selection                     */
     TFA9896_BF_MTPEX = 0x8010,    /*!< Calibration of RON status bit                      */
-} TFA9896BfEnumList_t;
+} nxpTFA9896BfEnumList_t;
 #define TFA9896_NAMETABLE static tfaBfName_t Tfa9896DatasheetNames[]= {\
    { 0x0, "VDDS"},    /* Power-on-reset flag (auto clear by reading)       , */\
    { 0x10, "PLLS"},    /* PLL lock to programmed frequency                  , */\

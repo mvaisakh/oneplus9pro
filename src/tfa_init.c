@@ -1,6 +1,5 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2020 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -8,14 +7,13 @@
  *
  */
 
-
 #include "dbgprint.h"
 #include "tfa_service.h"
 #include "tfa_internal.h"
 #include "tfa_container.h"
 #include "tfa98xx_tfafieldnames.h"
 
- /* The CurrentSense4 registers are not in the datasheet */
+/* The CurrentSense4 registers are not in the datasheet */
 #define TFA98XX_CURRENTSENSE4_CTRL_CLKGATECFOFF (1<<2)
 #define TFA98XX_CURRENTSENSE4 0x49
 
@@ -37,7 +35,7 @@ static enum Tfa98xx_Error no_overload_function_available2(struct tfa_device *tfa
 	return Tfa98xx_Error_Ok;
 }
 
-/* tfa98xx_dsp_system_stable
+/* tfa98xx_dsp_system_stable_v6
 *  return: *ready = 1 when clocks are stable to allow DSP subsystem access
 */
 static enum Tfa98xx_Error tfa_dsp_system_stable(struct tfa_device *tfa, int *ready)
@@ -111,7 +109,7 @@ int tfa_set_swprofile(struct tfa_device *tfa, unsigned short new_value)
 	int mtpk, active_value = tfa->profile;
 
 	/* Also set the new value in the struct */
-	tfa->profile = new_value - 1;
+	tfa->profile = new_value-1;
 
 	/* for TFA1 devices */
 	/* it's in MTP shadow, so unlock if not done already */
@@ -125,7 +123,7 @@ int tfa_set_swprofile(struct tfa_device *tfa, unsigned short new_value)
 
 static int tfa_get_swprofile(struct tfa_device *tfa)
 {
-	return /*TFA_GET_BF(tfa, SWPROFIL) - 1*/tfa->profile;
+	return TFA_GET_BF(tfa, SWPROFIL) - 1;
 }
 
 static int tfa_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
@@ -133,7 +131,7 @@ static int tfa_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
 	int mtpk, active_value = tfa->vstep;
 
 	/* Also set the new value in the struct */
-	tfa->vstep = new_value - 1;
+	tfa->vstep = new_value-1;
 
 	/* for TFA1 devices */
 	/* it's in MTP shadow, so unlock if not done already */
@@ -152,14 +150,14 @@ static int tfa_get_swvstep(struct tfa_device *tfa)
 	value = TFA_GET_BF(tfa, SWVSTEP);
 
 	/* Also set the new value in the struct */
-	tfa->vstep = value - 1;
+	tfa->vstep = value;
 
 	return value - 1; /* invalid if 0 */
 }
 
 static int tfa_get_mtpb(struct tfa_device *tfa) {
 
-	int value = 0;
+	int value=0;
 
 	/* Set the new value in the hw register */
 	value = TFA_GET_BF(tfa, MTPB);
@@ -176,26 +174,20 @@ tfa_set_mute_nodsp(struct tfa_device *tfa, int mute)
 	return Tfa98xx_Error_Ok;
 }
 
-static int tfa_set_bitfield(struct tfa_device* tfa, uint16_t bitfield, uint16_t value)
-{
-	return tfa_set_bf(tfa, (uint16_t)bitfield, value);
-}
-
-void tfa_set_ops_defaults(struct tfa_device_ops *ops)
+void set_ops_defaults(struct tfa_device_ops *ops)
 {
 	/* defaults */
-	ops->tfa_reg_read = tfa98xx_read_register16;
-	ops->tfa_reg_write = tfa98xx_write_register16;
-	ops->tfa_mem_read = tfa98xx_dsp_read_mem;
-	ops->tfa_mem_write = tfa98xx_dsp_write_mem_word;
-	ops->tfa_dsp_msg = tfa_dsp_msg_rpc;
-	ops->tfa_dsp_msg_read = tfa_dsp_msg_read_rpc;
+	ops->tfa_reg_read = tfa98xx_read_register16_v6;
+	ops->tfa_reg_write = tfa98xx_write_register16_v6;
+	ops->mem_read = tfa98xx_dsp_read_mem_v6;
+	ops->mem_write = tfa98xx_dsp_write_mem_word_v6;
+	ops->dsp_msg = tfa_dsp_msg_v6;
+	ops->dsp_msg_read = tfa_dsp_msg_v6_read_v6;
 	ops->dsp_write_tables = no_overload_function_available;
 	ops->dsp_reset = tfa_dsp_reset;
 	ops->dsp_system_stable = tfa_dsp_system_stable;
 	ops->auto_copy_mtp_to_iic = no_overload_function_available2;
 	ops->factory_trimmer = no_overload_function_available2;
-	ops->phase_shift = no_overload_function_available2;
 	ops->set_swprof = tfa_set_swprofile;
 	ops->get_swprof = tfa_get_swprofile;
 	ops->set_swvstep = tfa_set_swvstep;
@@ -205,13 +197,12 @@ void tfa_set_ops_defaults(struct tfa_device_ops *ops)
 	ops->faim_protect = tfa_faim_protect;
 	ops->set_osc_powerdown = tfa_set_osc_powerdown;
 	ops->update_lpm = tfa_update_lpm;
-	ops->tfa_set_bitfield = tfa_set_bitfield;
 }
 
 /***********************************************************************************/
 /* no TFA
  *  external DSP SB instance                                                               */
- /***********************************************************************************/
+/***********************************************************************************/
 static short tfanone_swvstep, swprof; //TODO emulate in hal plugin
 static enum Tfa98xx_Error tfanone_dsp_system_stable(struct tfa_device *tfa, int *ready)
 {
@@ -226,7 +217,7 @@ static int tfanone_set_swprofile(struct tfa_device *tfa, unsigned short new_valu
 	int active_value = tfa_dev_get_swprof(tfa);
 
 	/* Set the new value in the struct */
-	tfa->profile = new_value - 1;
+	tfa->profile = new_value-1;
 
 	/* Set the new value in the hw register */
 	swprof = new_value;
@@ -243,7 +234,7 @@ static int tfanone_get_swprofile(struct tfa_device *tfa)
 static int tfanone_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
 {
 	/* Set the new value in the struct */
-	tfa->vstep = new_value - 1;
+	tfa->vstep = new_value-1;
 
 	/* Set the new value in the hw register */
 	tfanone_swvstep = new_value;
@@ -260,7 +251,7 @@ static int tfanone_get_swvstep(struct tfa_device *tfa)
 void tfanone_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->dsp_system_stable = tfanone_dsp_system_stable;
 	ops->set_swprof = tfanone_set_swprofile;
@@ -279,7 +270,7 @@ static enum Tfa98xx_Error tfa9912_faim_protect(struct tfa_device *tfa, int statu
 
 	if (tfa) {
 		if (status == 0 || status == 1) {
-			ret = -(tfa_set_bf(tfa, TFA9912_BF_SSFAIME, (uint16_t)status));
+			ret = -(tfa_set_bf_v6(tfa, TFA9912_BF_SSFAIME, (uint16_t)status));
 		}
 	}
 
@@ -304,7 +295,7 @@ static enum Tfa98xx_Error tfa9912_specific(struct tfa_device *tfa)
 	if (tfa->rev == 0x1a13) {
 
 		/* ----- generated code start ----- */
-		/* -----  version 1.43  ----- */
+		/* -----  version 1.41  ----- */
 		tfa_reg_write(tfa, 0x00, 0x0255); //POR=0x0245
 		tfa_reg_write(tfa, 0x01, 0x838a); //POR=0x83ca
 		tfa_reg_write(tfa, 0x02, 0x2dc8); //POR=0x2828
@@ -331,12 +322,65 @@ static enum Tfa98xx_Error tfa9912_specific(struct tfa_device *tfa)
 
 		/* PLMA5505: MTP key open makes vulanable for MTP corruption */
 		tfa9912_faim_protect(tfa, 0);
-	}
-	else {
+	} else {
 		pr_info("Warning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
 	}
 
 	return error;
+}
+
+static enum Tfa98xx_Error tfa9912_tfa_dsp_write_tables(struct tfa_device *tfa, int sample_rate)
+{
+	unsigned char buffer[15] = { 0 };
+	int size = 15 * sizeof(char);
+
+	/* Write the fractional delay in the hardware register 'cs_frac_delay' */
+	switch (sample_rate) {
+	case 0:	/* 8kHz */
+		TFA_SET_BF(tfa, FRACTDEL, 40);
+		break;
+	case 1:	/* 11.025KHz */
+		TFA_SET_BF(tfa, FRACTDEL, 38);
+		break;
+	case 2:	/* 12kHz */
+		TFA_SET_BF(tfa, FRACTDEL, 37);
+		break;
+	case 3:	/* 16kHz */
+		TFA_SET_BF(tfa, FRACTDEL, 59);
+		break;
+	case 4:	/* 22.05KHz */
+		TFA_SET_BF(tfa, FRACTDEL, 56);
+		break;
+	case 5:	/* 24kHz */
+		TFA_SET_BF(tfa, FRACTDEL, 56);
+		break;
+	case 6:	/* 32kHz */
+		TFA_SET_BF(tfa, FRACTDEL, 52);
+		break;
+	case 7:	/* 44.1kHz */
+		TFA_SET_BF(tfa, FRACTDEL, 48);
+		break;
+	case 8:
+	default:/* 48kHz */
+		TFA_SET_BF(tfa, FRACTDEL, 46);
+		break;
+	}
+
+	/* First copy the msg_id to the buffer */
+	buffer[0] = (uint8_t)0;
+	buffer[1] = (uint8_t)MODULE_FRAMEWORK + 128;
+	buffer[2] = (uint8_t)FW_PAR_ID_SET_SENSES_DELAY;
+
+	/* Required for all FS exept 8kHz (8kHz is all zero) */
+	if (sample_rate != 0) {
+		buffer[5] = 1;	/* Vdelay_P */
+		buffer[8] = 0;	/* Idelay_P */
+		buffer[11] = 1; /* Vdelay_S */
+		buffer[14] = 0; /* Idelay_S */
+	}
+
+	/* send SetSensesDelay msg */
+	return dsp_msg(tfa, size, (char *)buffer);
 }
 
 static enum Tfa98xx_Error tfa9912_factory_trimmer(struct tfa_device *tfa)
@@ -396,39 +440,39 @@ static int tfa9912_set_swprofile(struct tfa_device *tfa, unsigned short new_valu
 	int active_value = tfa_dev_get_swprof(tfa);
 
 	/* Set the new value in the struct */
-	tfa->profile = new_value - 1;
+	tfa->profile = new_value-1;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9912_BF_SWPROFIL, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9912_BF_SWPROFIL, new_value);
 
 	return active_value;
 }
 
 static int tfa9912_get_swprofile(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9912_BF_SWPROFIL) - 1;
+	return tfa_get_bf_v6(tfa, TFA9912_BF_SWPROFIL) - 1;
 }
 
 static int tfa9912_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
 {
 	/* Set the new value in the struct */
-	tfa->vstep = new_value - 1;
+	tfa->vstep = new_value-1;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9912_BF_SWVSTEP, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9912_BF_SWVSTEP, new_value);
 
 	return new_value;
 }
 
 static int tfa9912_get_swvstep(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9912_BF_SWVSTEP) - 1;
+	return tfa_get_bf_v6(tfa, TFA9912_BF_SWVSTEP) - 1;
 }
 
 static enum Tfa98xx_Error
 tfa9912_set_mute(struct tfa_device *tfa, int mute)
 {
-	tfa_set_bf(tfa, TFA9912_BF_CFSM, (const uint16_t)mute);
+	tfa_set_bf_v6(tfa, TFA9912_BF_CFSM, (const uint16_t)mute);
 
 	return Tfa98xx_Error_Ok;
 }
@@ -451,8 +495,8 @@ static uint16_t tfa9912_vboost_fixup(struct tfa_device *tfa, uint16_t dcdc_cnt6)
 	new_dcdc_cnt6 = dcdc_cnt6;
 
 	/* Get current boost_volatage values */
-	boost_v_1st = tfa_get_bf_value(TFA9912_BF_DCVOF, new_dcdc_cnt6);
-	boost_v_2nd = tfa_get_bf_value(TFA9912_BF_DCVOS, new_dcdc_cnt6);
+	boost_v_1st = tfa_get_bf_v6_value_v6(TFA9912_BF_DCVOF, new_dcdc_cnt6);
+	boost_v_2nd = tfa_get_bf_v6_value_v6(TFA9912_BF_DCVOS, new_dcdc_cnt6);
 
 	/* Check boost voltages */
 	if (boost_v_1st > TFA9912_VBOOST_MAX)
@@ -468,14 +512,14 @@ static uint16_t tfa9912_vboost_fixup(struct tfa_device *tfa, uint16_t dcdc_cnt6)
 	if (boost_v_2nd + cal_offset > TFA9912_CALIBR_BOOST_MAX)
 		boost_v_2nd = TFA9912_CALIBR_BOOST_MAX - cal_offset;
 
-	tfa_set_bf_value(TFA9912_BF_DCVOF, boost_v_1st, &new_dcdc_cnt6);
-	tfa_set_bf_value(TFA9912_BF_DCVOS, boost_v_2nd, &new_dcdc_cnt6);
+	tfa_set_bf_v6_value(TFA9912_BF_DCVOF, boost_v_1st, &new_dcdc_cnt6);
+	tfa_set_bf_v6_value(TFA9912_BF_DCVOS, boost_v_2nd, &new_dcdc_cnt6);
 
 	/* Change register value only when it's neccesary */
 	if (new_dcdc_cnt6 != dcdc_cnt6) {
 		if (tfa->verbose)
 			pr_debug("tfa9912: V boost fixup applied. Old 0x%04x, new 0x%04x\n",
-				dcdc_cnt6, new_dcdc_cnt6);
+			         dcdc_cnt6, new_dcdc_cnt6);
 		dcdc_cnt6 = new_dcdc_cnt6;
 	}
 
@@ -490,7 +534,7 @@ enum Tfa98xx_Error tfa9912_reg_write(struct tfa_device *tfa, unsigned char subad
 		value = tfa9912_vboost_fixup(tfa, value);
 	}
 
-	return tfa98xx_write_register16(tfa, subaddress, value);
+	return tfa98xx_write_register16_v6(tfa, subaddress, value);
 }
 
 /** Set internal oscillator into power down mode for TFA9912.
@@ -505,36 +549,21 @@ enum Tfa98xx_Error tfa9912_reg_write(struct tfa_device *tfa, unsigned char subad
 static enum Tfa98xx_Error tfa9912_set_osc_powerdown(struct tfa_device *tfa, int state)
 {
 	if (state == 1 || state == 0) {
-		return -tfa_set_bf(tfa, TFA9912_BF_MANAOOSC, (uint16_t)state);
+		return -tfa_set_bf_v6(tfa, TFA9912_BF_MANAOOSC, (uint16_t) state);
 	}
 
-	return Tfa98xx_Error_Bad_Parameter;
-}
-/** update low power mode of the device.
-*
-*  @param[in] tfa device description structure
-*  @param[in] state State of the low power mode1 detector control
-*  0 - low power mode1 detector control enabled, 
-*  1 - low power mode1 detector control disabled(low power mode is also disabled).
-*
-*  @return Tfa98xx_Error_Ok when successfull, error otherwise.
-*/
-static enum Tfa98xx_Error tfa9912_update_lpm(struct tfa_device *tfa, int state)
-{
-	if (state == 1 || state == 0) {
-		return -tfa_set_bf(tfa, TFA9912_BF_LPM1DIS, (uint16_t)state);
-	}
 	return Tfa98xx_Error_Bad_Parameter;
 }
 
 void tfa9912_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9912_specific;
 	/* PLMA5322, PLMA5528 - Limits values of DCVOS and DCVOF. */
 	ops->tfa_reg_write = tfa9912_reg_write;
+	ops->dsp_write_tables = tfa9912_tfa_dsp_write_tables;
 	ops->factory_trimmer = tfa9912_factory_trimmer;
 	ops->auto_copy_mtp_to_iic = tfa9912_auto_copy_mtp_to_iic;
 	ops->set_swprof = tfa9912_set_swprofile;
@@ -544,7 +573,6 @@ void tfa9912_ops(struct tfa_device_ops *ops)
 	ops->set_mute = tfa9912_set_mute;
 	ops->faim_protect = tfa9912_faim_protect;
 	ops->set_osc_powerdown = tfa9912_set_osc_powerdown;
-	ops->update_lpm = tfa9912_update_lpm;
 }
 
 /***********************************************************************************/
@@ -564,60 +592,60 @@ static enum Tfa98xx_Error tfa9872_specific(struct tfa_device *tfa)
 	error = tfa_reg_read(tfa, 0xFB, &value);
 	xor = value ^ 0x005A;
 	error = tfa_reg_write(tfa, 0xA0, xor);
-	tfa98xx_key2(tfa, 0);
+	tfa98xx_key2_v6(tfa, 0);
 
 	switch (tfa->rev) {
-	case 0x1a72:
-	case 0x2a72:
-		/* ----- generated code start ----- */
-		/* -----  version 26 ----- */
-		tfa_reg_write(tfa, 0x00, 0x1801); //POR=0x0001
-		tfa_reg_write(tfa, 0x02, 0x2dc8); //POR=0x2028
-		tfa_reg_write(tfa, 0x20, 0x0890); //POR=0x2890
-		tfa_reg_write(tfa, 0x22, 0x043c); //POR=0x045c
-		tfa_reg_write(tfa, 0x51, 0x0000); //POR=0x0080
-		tfa_reg_write(tfa, 0x52, 0x1a1c); //POR=0x7ae8
-		tfa_reg_write(tfa, 0x58, 0x161c); //POR=0x101c
-		tfa_reg_write(tfa, 0x61, 0x0198); //POR=0x0000
-		tfa_reg_write(tfa, 0x65, 0x0a8b); //POR=0x0a9a
-		tfa_reg_write(tfa, 0x70, 0x07f5); //POR=0x06e6
-		tfa_reg_write(tfa, 0x74, 0xcc84); //POR=0xd823
-		tfa_reg_write(tfa, 0x82, 0x01ed); //POR=0x000d
-		tfa_reg_write(tfa, 0x83, 0x0014); //POR=0x0013
-		tfa_reg_write(tfa, 0x84, 0x0021); //POR=0x0020
-		tfa_reg_write(tfa, 0x85, 0x0001); //POR=0x0003
-		/* ----- generated code end   ----- */
-		break;
-	case 0x1b72:
-	case 0x2b72:
-	case 0x3b72:
-		/* ----- generated code start ----- */
-		/*  -----  version 25.00 ----- */
-		tfa_reg_write(tfa, 0x02, 0x2dc8); //POR=0x2828
-		tfa_reg_write(tfa, 0x20, 0x0890); //POR=0x2890
-		tfa_reg_write(tfa, 0x22, 0x043c); //POR=0x045c
-		tfa_reg_write(tfa, 0x23, 0x0001); //POR=0x0003
-		tfa_reg_write(tfa, 0x51, 0x0000); //POR=0x0080
-		tfa_reg_write(tfa, 0x52, 0x5a1c); //POR=0x7a08
-		tfa_reg_write(tfa, 0x61, 0x0198); //POR=0x0000
-		tfa_reg_write(tfa, 0x63, 0x0a9a); //POR=0x0a93
-		tfa_reg_write(tfa, 0x65, 0x0a82); //POR=0x0a8d
-		tfa_reg_write(tfa, 0x6f, 0x01e3); //POR=0x02e4
-		tfa_reg_write(tfa, 0x70, 0x06fd); //POR=0x06e6
-		tfa_reg_write(tfa, 0x71, 0x307e); //POR=0x207e
-		tfa_reg_write(tfa, 0x74, 0xcc84); //POR=0xd913
-		tfa_reg_write(tfa, 0x75, 0x1132); //POR=0x118a
-		tfa_reg_write(tfa, 0x82, 0x01ed); //POR=0x000d
-		tfa_reg_write(tfa, 0x83, 0x001a); //POR=0x0013
-		/* ----- generated code end   ----- */
-		break;
-	default:
-		pr_info("\nWarning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
-		break;
+		case 0x1a72:
+		case 0x2a72:
+			/* ----- generated code start ----- */
+			/* -----  version 26 ----- */
+			tfa_reg_write(tfa, 0x00, 0x1801); //POR=0x0001
+			tfa_reg_write(tfa, 0x02, 0x2dc8); //POR=0x2028
+			tfa_reg_write(tfa, 0x20, 0x0890); //POR=0x2890
+			tfa_reg_write(tfa, 0x22, 0x043c); //POR=0x045c
+			tfa_reg_write(tfa, 0x51, 0x0000); //POR=0x0080
+			tfa_reg_write(tfa, 0x52, 0x1a1c); //POR=0x7ae8
+			tfa_reg_write(tfa, 0x58, 0x161c); //POR=0x101c
+			tfa_reg_write(tfa, 0x61, 0x0198); //POR=0x0000
+			tfa_reg_write(tfa, 0x65, 0x0a8b); //POR=0x0a9a
+			tfa_reg_write(tfa, 0x70, 0x07f5); //POR=0x06e6
+			tfa_reg_write(tfa, 0x74, 0xcc84); //POR=0xd823
+			tfa_reg_write(tfa, 0x82, 0x01ed); //POR=0x000d
+			tfa_reg_write(tfa, 0x83, 0x0014); //POR=0x0013
+			tfa_reg_write(tfa, 0x84, 0x0021); //POR=0x0020
+			tfa_reg_write(tfa, 0x85, 0x0001); //POR=0x0003
+			/* ----- generated code end   ----- */
+			break;
+		case 0x1b72:
+		case 0x2b72:
+		case 0x3b72:
+			/* ----- generated code start ----- */
+			/* ----- TFA9872 Probus Registers map N1B2 - Version 21 (10/19/2016) ----- */
+			tfa_reg_write(tfa, 0x02, 0x2dc8); //POR=0x2828
+			tfa_reg_write(tfa, 0x20, 0x0890); //POR=0x2890
+			tfa_reg_write(tfa, 0x22, 0x043c); //POR=0x045c
+			tfa_reg_write(tfa, 0x23, 0x0001); //POR=0x0003
+			tfa_reg_write(tfa, 0x51, 0x0000); //POR=0x0080
+			tfa_reg_write(tfa, 0x52, 0x5a1c); //POR=0x7a08
+			tfa_reg_write(tfa, 0x61, 0x0198); //POR=0x0000
+			tfa_reg_write(tfa, 0x63, 0x0a9a); //POR=0x0a93
+			tfa_reg_write(tfa, 0x65, 0x0a82); //POR=0x0a8d
+			tfa_reg_write(tfa, 0x6f, 0x01e3); //POR=0x02e4
+			tfa_reg_write(tfa, 0x70, 0x06fd); //POR=0x06e6
+			tfa_reg_write(tfa, 0x71, 0x307e); //POR=0x207e
+			tfa_reg_write(tfa, 0x74, 0xcc84); //POR=0xd913
+			tfa_reg_write(tfa, 0x75, 0x1132); //POR=0x118a
+			tfa_reg_write(tfa, 0x82, 0x01ed); //POR=0x000d
+			tfa_reg_write(tfa, 0x83, 0x001a); //POR=0x0013
+			/* ----- generated code end   ----- */
+			break;
+		default:
+			pr_info("\nWarning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
+			break;
 	}
 
 	/* Turn off the osc1m to save power: PLMA4928 */
-	error = tfa_set_bf(tfa, MANAOOSC, 1);
+	error = tfa_set_bf_v6(tfa, MANAOOSC, 1);
 
 	/* Bypass OVP by setting bit 3 from register 0xB0 (bypass_ovp=1): PLMA5258 */
 	error = tfa_reg_read(tfa, 0xB0, &value);
@@ -638,40 +666,40 @@ static int tfa9872_set_swprofile(struct tfa_device *tfa, unsigned short new_valu
 	int active_value = tfa_dev_get_swprof(tfa);
 
 	/* Set the new value in the struct */
-	tfa->profile = new_value - 1;
+	tfa->profile = new_value;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9872_BF_SWPROFIL, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9872_BF_SWPROFIL, new_value);
 
 	return active_value;
 }
 
 static int tfa9872_get_swprofile(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9872_BF_SWPROFIL) - 1;
+	return tfa_get_bf_v6(tfa, TFA9872_BF_SWPROFIL) - 1;
 }
 
 static int tfa9872_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
 {
 
 	/* Set the new value in the struct */
-	tfa->vstep = new_value - 1;
+	tfa->vstep = new_value-1;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9872_BF_SWVSTEP, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9872_BF_SWVSTEP, new_value);
 
 	return new_value;
 }
 
 static int tfa9872_get_swvstep(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9872_BF_SWVSTEP) - 1;
+	return tfa_get_bf_v6(tfa, TFA9872_BF_SWVSTEP) - 1;
 }
 
 void tfa9872_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9872_specific;
 	ops->auto_copy_mtp_to_iic = tfa9872_auto_copy_mtp_to_iic;
@@ -694,14 +722,14 @@ static int tfa9873_set_swprofile(struct tfa_device *tfa, unsigned short new_valu
 	tfa->profile = new_value - 1;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9873_BF_SWPROFIL, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9873_BF_SWPROFIL, new_value);
 
 	return active_value;
 }
 
 static int tfa9873_get_swprofile(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9873_BF_SWPROFIL) - 1;
+	return tfa_get_bf_v6(tfa, TFA9873_BF_SWPROFIL) - 1;
 }
 
 static int tfa9873_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
@@ -711,14 +739,14 @@ static int tfa9873_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
 	tfa->vstep = new_value - 1;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9873_BF_SWVSTEP, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9873_BF_SWVSTEP, new_value);
 
 	return new_value;
 }
 
 static int tfa9873_get_swvstep(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9873_BF_SWVSTEP) - 1;
+	return tfa_get_bf_v6(tfa, TFA9873_BF_SWVSTEP) - 1;
 }
 
 /* tfa98xx_dsp_system_stable
@@ -729,7 +757,7 @@ static enum Tfa98xx_Error tfa9873_dsp_system_stable(struct tfa_device *tfa, int 
 	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
 
 	/* check CLKS: ready if set */
-	*ready = tfa_get_bf(tfa, TFA9873_BF_CLKS) == 1;
+	*ready = tfa_get_bf_v6(tfa, TFA9873_BF_CLKS) == 1;
 
 	return error;
 }
@@ -737,14 +765,14 @@ static enum Tfa98xx_Error tfa9873_dsp_system_stable(struct tfa_device *tfa, int 
 static int tfa9873_get_mtpb(struct tfa_device *tfa) {
 
 	int value;
-	value = tfa_get_bf(tfa, TFA9873_BF_MTPB);
+	value = tfa_get_bf_v6(tfa, TFA9873_BF_MTPB);
 	return value;
 }
 static enum Tfa98xx_Error tfa9873_faim_protect(struct tfa_device *tfa, int status)
 {
 	enum Tfa98xx_Error ret = Tfa98xx_Error_Ok;
 	/* 0b = FAIM protection enabled 1b = FAIM protection disabled*/
-	ret = tfa_set_bf_volatile(tfa, TFA9873_BF_OPENMTP, (uint16_t)(status));
+	ret = tfa_set_bf_v6_volatile(tfa, TFA9873_BF_OPENMTP, (uint16_t)(status));
 	return ret;
 }
 static enum Tfa98xx_Error tfa9873_specific(struct tfa_device* tfa)
@@ -760,7 +788,7 @@ static enum Tfa98xx_Error tfa9873_specific(struct tfa_device* tfa)
 	error = tfa_reg_read(tfa, 0xFB, &value);
 	xor = value ^ 0x005A;
 	error = tfa_reg_write(tfa, 0xA0, xor);
-	tfa98xx_key2(tfa, 0);
+	tfa98xx_key2_v6(tfa, 0);
 
 	switch (tfa->rev) {
 	case 0x0a73:
@@ -789,13 +817,12 @@ static enum Tfa98xx_Error tfa9873_specific(struct tfa_device* tfa)
 		break;
 	case 0x0b73:
 		/* ----- generated code start ----- */
-		/* -----  version 20 ----- */
+		/* -----  version 16 ----- */
 		tfa_reg_write(tfa, 0x02, 0x0628); //POR=0x0008
 		tfa_reg_write(tfa, 0x61, 0x0183); //POR=0x0182
 		tfa_reg_write(tfa, 0x63, 0x005a); //POR=0x055a
 		tfa_reg_write(tfa, 0x6f, 0x0082); //POR=0x00a5
 		tfa_reg_write(tfa, 0x70, 0xa3eb); //POR=0x23fb
-		tfa_reg_write(tfa, 0x71, 0x107e); //POR=0x007e
 		tfa_reg_write(tfa, 0x73, 0x0187); //POR=0x0107
 		tfa_reg_write(tfa, 0x83, 0x071c); //POR=0x0799
 		tfa_reg_write(tfa, 0x85, 0x0380); //POR=0x0382
@@ -808,14 +835,14 @@ static enum Tfa98xx_Error tfa9873_specific(struct tfa_device* tfa)
 		pr_info("\nWarning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
 		break;
 	}
-	error = tfa_set_bf_volatile(tfa, TFA9873_BF_FSSYNCEN, 0);
+	error = tfa_set_bf_v6_volatile(tfa, TFA9873_BF_FSSYNCEN, 0);
 	pr_info("info : disabled FS synchronisation! \n");
 	return error;
 }
 void tfa9873_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9873_specific;
 	ops->set_swprof = tfa9873_set_swprofile;
@@ -836,7 +863,7 @@ static enum Tfa98xx_Error tfa9874_faim_protect(struct tfa_device *tfa, int statu
 {
 	enum Tfa98xx_Error ret = Tfa98xx_Error_Ok;
 	/* 0b = FAIM protection enabled 1b = FAIM protection disabled*/
-	ret = tfa_set_bf_volatile(tfa, TFA9874_BF_OPENMTP, (uint16_t)(status));
+	ret = tfa_set_bf_v6_volatile(tfa, TFA9874_BF_OPENMTP, (uint16_t)(status));
 	return ret;
 }
 
@@ -854,72 +881,71 @@ static enum Tfa98xx_Error tfa9874_specific(struct tfa_device *tfa)
 	error = tfa_reg_read(tfa, 0xFB, &value);
 	xor = value ^ 0x005A;
 	error = tfa_reg_write(tfa, 0xA0, xor);
-	tfa98xx_key2(tfa, 0);
+	tfa98xx_key2_v6(tfa, 0);
 
 	switch (tfa->rev) {
-	case 0x0a74: /* Initial revision ID */
-				 /* ----- generated code start ----- */
-				 /* V25 */
-		tfa_reg_write(tfa, 0x02, 0x22a8); //POR=0x25c8
-		tfa_reg_write(tfa, 0x51, 0x0020); //POR=0x0000
-		tfa_reg_write(tfa, 0x52, 0x57dc); //POR=0x56dc
-		tfa_reg_write(tfa, 0x58, 0x16a4); //POR=0x1614
-		tfa_reg_write(tfa, 0x61, 0x0110); //POR=0x0198
-		tfa_reg_write(tfa, 0x66, 0x0701); //POR=0x0700
-		tfa_reg_write(tfa, 0x6f, 0x00a3); //POR=0x01a3
-		tfa_reg_write(tfa, 0x70, 0x07f8); //POR=0x06f8
-		tfa_reg_write(tfa, 0x73, 0x0007); //POR=0x0005
-		tfa_reg_write(tfa, 0x74, 0x5068); //POR=0xcc80
-		tfa_reg_write(tfa, 0x75, 0x0d28); //POR=0x1138
-		tfa_reg_write(tfa, 0x83, 0x0594); //POR=0x061a
-		tfa_reg_write(tfa, 0x84, 0x0001); //POR=0x0021
-		tfa_reg_write(tfa, 0x85, 0x0001); //POR=0x0003
-		tfa_reg_write(tfa, 0x88, 0x0000); //POR=0x0002
-		tfa_reg_write(tfa, 0xc4, 0x2001); //POR=0x0001
-									  /* ----- generated code end   ----- */
-		break;
-	case 0x0b74:
-		/* ----- generated code start ----- */
-		/* V1.6 */
-		tfa_reg_write(tfa, 0x02, 0x22a8); //POR=0x25c8
-		tfa_reg_write(tfa, 0x51, 0x0020); //POR=0x0000
-		tfa_reg_write(tfa, 0x52, 0x57dc); //POR=0x56dc
-		tfa_reg_write(tfa, 0x58, 0x16a4); //POR=0x1614
-		tfa_reg_write(tfa, 0x61, 0x0110); //POR=0x0198
-		tfa_reg_write(tfa, 0x66, 0x0701); //POR=0x0700
-		tfa_reg_write(tfa, 0x6f, 0x00a3); //POR=0x01a3
-		tfa_reg_write(tfa, 0x70, 0x07f8); //POR=0x06f8
-		tfa_reg_write(tfa, 0x73, 0x0047); //POR=0x0045
-		tfa_reg_write(tfa, 0x74, 0x5068); //POR=0xcc80
-		tfa_reg_write(tfa, 0x75, 0x0d28); //POR=0x1138
-		tfa_reg_write(tfa, 0x83, 0x0595); //POR=0x061a
-		tfa_reg_write(tfa, 0x84, 0x0001); //POR=0x0021
-		tfa_reg_write(tfa, 0x85, 0x0001); //POR=0x0003
-		tfa_reg_write(tfa, 0x88, 0x0000); //POR=0x0002
-		tfa_reg_write(tfa, 0xc4, 0x2001); //POR=0x0001
-									  /* ----- generated code end   ----- */
-		break;
-	case 0x0c74:
-		/* ----- generated code start ----- */
-		/* V1.16 */
-		tfa_reg_write(tfa, 0x02, 0x22c8); //POR=0x25c8
-		tfa_reg_write(tfa, 0x52, 0x57dc); //POR=0x56dc
-		tfa_reg_write(tfa, 0x53, 0x003e); //POR=0x001e
-		tfa_reg_write(tfa, 0x56, 0x0400); //POR=0x0600
-		tfa_reg_write(tfa, 0x61, 0x0110); //POR=0x0198
-		tfa_reg_write(tfa, 0x6f, 0x00a5); //POR=0x01a3
-		tfa_reg_write(tfa, 0x70, 0x07f8); //POR=0x06f8
-		tfa_reg_write(tfa, 0x73, 0x0047); //POR=0x0045
-		tfa_reg_write(tfa, 0x74, 0x5098); //POR=0xcc80
-		tfa_reg_write(tfa, 0x75, 0x8d28); //POR=0x1138
-		tfa_reg_write(tfa, 0x80, 0x0000); //POR=0x0003
-		tfa_reg_write(tfa, 0x83, 0x0799); //POR=0x061a
-		tfa_reg_write(tfa, 0x84, 0x0081); //POR=0x0021
-									  /* ----- generated code end   ----- */
-		break;
-	default:
-		pr_info("\nWarning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
-		break;
+		case 0x0a74: /* Initial revision ID */
+			/* ----- generated code start ----- */
+			/* V25 */
+			tfa_reg_write(tfa, 0x02, 0x22a8); //POR=0x25c8
+			tfa_reg_write(tfa, 0x51, 0x0020); //POR=0x0000
+			tfa_reg_write(tfa, 0x52, 0x57dc); //POR=0x56dc
+			tfa_reg_write(tfa, 0x58, 0x16a4); //POR=0x1614
+			tfa_reg_write(tfa, 0x61, 0x0110); //POR=0x0198
+			tfa_reg_write(tfa, 0x66, 0x0701); //POR=0x0700
+			tfa_reg_write(tfa, 0x6f, 0x00a3); //POR=0x01a3
+			tfa_reg_write(tfa, 0x70, 0x07f8); //POR=0x06f8
+			tfa_reg_write(tfa, 0x73, 0x0007); //POR=0x0005
+			tfa_reg_write(tfa, 0x74, 0x5068); //POR=0xcc80
+			tfa_reg_write(tfa, 0x75, 0x0d28); //POR=0x1138
+			tfa_reg_write(tfa, 0x83, 0x0594); //POR=0x061a
+			tfa_reg_write(tfa, 0x84, 0x0001); //POR=0x0021
+			tfa_reg_write(tfa, 0x85, 0x0001); //POR=0x0003
+			tfa_reg_write(tfa, 0x88, 0x0000); //POR=0x0002
+			tfa_reg_write(tfa, 0xc4, 0x2001); //POR=0x0001
+			/* ----- generated code end   ----- */
+			break;
+		case 0x0b74:
+			/* ----- generated code start ----- */
+			/* V1.6 */
+			tfa_reg_write(tfa, 0x02, 0x22a8); //POR=0x25c8
+			tfa_reg_write(tfa, 0x51, 0x0020); //POR=0x0000
+			tfa_reg_write(tfa, 0x52, 0x57dc); //POR=0x56dc
+			tfa_reg_write(tfa, 0x58, 0x16a4); //POR=0x1614
+			tfa_reg_write(tfa, 0x61, 0x0110); //POR=0x0198
+			tfa_reg_write(tfa, 0x66, 0x0701); //POR=0x0700
+			tfa_reg_write(tfa, 0x6f, 0x00a3); //POR=0x01a3
+			tfa_reg_write(tfa, 0x70, 0x07f8); //POR=0x06f8
+			tfa_reg_write(tfa, 0x73, 0x0047); //POR=0x0045
+			tfa_reg_write(tfa, 0x74, 0x5068); //POR=0xcc80
+			tfa_reg_write(tfa, 0x75, 0x0d28); //POR=0x1138
+			tfa_reg_write(tfa, 0x83, 0x0595); //POR=0x061a
+			tfa_reg_write(tfa, 0x84, 0x0001); //POR=0x0021
+			tfa_reg_write(tfa, 0x85, 0x0001); //POR=0x0003
+			tfa_reg_write(tfa, 0x88, 0x0000); //POR=0x0002
+			tfa_reg_write(tfa, 0xc4, 0x2001); //POR=0x0001
+			/* ----- generated code end   ----- */
+			break;
+		case 0x0c74:
+			/* ----- generated code start ----- */
+			tfa_reg_write(tfa, 0x02, 0x22c8); //POR=0x25c8
+			tfa_reg_write(tfa, 0x52, 0x57dc); //POR=0x56dc
+			tfa_reg_write(tfa, 0x53, 0x003e); //POR=0x001e
+			tfa_reg_write(tfa, 0x56, 0x0400); //POR=0x0600
+			tfa_reg_write(tfa, 0x61, 0x0110); //POR=0x0198
+			tfa_reg_write(tfa, 0x6f, 0x00a5); //POR=0x01a3
+			tfa_reg_write(tfa, 0x70, 0x07f8); //POR=0x06f8
+			tfa_reg_write(tfa, 0x73, 0x0047); //POR=0x0045
+			tfa_reg_write(tfa, 0x74, 0x5098); //POR=0xcc80
+			tfa_reg_write(tfa, 0x75, 0x8d28); //POR=0x1138
+			tfa_reg_write(tfa, 0x80, 0x0000); //POR=0x0003
+			tfa_reg_write(tfa, 0x83, 0x0799); //POR=0x061a
+			tfa_reg_write(tfa, 0x84, 0x0081); //POR=0x0021
+			/* ----- generated code end   ----- */
+			break;
+		default:
+			pr_info("\nWarning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
+			break;
 	}
 
 	return error;
@@ -930,37 +956,37 @@ static int tfa9874_set_swprofile(struct tfa_device *tfa, unsigned short new_valu
 	int active_value = tfa_dev_get_swprof(tfa);
 
 	/* Set the new value in the struct */
-	tfa->profile = new_value - 1;
+	tfa->profile = new_value;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9874_BF_SWPROFIL, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9874_BF_SWPROFIL, new_value);
 
 	return active_value;
 }
 
 static int tfa9874_get_swprofile(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9874_BF_SWPROFIL) - 1;
+	return tfa_get_bf_v6(tfa, TFA9874_BF_SWPROFIL) - 1;
 }
 
 static int tfa9874_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
 {
 
 	/* Set the new value in the struct */
-	tfa->vstep = new_value - 1;
+	tfa->vstep = new_value-1;
 
 	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9874_BF_SWVSTEP, new_value);
+	tfa_set_bf_v6_volatile(tfa, TFA9874_BF_SWVSTEP, new_value);
 
 	return new_value;
 }
 
 static int tfa9874_get_swvstep(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9874_BF_SWVSTEP) - 1;
+	return tfa_get_bf_v6(tfa, TFA9874_BF_SWVSTEP) - 1;
 }
 
-/* tfa98xx_dsp_system_stable
+/* tfa98xx_dsp_system_stable_v6
 *  return: *ready = 1 when clocks are stable to allow DSP subsystem access
 */
 static enum Tfa98xx_Error tfa9874_dsp_system_stable(struct tfa_device *tfa, int *ready)
@@ -968,7 +994,7 @@ static enum Tfa98xx_Error tfa9874_dsp_system_stable(struct tfa_device *tfa, int 
 	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
 
 	/* check CLKS: ready if set */
-	*ready = tfa_get_bf(tfa, TFA9874_BF_CLKS) == 1;
+	*ready = tfa_get_bf_v6(tfa, TFA9874_BF_CLKS)==1;
 
 	return error;
 }
@@ -976,372 +1002,26 @@ static enum Tfa98xx_Error tfa9874_dsp_system_stable(struct tfa_device *tfa, int 
 static int tfa9874_get_mtpb(struct tfa_device *tfa) {
 
 	int value;
-	value = tfa_get_bf(tfa, TFA9874_BF_MTPB);
+	value = tfa_get_bf_v6(tfa, TFA9874_BF_MTPB);
 	return value;
 }
 
 void tfa9874_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9874_specific;
 	ops->set_swprof = tfa9874_set_swprofile;
 	ops->get_swprof = tfa9874_get_swprofile;
 	ops->set_swvstep = tfa9874_set_swvstep;
 	ops->get_swvstep = tfa9874_get_swvstep;
-	ops->dsp_system_stable = tfa9874_dsp_system_stable;
-	ops->faim_protect = tfa9874_faim_protect;
+	ops->dsp_system_stable	= tfa9874_dsp_system_stable;
+	ops->faim_protect	= tfa9874_faim_protect;
 	ops->get_mtpb = tfa9874_get_mtpb;
 	ops->set_mute = tfa_set_mute_nodsp;
 }
-/***********************************************************************************/
-/* TFA9875                                                                         */
-/***********************************************************************************/
-static enum Tfa98xx_Error tfa9875_faim_protect(struct tfa_device *tfa, int status)
-{
-	enum Tfa98xx_Error ret = Tfa98xx_Error_Ok;
-	/* 0b = FAIM protection enabled 1b = FAIM protection disabled*/
-	ret = tfa_set_bf_volatile(tfa, TFA9875_BF_OPENMTP, (uint16_t)(status));
-	return ret;
-}
 
-
-static enum Tfa98xx_Error tfa9875_specific(struct tfa_device *tfa)
-{
-	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
-	unsigned short value, xor;
-
-	if (tfa->in_use == 0)
-		return Tfa98xx_Error_NotOpen;
-
-	/* Unlock key 1 and 2 */
-	error = tfa_reg_write(tfa, 0x0F, 0x5A6B);
-	error = tfa_reg_read(tfa, 0xFB, &value);
-	xor = value ^ 0x005A;
-	error = tfa_reg_write(tfa, 0xA0, xor);
-	tfa98xx_key2(tfa, 0);
-
-	switch (tfa->rev) {
-	case 0x0a75: /* Initial revision ID */
-		/* ----- generated code start ----- */
-		/* -----  version 26 ----- */
-		tfa_reg_write(tfa, 0x02, 0x0628); //POR=0x0008
-		tfa_reg_write(tfa, 0x53, 0x0237); //POR=0x0337
-		tfa_reg_write(tfa, 0x58, 0x0210); //POR=0x0200
-		tfa_reg_write(tfa, 0x5f, 0x0080); //POR=0x00c0
-		tfa_reg_write(tfa, 0x61, 0x0183); //POR=0x0182
-		tfa_reg_write(tfa, 0x64, 0x4040); //POR=0x0040
-		tfa_reg_write(tfa, 0x6f, 0x0083); //POR=0x00a5
-		tfa_reg_write(tfa, 0x70, 0xdedf); //POR=0xdefb
-		tfa_reg_write(tfa, 0x73, 0x0182); //POR=0x0187
-		tfa_reg_write(tfa, 0x74, 0xd0f8); //POR=0x50f8
-		tfa_reg_write(tfa, 0x75, 0xd57a); //POR=0xd278
-		tfa_reg_write(tfa, 0x83, 0x009a); //POR=0x0799
-		tfa_reg_write(tfa, 0x85, 0x0380); //POR=0x0382
-		tfa_reg_write(tfa, 0xd5, 0x004d); //POR=0x014d
-		/* ----- generated code end   ----- */
-		break;
-	case 0x1a75: /* Initial revision ID */
-		/* ----- generated code start ----- */
-		/* -----  version 26 ----- */
-		tfa_reg_write(tfa, 0x02, 0x0628); //POR=0x0008
-		tfa_reg_write(tfa, 0x51, 0x0020); //POR=0x0000
-		tfa_reg_write(tfa, 0x53, 0x0336); //POR=0x0337
-		tfa_reg_write(tfa, 0x58, 0x0210); //POR=0x0200
-		tfa_reg_write(tfa, 0x5f, 0x0080); //POR=0x00c0
-		tfa_reg_write(tfa, 0x61, 0x0183); //POR=0x0182
-		tfa_reg_write(tfa, 0x63, 0x056a); //POR=0x055a
-		tfa_reg_write(tfa, 0x64, 0x4040); //POR=0x0040
-		tfa_reg_write(tfa, 0x6f, 0x0385); //POR=0x00a5
-		tfa_reg_write(tfa, 0x70, 0xde5f); //POR=0xdefb
-		tfa_reg_write(tfa, 0x73, 0x0183); //POR=0x0187
-		tfa_reg_write(tfa, 0x74, 0xd118); //POR=0x50f8
-		tfa_reg_write(tfa, 0x75, 0xd77a); //POR=0xd278
-		tfa_reg_write(tfa, 0x83, 0x06de); //POR=0x0799
-		tfa_reg_write(tfa, 0x85, 0x0380); //POR=0x0382
-		tfa_reg_write(tfa, 0x87, 0x040a); //POR=0x060a
-		/* ----- generated code end   ----- */
-		break;
-	default:
-		pr_info("\nWarning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
-		break;
-	}
-
-	return error;
-}
-
-static int tfa9875_set_bitfield(struct tfa_device* tfa, uint16_t bitfield, uint16_t value)
-{
-	if (((bitfield >> 8) & 0xff) == 0x10 || ((bitfield >> 8) & 0xff) == 0x13)
-		return tfa_set_bf_volatile(tfa, (uint16_t)bitfield, value);
-	else
-		return tfa_set_bf(tfa, (uint16_t)bitfield, value);
-}
-enum Tfa98xx_Error tfa9875_tfa_status(struct tfa_device* tfa)
-{
-	int value;
-	uint16_t val;
-	value = tfa_read_reg(tfa, TFA9875_BF_VDDS); /* STATUSREG */
-	if (value < 0)
-		return -value;
-	val = (uint16_t)value;
-	if (!tfa_get_bf_value(TFA9875_BF_UVDS, val) ||
-		!tfa_get_bf_value(TFA9875_BF_OVDS, val) ||
-		!tfa_get_bf_value(TFA9875_BF_OTDS, val) ||
-		tfa_get_bf_value(TFA9875_BF_OCDS, val) ||
-		tfa_get_bf_value(TFA9875_BF_NOCLK, val))
-		pr_err("Misc errors detected: STATUS_FLAG0 = 0x%x\n", val);
-	if (!tfa_get_bf_value(TFA9875_BF_UVDS, val))
-		tfa_set_bf(tfa, (uint16_t)TFA9875_BF_UVDS, 1);
-	if (!tfa_get_bf_value(TFA9875_BF_OVDS, val))
-		tfa_set_bf(tfa, (uint16_t)TFA9875_BF_OVDS, 1);
-	if (!tfa_get_bf_value(TFA9875_BF_OTDS, val))
-		tfa_set_bf(tfa, (uint16_t)TFA9875_BF_OTDS, 1);
-	if (tfa_get_bf_value(TFA9875_BF_OCDS, val))
-		tfa_set_bf(tfa, (uint16_t)TFA9875_BF_OCDS, 1);
-	if (tfa_get_bf_value(TFA9875_BF_NOCLK, val))
-		tfa_set_bf(tfa, (uint16_t)TFA9875_BF_NOCLK, 1);
-	/*
-	 * checking clocking stability.
-	 */
-	if (!tfa_get_bf(tfa, TFA9875_BF_CLKS))
-		pr_err("ERROR: CLKS is unstable\n");
-	if (!tfa_get_bf(tfa, TFA9875_BF_PLLS))
-		pr_err("ERROR: PLL not locked\n");
-	if (tfa_get_bf(tfa, TFA9875_BF_TDMERR) ||
-		tfa_get_bf(tfa, TFA9875_BF_TDMLUTER))
-		pr_err("TDM related errors: STATUS_FLAG1 = 0x%x\n", (uint16_t)tfa_read_reg(tfa, TFA9875_BF_TDMERR));
-	if (tfa_get_bf(tfa, TFA9875_BF_BODNOK))
-	{
-		pr_err("BODNOK error detected : STATUS_FLAG3 = 0x%x\n", (uint16_t)tfa_read_reg(tfa, TFA9875_BF_BODNOK));
-		tfa_set_bf(tfa, (uint16_t)TFA9875_BF_BODNOK, 1);
-	}
-
-	return Tfa98xx_Error_Ok;
-}
-static enum Tfa98xx_Error tfa9875_phase_shift(struct tfa_device *tfa)
-{
-	enum Tfa98xx_Error ret = Tfa98xx_Error_Ok;
-	/* 1b = enable phase shift 0b = disable phase shift */
-	ret = tfa_set_bf_volatile(tfa, 0x58c0, (const uint16_t)1);
-	return ret;
-}
-static int tfa9875_set_swprofile(struct tfa_device *tfa, unsigned short new_value)
-{
-	int active_value = tfa_dev_get_swprof(tfa);
-
-	/* Set the new value in the struct */
-	tfa->profile = new_value - 1;
-
-	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9875_BF_SWPROFIL, new_value);
-
-	return active_value;
-}
-
-static int tfa9875_get_swprofile(struct tfa_device *tfa)
-{
-	return tfa_get_bf(tfa, TFA9875_BF_SWPROFIL) - 1;
-}
-
-static int tfa9875_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
-{
-
-	/* Set the new value in the struct */
-	tfa->vstep = new_value - 1;
-
-	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9875_BF_SWVSTEP, new_value);
-
-	return new_value;
-}
-
-static int tfa9875_get_swvstep(struct tfa_device *tfa)
-{
-	return tfa_get_bf(tfa, TFA9875_BF_SWVSTEP) - 1;
-}
-
-/* tfa98xx_dsp_system_stable
-*  return: *ready = 1 when clocks are stable to allow DSP subsystem access
-*/
-static enum Tfa98xx_Error tfa9875_dsp_system_stable(struct tfa_device *tfa, int *ready)
-{
-	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
-
-	/* check CLKS: ready if set */
-	*ready = tfa_get_bf(tfa, TFA9875_BF_CLKS) == 1;
-
-	return error;
-}
-
-static int tfa9875_get_mtpb(struct tfa_device *tfa) {
-
-	int value;
-	value = tfa_get_bf(tfa, TFA9875_BF_MTPB);
-	return value;
-}
-
-void tfa9875_ops(struct tfa_device_ops *ops)
-{
-	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
-
-	ops->tfa_init = tfa9875_specific;
-	ops->set_swprof = tfa9875_set_swprofile;
-	ops->get_swprof = tfa9875_get_swprofile;
-	ops->set_swvstep = tfa9875_set_swvstep;
-	ops->get_swvstep = tfa9875_get_swvstep;
-	ops->dsp_system_stable = tfa9875_dsp_system_stable;
-	ops->faim_protect = tfa9875_faim_protect;
-	ops->get_mtpb = tfa9875_get_mtpb;
-	ops->set_mute = tfa_set_mute_nodsp;
-	ops->tfa_set_bitfield = tfa9875_set_bitfield;
-	ops->tfa_status = tfa9875_tfa_status;
-	ops->phase_shift = tfa9875_phase_shift;
-}
-/***********************************************************************************/
-/* TFA9878                                                                         */
-/***********************************************************************************/
-static enum Tfa98xx_Error tfa9878_faim_protect(struct tfa_device *tfa, int status)
-{
-	enum Tfa98xx_Error ret = Tfa98xx_Error_Ok;
-	/* 0b = FAIM protection enabled 1b = FAIM protection disabled*/
-	ret = tfa_set_bf_volatile(tfa, TFA9878_BF_OPENMTP, (uint16_t)(status));
-	return ret;
-}
-
-
-static enum Tfa98xx_Error tfa9878_specific(struct tfa_device *tfa)
-{
-	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
-	unsigned short value, xor;
-
-	if (tfa->in_use == 0)
-		return Tfa98xx_Error_NotOpen;
-
-	/* Unlock key 1 and 2 */
-	error = tfa_reg_write(tfa, 0x0F, 0x5A6B);
-	error = tfa_reg_read(tfa, 0xFB, &value);
-	xor = value ^ 0x005A;
-	error = tfa_reg_write(tfa, 0xA0, xor);
-	tfa98xx_key2(tfa, 0);
-
-	switch (tfa->rev) {
-	case 0x0a78: /* Initial revision ID */
-/* ----- generated code start ----- */
-/* -----  version 28 ----- */
-		tfa_reg_write(tfa, 0x01, 0x2e18); //POR=0x2e88
-		tfa_reg_write(tfa, 0x02, 0x0628); //POR=0x0008
-		tfa_reg_write(tfa, 0x04, 0x0240); //POR=0x0340
-		tfa_reg_write(tfa, 0x52, 0x587c); //POR=0x57dc
-		tfa_reg_write(tfa, 0x61, 0x0183); //POR=0x0a82
-		tfa_reg_write(tfa, 0x63, 0x055a); //POR=0x0a9a
-		tfa_reg_write(tfa, 0x65, 0x0542); //POR=0x0a82
-		tfa_reg_write(tfa, 0x71, 0x303e); //POR=0x307e
-		tfa_reg_write(tfa, 0x83, 0x009a); //POR=0x0799
-		/* ----- generated code end   ----- */
-
-
-		break;
-	case 0x1a78: /* Initial revision ID */
-		/* ----- generated code start ----- */
-		/* -----  version 12 ----- */
-		tfa_reg_write(tfa, 0x01, 0x2e18); //POR=0x2e88
-		tfa_reg_write(tfa, 0x02, 0x0628); //POR=0x0008
-		tfa_reg_write(tfa, 0x04, 0x0241); //POR=0x0340
-		tfa_reg_write(tfa, 0x52, 0x587c); //POR=0x57dc
-		tfa_reg_write(tfa, 0x61, 0x0183); //POR=0x0a82
-		tfa_reg_write(tfa, 0x63, 0x055a); //POR=0x0a9a
-		tfa_reg_write(tfa, 0x65, 0x0542); //POR=0x0a82
-		tfa_reg_write(tfa, 0x70, 0xb7ff); //POR=0x37ff
-		tfa_reg_write(tfa, 0x71, 0x303e); //POR=0x307e
-		tfa_reg_write(tfa, 0x83, 0x009a); //POR=0x0799
-		tfa_reg_write(tfa, 0x84, 0x0211); //POR=0x0011
-		tfa_reg_write(tfa, 0x8c, 0x0210); //POR=0x0010
-		tfa_reg_write(tfa, 0xce, 0x2202); //POR=0xa202
-		tfa_reg_write(tfa, 0xd5, 0x0000); //POR=0x0100
-		/* ----- generated code end   ----- */
-
-		break;
-	default:
-		pr_info("\nWarning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
-		break;
-	}
-
-	return error;
-}
-
-static int tfa9878_set_swprofile(struct tfa_device *tfa, unsigned short new_value)
-{
-	int active_value = tfa_dev_get_swprof(tfa);
-
-	/* Set the new value in the struct */
-	tfa->profile = new_value - 1;
-
-	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9878_BF_SWPROFIL, new_value);
-
-	return active_value;
-}
-
-static int tfa9878_get_swprofile(struct tfa_device *tfa)
-{
-	return tfa_get_bf(tfa, TFA9878_BF_SWPROFIL) - 1;
-}
-
-static int tfa9878_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
-{
-
-	/* Set the new value in the struct */
-	tfa->vstep = new_value - 1;
-
-	/* Set the new value in the hw register */
-	tfa_set_bf_volatile(tfa, TFA9878_BF_SWVSTEP, new_value);
-
-	return new_value;
-}
-
-static int tfa9878_get_swvstep(struct tfa_device *tfa)
-{
-	return tfa_get_bf(tfa, TFA9878_BF_SWVSTEP) - 1;
-}
-
-/* tfa98xx_dsp_system_stable
-*  return: *ready = 1 when clocks are stable to allow DSP subsystem access
-*/
-static enum Tfa98xx_Error tfa9878_dsp_system_stable(struct tfa_device *tfa, int *ready)
-{
-	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
-
-	/* check CLKS: ready if set */
-	*ready = tfa_get_bf(tfa, TFA9878_BF_CLKS) == 1;
-
-	return error;
-}
-
-static int tfa9878_get_mtpb(struct tfa_device *tfa) {
-
-	int value;
-	value = tfa_get_bf(tfa, TFA9878_BF_MTPB);
-	return value;
-}
-
-void tfa9878_ops(struct tfa_device_ops *ops)
-{
-	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
-
-	ops->tfa_init = tfa9878_specific;
-	ops->set_swprof = tfa9878_set_swprofile;
-	ops->get_swprof = tfa9878_get_swprofile;
-	ops->set_swvstep = tfa9878_set_swvstep;
-	ops->get_swvstep = tfa9878_get_swvstep;
-	ops->dsp_system_stable = tfa9878_dsp_system_stable;
-	ops->faim_protect = tfa9878_faim_protect;
-	ops->get_mtpb = tfa9878_get_mtpb;
-	ops->set_mute = tfa_set_mute_nodsp;
-}
 /***********************************************************************************/
 /* TFA9888                                                                         */
 /***********************************************************************************/
@@ -1381,8 +1061,7 @@ static enum Tfa98xx_Error tfa9888_specific(struct tfa_device *tfa)
 		tfa_reg_write(tfa, 0x71, 0x1074); //POR=0x3074
 		tfa_reg_write(tfa, 0x83, 0x0014); //POR=0x0013
 		/* ----- generated code end   ----- */
-	}
-	else {
+	} else {
 		pr_info("Warning: Optimal settings not found for device with revid = 0x%x \n", tfa->rev);
 	}
 
@@ -1400,34 +1079,34 @@ static enum Tfa98xx_Error tfa9888_tfa_dsp_write_tables(struct tfa_device *tfa, i
 
 	/* Write the fractional delay in the hardware register 'cs_frac_delay' */
 	switch (sample_rate) {
-	case 0:	/* 8kHz */
-		TFA_SET_BF(tfa, FRACTDEL, 40);
-		break;
-	case 1:	/* 11.025KHz */
-		TFA_SET_BF(tfa, FRACTDEL, 38);
-		break;
-	case 2:	/* 12kHz */
-		TFA_SET_BF(tfa, FRACTDEL, 37);
-		break;
-	case 3:	/* 16kHz */
-		TFA_SET_BF(tfa, FRACTDEL, 59);
-		break;
-	case 4:	/* 22.05KHz */
-		TFA_SET_BF(tfa, FRACTDEL, 56);
-		break;
-	case 5:	/* 24kHz */
-		TFA_SET_BF(tfa, FRACTDEL, 56);
-		break;
-	case 6:	/* 32kHz */
-		TFA_SET_BF(tfa, FRACTDEL, 52);
-		break;
-	case 7:	/* 44.1kHz */
-		TFA_SET_BF(tfa, FRACTDEL, 48);
-		break;
-	case 8:
-	default:/* 48kHz */
-		TFA_SET_BF(tfa, FRACTDEL, 46);
-		break;
+		case 0:	/* 8kHz */
+			TFA_SET_BF(tfa, FRACTDEL, 40);
+			break;
+		case 1:	/* 11.025KHz */
+			TFA_SET_BF(tfa, FRACTDEL, 38);
+			break;
+		case 2:	/* 12kHz */
+			TFA_SET_BF(tfa, FRACTDEL, 37);
+			break;
+		case 3:	/* 16kHz */
+			TFA_SET_BF(tfa, FRACTDEL, 59);
+			break;
+		case 4:	/* 22.05KHz */
+			TFA_SET_BF(tfa, FRACTDEL, 56);
+			break;
+		case 5:	/* 24kHz */
+			TFA_SET_BF(tfa, FRACTDEL, 56);
+			break;
+		case 6:	/* 32kHz */
+			TFA_SET_BF(tfa, FRACTDEL, 52);
+			break;
+		case 7:	/* 44.1kHz */
+			TFA_SET_BF(tfa, FRACTDEL, 48);
+			break;
+		case 8:
+		default:/* 48kHz */
+			TFA_SET_BF(tfa, FRACTDEL, 46);
+			break;
 	}
 
 	/* First copy the msg_id to the buffer */
@@ -1444,7 +1123,7 @@ static enum Tfa98xx_Error tfa9888_tfa_dsp_write_tables(struct tfa_device *tfa, i
 	}
 
 	/* send SetSensesDelay msg */
-	return tfa_dsp_msg(tfa, size, (char *)buffer);
+	return dsp_msg(tfa, size, (char *)buffer);
 }
 
 static enum Tfa98xx_Error tfa9888_auto_copy_mtp_to_iic(struct tfa_device *tfa)
@@ -1508,10 +1187,10 @@ tfa9888_set_mute(struct tfa_device *tfa, int mute)
 	return Tfa98xx_Error_Ok;
 }
 
-void tfa9888_ops(struct tfa_device_ops *ops)
+void tfa9888_ops_v6(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9888_specific;
 	ops->dsp_write_tables = tfa9888_tfa_dsp_write_tables;
@@ -1527,8 +1206,8 @@ static enum Tfa98xx_Error tfa9896_faim_protect(struct tfa_device *tfa, int statu
 {
 	enum Tfa98xx_Error ret = Tfa98xx_Error_Ok;
 
-	if ((tfa->rev == 0x2b96) || (tfa->rev == 0x3b96)) {
-		ret = tfa_set_bf_volatile(tfa, TFA9896_BF_OPENMTP, (uint16_t)status);
+	if ( (tfa->rev  == 0x2b96) || (tfa->rev == 0x3b96) ) {
+		ret = tfa_set_bf_v6_volatile(tfa, TFA9896_BF_OPENMTP, (uint16_t)status);
 	}
 
 	return ret;
@@ -1607,7 +1286,7 @@ static unsigned char tfa9896_vsfwdelay_table[] = {
 */
 static enum Tfa98xx_Error tfa9896_dsp_write_vsfwdelay_table(struct tfa_device *tfa)
 {
-	return tfa_dsp_cmd_id_write(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURRENT_DELAY, sizeof(tfa9896_vsfwdelay_table), tfa9896_vsfwdelay_table);
+	return tfa_dsp_cmd_id_write_v6(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURRENT_DELAY, sizeof(tfa9896_vsfwdelay_table), tfa9896_vsfwdelay_table);
 }
 
 /*
@@ -1628,7 +1307,7 @@ static unsigned char tfa9896_cvfracdelay_table[] = {
 
 static enum Tfa98xx_Error tfa9896_dsp_write_cvfracdelay_table(struct tfa_device *tfa)
 {
-	return tfa_dsp_cmd_id_write(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURFRAC_DELAY, sizeof(tfa9896_cvfracdelay_table), tfa9896_cvfracdelay_table);;
+	return tfa_dsp_cmd_id_write_v6(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURFRAC_DELAY, sizeof(tfa9896_cvfracdelay_table), tfa9896_cvfracdelay_table);;
 }
 
 static enum Tfa98xx_Error tfa9896_tfa_dsp_write_tables(struct tfa_device *tfa, int sample_rate)
@@ -1649,7 +1328,7 @@ static enum Tfa98xx_Error tfa9896_tfa_dsp_write_tables(struct tfa_device *tfa, i
 void tfa9896_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9896_specific;
 	ops->dsp_write_tables = tfa9896_tfa_dsp_write_tables;
@@ -1704,7 +1383,7 @@ static unsigned char tfa9897_vsfwdelay_table[] = {
 */
 static enum Tfa98xx_Error tfa9897_dsp_write_vsfwdelay_table(struct tfa_device *tfa)
 {
-	return tfa_dsp_cmd_id_write(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURRENT_DELAY, sizeof(tfa9897_vsfwdelay_table), tfa9897_vsfwdelay_table);;
+	return tfa_dsp_cmd_id_write_v6(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURRENT_DELAY, sizeof(tfa9897_vsfwdelay_table), tfa9897_vsfwdelay_table);;
 }
 
 /*
@@ -1725,7 +1404,7 @@ static unsigned char tfa9897_cvfracdelay_table[] = {
 
 static enum Tfa98xx_Error tfa9897_dsp_write_cvfracdelay_table(struct tfa_device *tfa)
 {
-	return tfa_dsp_cmd_id_write(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURFRAC_DELAY, sizeof(tfa9897_cvfracdelay_table), tfa9897_cvfracdelay_table);;
+	return tfa_dsp_cmd_id_write_v6(tfa, MODULE_FRAMEWORK, TFA1_FW_PAR_ID_SET_CURFRAC_DELAY, sizeof(tfa9897_cvfracdelay_table), tfa9897_cvfracdelay_table);;
 }
 
 static enum Tfa98xx_Error tfa9897_tfa_dsp_write_tables(struct tfa_device *tfa, int sample_rate)
@@ -1743,10 +1422,10 @@ static enum Tfa98xx_Error tfa9897_tfa_dsp_write_tables(struct tfa_device *tfa, i
 	return error;
 }
 
-void tfa9897_ops(struct tfa_device_ops *ops)
+void tfa9897_ops_v6(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9897_specific;
 	ops->dsp_write_tables = tfa9897_tfa_dsp_write_tables;
@@ -1760,7 +1439,7 @@ static enum Tfa98xx_Error tfa9895_specific(struct tfa_device *tfa)
 	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
 	int result;
 
-	if (tfa->in_use == 0)
+	if(tfa->in_use == 0)
 		return Tfa98xx_Error_NotOpen;
 
 	/* all i2C registers are already set to default */
@@ -1785,7 +1464,7 @@ static enum Tfa98xx_Error tfa9895_specific(struct tfa_device *tfa)
 void tfa9895_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9895_specific;
 }
@@ -1813,10 +1492,10 @@ static enum Tfa98xx_Error tfa9891_specific(struct tfa_device *tfa)
 	return error;
 }
 
-void tfa9891_ops(struct tfa_device_ops *ops)
+void tfa9891_ops_v6(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9891_specific;
 }
@@ -1829,7 +1508,7 @@ static enum Tfa98xx_Error tfa9890_specific(struct tfa_device *tfa)
 	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
 	unsigned short regRead = 0;
 
-	if (tfa->in_use == 0)
+	if(tfa->in_use == 0)
 		return Tfa98xx_Error_NotOpen;
 
 	/* all i2C registers are already set to default for N1C2 */
@@ -1924,7 +1603,7 @@ static enum Tfa98xx_Error tfa9890_dsp_system_stable(struct tfa_device *tfa, int 
 
 	/* check AREFS and CLKS: not ready if either is clear */
 	*ready = !((TFA_GET_BF_VALUE(tfa, AREFS, status) == 0)
-		|| (TFA_GET_BF_VALUE(tfa, CLKS, status) == 0));
+		   || (TFA_GET_BF_VALUE(tfa, CLKS, status) == 0));
 	if (!*ready)		/* if not ready go back */
 		return error;	/* will be Tfa98xx_Error_Ok */
 
@@ -1964,10 +1643,10 @@ errorExit:
 	return error;
 }
 
-void tfa9890_ops(struct tfa_device_ops *ops)
+void tfa9890_ops_v6(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
 	ops->tfa_init = tfa9890_specific;
 	ops->dsp_reset = tfa9890_dsp_reset;
@@ -1982,33 +1661,57 @@ static int tfa9894_set_swprofile(struct tfa_device *tfa, unsigned short new_valu
 	int active_value = tfa_dev_get_swprof(tfa);
 
 	/* Set the new value in the struct */
-	tfa->profile = new_value - 1;
-	tfa_set_bf_volatile(tfa, TFA9894_BF_SWPROFIL, new_value);
+	tfa->profile = new_value-1;
+
+	/* Set the new value in the hw register */
+	if (is_94_N2_device(tfa))
+		tfa_set_bf_v6_volatile(tfa, TFA9894N2_BF_SWPROFIL, new_value);
+	else
+		tfa_set_bf_v6_volatile(tfa, TFA9894_BF_SWPROFIL, new_value);
+
 	return active_value;
 }
 
 static int tfa9894_get_swprofile(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9894_BF_SWPROFIL) - 1;
+	if (is_94_N2_device(tfa))
+		return tfa_get_bf_v6(tfa, TFA9894N2_BF_SWPROFIL) - 1;
+	else
+		return tfa_get_bf_v6(tfa, TFA9894_BF_SWPROFIL) - 1;
 }
 
 static int tfa9894_set_swvstep(struct tfa_device *tfa, unsigned short new_value)
 {
 	/* Set the new value in the struct */
-	tfa->vstep = new_value - 1;
-	tfa_set_bf_volatile(tfa, TFA9894_BF_SWVSTEP, new_value);
+	tfa->vstep = new_value-1;
+
+	/* Set the new value in the hw register */
+	if (is_94_N2_device(tfa))
+		tfa_set_bf_v6_volatile(tfa, TFA9894N2_BF_SWVSTEP, new_value);
+	else
+		tfa_set_bf_v6_volatile(tfa, TFA9894_BF_SWVSTEP, new_value);
+
 	return new_value;
 }
 
 static int tfa9894_get_swvstep(struct tfa_device *tfa)
 {
-	return tfa_get_bf(tfa, TFA9894_BF_SWVSTEP) - 1;
+	if (is_94_N2_device(tfa))
+		return tfa_get_bf_v6(tfa, TFA9894N2_BF_SWVSTEP) - 1;
+	else
+		return tfa_get_bf_v6(tfa, TFA9894_BF_SWVSTEP) - 1;
 }
 
-static int tfa9894_get_mtpb(struct tfa_device *tfa)
-{
+static int tfa9894_get_mtpb(struct tfa_device *tfa) {
+
 	int value = 0;
-	value = tfa_get_bf(tfa, TFA9894_BF_MTPB);
+
+	/* Set the new value in the hw register */
+	if (is_94_N2_device(tfa))
+		value = tfa_get_bf_v6(tfa, TFA9894N2_BF_MTPB);
+	else
+		value = tfa_get_bf_v6(tfa, TFA9894_BF_MTPB);
+
 	return value;
 }
 
@@ -2024,7 +1727,10 @@ static int tfa9894_get_mtpb(struct tfa_device *tfa)
 static enum Tfa98xx_Error tfa9894_set_osc_powerdown(struct tfa_device *tfa, int state)
 {
 	if (state == 1 || state == 0) {
-		return -tfa_set_bf(tfa, TFA9894_BF_MANAOOSC, (uint16_t)state);
+		if (is_94_N2_device(tfa))
+			return -tfa_set_bf_v6(tfa, TFA9894N2_BF_MANAOOSC, (uint16_t)state);
+		else
+			return -tfa_set_bf_v6(tfa, TFA9894_BF_MANAOOSC, (uint16_t)state);
 	}
 
 	return Tfa98xx_Error_Bad_Parameter;
@@ -2034,7 +1740,10 @@ static enum Tfa98xx_Error tfa9894_faim_protect(struct tfa_device *tfa, int statu
 {
 	enum Tfa98xx_Error ret = Tfa98xx_Error_Ok;
 	/* 0b = FAIM protection enabled 1b = FAIM protection disabled*/
-	ret = tfa_set_bf_volatile(tfa, TFA9894_BF_OPENMTP, (uint16_t)(status));
+	if (is_94_N2_device(tfa))
+		ret = tfa_set_bf_v6_volatile(tfa, TFA9894N2_BF_OPENMTP, (uint16_t)(status));
+	else
+		ret = tfa_set_bf_v6_volatile(tfa, TFA9894_BF_OPENMTP, (uint16_t)(status));
 	return ret;
 }
 
@@ -2045,6 +1754,9 @@ static enum Tfa98xx_Error tfa9894_specific(struct tfa_device *tfa)
 
 	if (tfa->in_use == 0)
 		return Tfa98xx_Error_NotOpen;
+	if (tfa->verbose)
+		if (is_94_N2_device(tfa))
+			pr_debug("check_correct\n");
 	/* Unlock keys to write settings */
 	error = tfa_reg_write(tfa, 0x0F, 0x5A6B);
 	error = tfa_reg_read(tfa, 0xFB, &value);
@@ -2068,9 +1780,8 @@ static enum Tfa98xx_Error tfa9894_specific(struct tfa_device *tfa)
 		tfa_reg_write(tfa, 0x81, 0x5715); //POR=0x561a
 		tfa_reg_write(tfa, 0x82, 0x0104); //POR=0x0044
 		/* ----- generated code end   ----- */
-	}
-	else if (tfa->rev == 0x1a94) {
-		/* V17 */
+	} else if (tfa->rev == 0x1a94) {
+		/* V14 */
 		/* ----- generated code start ----- */
 		tfa_reg_write(tfa, 0x00, 0xa245); //POR=0x8245
 		tfa_reg_write(tfa, 0x01, 0x15da); //POR=0x11ca
@@ -2089,33 +1800,35 @@ static enum Tfa98xx_Error tfa9894_specific(struct tfa_device *tfa)
 		tfa_reg_write(tfa, 0x82, 0x0104); //POR=0x0044
 		/* ----- generated code end ----- */
 
-	}
-	else if (tfa->rev == 0x2a94 || tfa->rev == 0x3a94) {
+	} else if (tfa->rev == 0x2a94 || tfa->rev == 0x3a94) {
 		/* ----- generated code start ----- */
-		/* -----  version 25.00 ----- */
+		tfa_reg_write(tfa, 0x00, 0xa245); //POR=0x8245
 		tfa_reg_write(tfa, 0x01, 0x15da); //POR=0x11ca
 		tfa_reg_write(tfa, 0x02, 0x51e8); //POR=0x55c8
-		tfa_reg_write(tfa, 0x04, 0x0200); //POR=0x0000
 		tfa_reg_write(tfa, 0x52, 0xbe17); //POR=0xb617
 		tfa_reg_write(tfa, 0x53, 0x0dbe); //POR=0x0d9e
 		tfa_reg_write(tfa, 0x57, 0x0344); //POR=0x0366
-		tfa_reg_write(tfa, 0x61, 0x0032); //POR=0x0073
+		tfa_reg_write(tfa, 0x61, 0x0033); //POR=0x0073
 		tfa_reg_write(tfa, 0x71, 0x6ecf); //POR=0x6f8d
-		tfa_reg_write(tfa, 0x72, 0xb4a9); //POR=0x44e8
+		tfa_reg_write(tfa, 0x72, 0x34a9); //POR=0x44e8
 		tfa_reg_write(tfa, 0x73, 0x38c8); //POR=0x3806
 		tfa_reg_write(tfa, 0x76, 0x0067); //POR=0x0065
 		tfa_reg_write(tfa, 0x80, 0x0000); //POR=0x0003
 		tfa_reg_write(tfa, 0x81, 0x5799); //POR=0x561a
 		tfa_reg_write(tfa, 0x82, 0x0104); //POR=0x0044
-	/* ----- generated code end   ----- */
+		/* ----- generated code end   ----- */
 	}
+
 	return error;
 }
 
 static enum Tfa98xx_Error
 tfa9894_set_mute(struct tfa_device *tfa, int mute)
 {
-	tfa_set_bf(tfa, TFA9894_BF_CFSM, (const uint16_t)mute);
+	if (is_94_N2_device(tfa))
+		tfa_set_bf_v6(tfa, TFA9894N2_BF_CFSM, (const uint16_t)mute);
+	else
+		tfa_set_bf_v6(tfa, TFA9894_BF_CFSM, (const uint16_t)mute);
 	return Tfa98xx_Error_Ok;
 }
 
@@ -2124,7 +1837,10 @@ static enum Tfa98xx_Error tfa9894_dsp_system_stable(struct tfa_device *tfa, int 
 	enum Tfa98xx_Error error = Tfa98xx_Error_Ok;
 
 	/* check CLKS: ready if set */
-	*ready = tfa_get_bf(tfa, TFA9894_BF_CLKS) == 1;
+	if (is_94_N2_device(tfa))
+		*ready = tfa_get_bf_v6(tfa, TFA9894N2_BF_CLKS)==1;
+	else
+		*ready = tfa_get_bf_v6(tfa, TFA9894_BF_CLKS)==1;
 
 	return error;
 }
@@ -2132,17 +1848,17 @@ static enum Tfa98xx_Error tfa9894_dsp_system_stable(struct tfa_device *tfa, int 
 void tfa9894_ops(struct tfa_device_ops *ops)
 {
 	/* Set defaults for ops */
-	tfa_set_ops_defaults(ops);
+	set_ops_defaults(ops);
 
-	ops->tfa_init = tfa9894_specific;
-	ops->dsp_system_stable = tfa9894_dsp_system_stable;
-	ops->set_mute = tfa9894_set_mute;
-	ops->faim_protect = tfa9894_faim_protect;
-	ops->get_mtpb = tfa9894_get_mtpb;
-	ops->set_swprof = tfa9894_set_swprofile;
-	ops->get_swprof = tfa9894_get_swprofile;
-	ops->set_swvstep = tfa9894_set_swvstep;
-	ops->get_swvstep = tfa9894_get_swvstep;
+	ops->tfa_init	        = tfa9894_specific;
+	ops->dsp_system_stable	= tfa9894_dsp_system_stable;
+	ops->set_mute           = tfa9894_set_mute;
+	ops->faim_protect		= tfa9894_faim_protect;
+	ops->get_mtpb			= tfa9894_get_mtpb;
+	ops->set_swprof			= tfa9894_set_swprofile;
+	ops->get_swprof			= tfa9894_get_swprofile;
+	ops->set_swvstep		= tfa9894_set_swvstep;
+	ops->get_swvstep		= tfa9894_get_swvstep;
 	//ops->auto_copy_mtp_to_iic = tfa9894_auto_copy_mtp_to_iic;
 	ops->set_osc_powerdown = tfa9894_set_osc_powerdown;
 }

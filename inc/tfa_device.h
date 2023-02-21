@@ -1,13 +1,11 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
  */
-
 
 /**\file
  *
@@ -51,12 +49,12 @@ enum Tfa98xx_DAI {
  * device ops function structure
  */
 struct tfa_device_ops {
-	enum Tfa98xx_Error(*tfa_dsp_msg)(struct tfa_device *tfa, int length, const char *buf);
-	enum Tfa98xx_Error(*tfa_dsp_msg_read)(struct tfa_device *tfa, int length, unsigned char *bytes);
+	enum Tfa98xx_Error(*dsp_msg)(struct tfa_device *tfa, int length, const char *buf);
+	enum Tfa98xx_Error(*dsp_msg_read)(struct tfa_device *tfa, int length, unsigned char *bytes);
 	enum Tfa98xx_Error(*tfa_reg_read)(struct tfa_device *tfa, unsigned char subaddress, unsigned short *value);
 	enum Tfa98xx_Error(*tfa_reg_write)(struct tfa_device *tfa, unsigned char subaddress, unsigned short value);
-	enum Tfa98xx_Error(*tfa_mem_read)(struct tfa_device *tfa, unsigned int start_offset, int num_words, int *pValues);
-	enum Tfa98xx_Error(*tfa_mem_write)(struct tfa_device *tfa, unsigned short address, int value, int memtype);
+	enum Tfa98xx_Error(*mem_read)(struct tfa_device *tfa, unsigned int start_offset, int num_words, int *pValues);
+	enum Tfa98xx_Error(*mem_write)(struct tfa_device *tfa, unsigned short address, int value, int memtype);
 
 	enum Tfa98xx_Error (*tfa_init)(struct tfa_device *tfa); /**< init typically for loading optimal settings */
 	enum Tfa98xx_Error (*dsp_reset)(struct tfa_device *tfa, int state); /**< reset the coolflux dsp */
@@ -64,7 +62,6 @@ struct tfa_device_ops {
 	enum Tfa98xx_Error (*dsp_write_tables)(struct tfa_device *tfa, int sample_rate); /**< write the device/type specific delaytables */
 	enum Tfa98xx_Error (*auto_copy_mtp_to_iic)(struct tfa_device *tfa); /**< Set auto_copy_mtp_to_iic */
 	enum Tfa98xx_Error (*factory_trimmer)(struct tfa_device *tfa); /**< Factory trimming for the Boost converter */
-	enum Tfa98xx_Error (*phase_shift)(struct tfa_device *tfa); /**< Control for PWM phase shift  */
 	int (*set_swprof)(struct tfa_device *tfa, unsigned short new_value); /**< Set the sw profile in the struct and the hw register */
 	int (*get_swprof)(struct tfa_device *tfa); /**< Get the sw profile from the hw register */
 	int(*set_swvstep)(struct tfa_device *tfa, unsigned short new_value); /**< Set the sw vstep in the struct and the hw register */
@@ -73,9 +70,8 @@ struct tfa_device_ops {
 	enum Tfa98xx_Error (*set_mute)(struct tfa_device *tfa, int mute); /**< set mute */
 	enum Tfa98xx_Error (*faim_protect)(struct tfa_device *tfa, int state); /**< Protect FAIM from being corrupted  */
 	enum Tfa98xx_Error(*set_osc_powerdown)(struct tfa_device *tfa, int state); /**< Allow to change internal osc. gating settings */
+	/*To support tfa9873*/
 	enum Tfa98xx_Error(*update_lpm)(struct tfa_device *tfa, int state); /**< Allow to change lowpowermode settings */
-    int (*tfa_set_bitfield)(struct tfa_device* tfa, uint16_t bitfield, uint16_t value);
-    enum Tfa98xx_Error (*tfa_status)(struct tfa_device *tfa);	
 };
 
 /**
@@ -112,8 +108,6 @@ struct tfa_device {
 	int in_use;
 	int buffer_size;		/**< lowest level max buffer size */
 	int has_msg; 			/**< support direct dsp messaging */
-	int dynamicTDMmode; /**tracking dynamic TDM setting from alsa input stream*/
-	int bitwidth;       /**bitwdith from alsa input stream*/
 	unsigned char slave_address; /**< I2C slave address (not shifted) */
 	unsigned short rev;     /**< full revid of this device */
 	unsigned char tfa_family; /**< tfa1/tfa2 */
@@ -137,18 +131,30 @@ struct tfa_device {
 	int tfadsp_event; /**< enum tfadsp_event_en is for external registry */
 	int verbose; /**< verbosity level for debug print output */
 	enum tfa_state state;  /**< last known state or-ed with optional state_modifier */
-	struct TfaContainer *cnt;/**< the loaded container file */
-	struct TfaVolumeStepRegisterInfo *p_regInfo; /**< remember vstep for partial updates */
+	struct nxpTfaContainer *cnt;/**< the loaded container file */
+	struct nxpTfaVolumeStepRegisterInfo *p_regInfo; /**< remember vstep for partial updates */
 	int partial_enable; /**< enable partial updates */
 	void *data; /**< typically pointing to Linux driver structure owning this device */
 	int convert_dsp32; /**< convert 24 bit DSP messages to 32 bit */
 	int sync_iv_delay; /**< synchronize I/V delay at cold start */
 	int is_probus_device; /**< probus device: device without internal DSP */
+	/*To support tfa9873*/
 	int advance_keys_handling;
-	unsigned int rate; 
+
 	int needs_reset; /**< add the reset trigger for SetAlgoParams and SetMBDrc commands */
 	struct kmem_cache *cachep;	/**< Memory allocator handle */
+
+	/*To support tfa9873*/
 	char fw_itf_ver[4];          /* Firmware ITF version */
+
+	#ifdef OPLUS_ARCH_EXTENDS
+	u32 min_mohms;
+	u32 max_mohms;
+	int mi2s_id;
+	#endif /* OPLUS_ARCH_EXTENDS */
+
+	/* 0-left/top, 1-right/bottom, 0xff-default, not initialized */
+	u32 channel;
 };
 
 /**
@@ -223,7 +229,7 @@ enum tfa_error tfa_dev_stop(struct tfa_device *tfa);
  *  @param state struct = desired device state after function return
  *  @return tfa_error enum
  */
-enum tfa_error tfa_dev_set_state(struct tfa_device *tfa, enum tfa_state state,int is_calibration);
+enum tfa_error tfa_dev_set_state(struct tfa_device *tfa, enum tfa_state state);
 
 /**
  * Retrieve the current state of this instance in an active way.
@@ -238,25 +244,9 @@ enum tfa_error tfa_dev_set_state(struct tfa_device *tfa, enum tfa_state state,in
  */
 enum tfa_state tfa_dev_get_state(struct tfa_device *tfa);
 
-/**
- * Deduce the width from machine driver and decide TDM setting to be 
- * programmed to the TFA amplifier dynamically
- *  @param tfa struct = pointer to context of this device instance
- *  @param width = parmeters read from top layer to decide the applicable TDM settings
- *  @return tfa_error enum
-    - 0 if the width received is correct (16/32/24)     
- *  - others if width received is not correct 
- */
-int tfa_dev_set_tdm_bitwidth(struct tfa_device *tfa, int width);
-/**
- * Fill TDM setting addresses for current device needed with dynamic TDM switch 
- *  @param tfa struct = pointer to context of this device instance
- *  @param tdme = pointer to be filled with TDME address
- *  @param tnbck = pointer to be filled with TDMNBCK address
- *  @param tslln = pointer to be filled with TDMSLLN address
- *  @param tsize = pointer to be filled with TDMSSIZE address
- */
-void tfa_dev_get_tdm_add(struct tfa_device* tfa,uint16_t *tdme,uint16_t * tnbck,uint16_t *tslln,uint16_t *tsize);
+
+/*****************************************************************************/
+/*****************************************************************************/
 /**
  *  MTP support functions
  */

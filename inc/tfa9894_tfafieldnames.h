@@ -1,6 +1,5 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -8,19 +7,10 @@
  *
  */
 
-
-/** Filename: tfa9894_tfaFieldnames_N1Last.h
- *  This file was generated automatically on 09/28/18 at 11:24:56. 
- *  Source file: TFA9894_N1A1_I2C_RegisterMap.xlsx
- */
-
 #ifndef _TFA9894_TFAFIELDNAMES_H
 #define _TFA9894_TFAFIELDNAMES_H
 
-
-#define TFA9894_I2CVERSION    17.0
-
-typedef enum Tfa9894BfEnumList {
+typedef enum nxpTfa9894BfEnumList {
     TFA9894_BF_PWDN  = 0x0000,    /*!< Powerdown control                                  */
     TFA9894_BF_I2CR  = 0x0010,    /*!< I2C Reset - Auto clear                             */
     TFA9894_BF_CFE   = 0x0020,    /*!< Enable CoolFlux DSP                                */
@@ -232,7 +222,6 @@ typedef enum Tfa9894BfEnumList {
     TFA9894_BF_DCDIS = 0x7140,    /*!< DCDC on/off                                        */
     TFA9894_BF_DCPWM = 0x7150,    /*!< DCDC PWM only mode                                 */
     TFA9894_BF_DCTRACK= 0x7160,    /*!< Boost algorithm selection, effective only when boost_intelligent is set to 1 */
-    TFA9894_BF_DCENVSEL= 0x7170,    /*!< Selection of data for adaptive boost algorithm, effective only when boost_intelligent is set to 1 */
     TFA9894_BF_DCTRIP= 0x7204,    /*!< 1st adaptive boost trip levels, effective only when DCIE is set to 1 */
     TFA9894_BF_DCTRIP2= 0x7254,    /*!< 2nd adaptive boost trip levels, effective only when DCIE is set to 1 */
     TFA9894_BF_DCTRIPT= 0x72a4,    /*!< Track adaptive boost trip levels, effective only when boost_intelligent is set to 1 */
@@ -280,7 +269,7 @@ typedef enum Tfa9894BfEnumList {
     TFA9894_BF_USERDEF= 0xf042,    /*!< Calibration delta current limit DCDC               */
     TFA9894_BF_CUSTINFO= 0xf078,    /*!< Reserved space for allowing customer to store speaker information */
     TFA9894_BF_R25C  = 0xf50f,    /*!< Ron resistance of speaker coil                     */
-} Tfa9894BfEnumList_t;
+} nxpTfa9894BfEnumList_t;
 #define TFA9894_NAMETABLE static tfaBfName_t Tfa9894DatasheetNames[]= {\
    { 0x0, "PWDN"},    /* Powerdown control                                 , */\
    { 0x10, "I2CR"},    /* I2C Reset - Auto clear                            , */\
@@ -493,7 +482,6 @@ typedef enum Tfa9894BfEnumList {
    { 0x7140, "DCDIS"},    /* DCDC on/off                                       , */\
    { 0x7150, "DCPWM"},    /* DCDC PWM only mode                                , */\
    { 0x7160, "DCTRACK"},    /* Boost algorithm selection, effective only when boost_intelligent is set to 1, */\
-   { 0x7170, "DCENVSEL"},    /* Selection of data for adaptive boost algorithm, effective only when boost_intelligent is set to 1, */\
    { 0x7204, "DCTRIP"},    /* 1st adaptive boost trip levels, effective only when DCIE is set to 1, */\
    { 0x7254, "DCTRIP2"},    /* 2nd adaptive boost trip levels, effective only when DCIE is set to 1, */\
    { 0x72a4, "DCTRIPT"},    /* Track adaptive boost trip levels, effective only when boost_intelligent is set to 1, */\

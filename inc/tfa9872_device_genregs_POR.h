@@ -1,16 +1,10 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
- */
-
-/** Filename: Tfa98xx_device_genregs.h
- *  This file was generated automatically on 08/11/16 at 07:44:41. 
- *  Source file: TFA9872N1B2_DefaultI2CSettings - V1.xlsx
  */
 
 #ifndef _TFA9872_DEVICE_GENREGS_H

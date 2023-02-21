@@ -1,6 +1,5 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -33,7 +32,21 @@
 #define TFA98XX_FLAG_REMOVE_PLOP_NOISE	(1 << 6)
 #define TFA98XX_FLAG_LP_MODES	        (1 << 7)
 #define TFA98XX_FLAG_TDM_DEVICE         (1 << 8)
+
+/*To support tfa9873*/
 #define TFA98XX_FLAG_ADAPT_NOISE_MODE   (1 << 9)
+#ifdef OPLUS_ARCH_EXTENDS
+#define TFA98XX_FLAG_CHIP_SELECTED      (1 << 16)
+
+//chip select
+#define CHIP_SELECTOR_LEFT	(1)
+#define CHIP_SELECTOR_RIGHT	(2)
+#define CHIP_SELECTOR_STEREO	(3)
+
+//device i2c address
+#define CHIP_LEFT_ADDR		(0x34)
+#define CHIP_RIGHT_ADDR		(0x35)
+#endif /* OPLUS_ARCH_EXTENDS */
 
 #define TFA98XX_NUM_RATES		9
 
@@ -67,25 +80,24 @@ struct tfa98xx_baseprofile {
 	int sr_rate_sup[TFA98XX_NUM_RATES]; /* sample rates supported by this profile */
 	struct list_head list;              /* list of all profiles */
 };
-enum tfa_reset_polarity{
-	LOW=0,
-	HIGH=1
-};
+
 struct tfa98xx {
 	struct regmap *regmap;
 	struct i2c_client *i2c;
 	struct regulator *vdd;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,18,0)
-	struct snd_soc_component *codec;
-#else
-	struct snd_soc_codec *codec;
-#endif
+	struct snd_soc_component *component;
 	struct workqueue_struct *tfa98xx_wq;
 	struct delayed_work init_work;
 	struct delayed_work monitor_work;
 	struct delayed_work interrupt_work;
 	struct delayed_work tapdet_work;
+
+	/*To support tfa9873*/
 	struct delayed_work nmodeupdate_work;
+
+	#ifdef OPLUS_FEATURE_FADE_IN
+	struct delayed_work fadein_work;
+	#endif /* OPLUS_FEATURE_FADE_IN */
 	struct mutex dsp_lock;
 	int dsp_init;
 	int dsp_fw_state;
@@ -113,7 +125,7 @@ struct tfa98xx {
 	int reset_gpio;
 	int power_gpio;
 	int irq_gpio;
-	enum tfa_reset_polarity reset_polarity; 
+
 	struct list_head list;
 	struct tfa_device *tfa;
 	int vstep;
@@ -122,11 +134,20 @@ struct tfa98xx {
 
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *dbg_dir;
-#endif
+#else
+	struct proc_dir_entry *dbg_dir;
+#endif/*CONFIG_DEBUG_FS*/
 	u8 reg;
 	unsigned int flags;
 	bool set_mtp_cal;
 	uint16_t cal_data;
+	#ifdef OPLUS_ARCH_EXTENDS
+	struct regulator *tfa98xx_vdd;
+	#endif /* OPLUS_ARCH_EXTENDS */
+
+	#ifdef OPLUS_FEATURE_FADE_IN
+	bool fadein_enable;
+	#endif /* OPLUS_FEATURE_FADE_IN */
 };
 
 

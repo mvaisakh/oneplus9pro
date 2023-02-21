@@ -1,6 +1,5 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -8,20 +7,16 @@
  *
  */
 
-
-/** Filename: tfa9872_tfaFieldnames.h
- *  This file was generated automatically on 09/28/18 at 11:21:43. 
- *  Source file: TFA9872N1B2_DefaultI2CSettings -v25.xlsx
- */
-
 #ifndef _TFA9872_TFAFIELDNAMES_H
 #define _TFA9872_TFAFIELDNAMES_H
 
+
 #define TFA9872_I2CVERSION_N1A    26
 #define TFA9872_I2CVERSION_N1B    29
-#define TFA9872_I2CVERSION_N1B2   25
+#define TFA9872_I2CVERSION_N1B2   21
 
-typedef enum Tfa9872BfEnumList {
+
+typedef enum nxpTfa9872BfEnumList {
     TFA9872_BF_PWDN  = 0x0000,    /*!< Powerdown selection                                */
     TFA9872_BF_I2CR  = 0x0010,    /*!< I2C Reset - Auto clear                             */
     TFA9872_BF_AMPE  = 0x0030,    /*!< Activate Amplifier                                 */
@@ -308,7 +303,7 @@ typedef enum Tfa9872BfEnumList {
     TFA9872_BF_USERDEF= 0xf042,    /*!< Calibration delta current limit DCDC               */
     TFA9872_BF_CUSTINFO= 0xf078,    /*!< Reserved space for allowing customer to store speaker information */
     TFA9872_BF_R25C  = 0xf50f,    /*!< Ron resistance of  speaker coil                    */
-} Tfa9872BfEnumList_t;
+} nxpTfa9872BfEnumList_t;
 #define TFA9872_NAMETABLE static tfaBfName_t Tfa9872DatasheetNames[]= {\
    { 0x0, "PWDN"},    /* Powerdown selection                               , */\
    { 0x10, "I2CR"},    /* I2C Reset - Auto clear                            , */\
@@ -1149,38 +1144,38 @@ typedef enum Tfa9872BfEnumList {
    { 0xffff,"Unknown bitfield enum" }    /* not found */\
 };
 
-enum tfa9872_irq {
-	tfa9872_irq_stvdds = 0,
-	tfa9872_irq_stplls = 1,
-	tfa9872_irq_stotds = 2,
-	tfa9872_irq_stovds = 3,
-	tfa9872_irq_stuvds = 4,
-	tfa9872_irq_stclks = 5,
-	tfa9872_irq_stmtpb = 6,
-	tfa9872_irq_stnoclk = 7,
-	tfa9872_irq_stsws = 10,
-	tfa9872_irq_stamps = 12,
-	tfa9872_irq_starefs = 13,
-	tfa9872_irq_stadccr = 14,
-	tfa9872_irq_stbstcu = 16,
-	tfa9872_irq_stbsthi = 17,
-	tfa9872_irq_stbstoc = 18,
-	tfa9872_irq_stbstpkcur = 19,
-	tfa9872_irq_stbstvc = 20,
-	tfa9872_irq_stbst86 = 21,
-	tfa9872_irq_stbst93 = 22,
-	tfa9872_irq_stocpr = 25,
-	tfa9872_irq_stmwsrc = 26,
-	tfa9872_irq_stmwsmu = 28,
-	tfa9872_irq_stclkoor = 31,
-	tfa9872_irq_sttdmer = 32,
-	tfa9872_irq_stclpr = 34,
-	tfa9872_irq_stlp0 = 36,
-	tfa9872_irq_stlp1 = 37,
-	tfa9872_irq_stla = 38,
-	tfa9872_irq_stvddph = 39,
-	tfa9872_irq_max = 40,
-	tfa9872_irq_all = -1 /* all irqs */};
+enum TFA9872_irq {
+	TFA9872_irq_stvdds = 0,
+	TFA9872_irq_stplls = 1,
+	TFA9872_irq_stotds = 2,
+	TFA9872_irq_stovds = 3,
+	TFA9872_irq_stuvds = 4,
+	TFA9872_irq_stclks = 5,
+	TFA9872_irq_stmtpb = 6,
+	TFA9872_irq_stnoclk = 7,
+	TFA9872_irq_stsws = 10,
+	TFA9872_irq_stamps = 12,
+	TFA9872_irq_starefs = 13,
+	TFA9872_irq_stadccr = 14,
+	TFA9872_irq_stbstcu = 16,
+	TFA9872_irq_stbsthi = 17,
+	TFA9872_irq_stbstoc = 18,
+	TFA9872_irq_stbstpkcur = 19,
+	TFA9872_irq_stbstvc = 20,
+	TFA9872_irq_stbst86 = 21,
+	TFA9872_irq_stbst93 = 22,
+	TFA9872_irq_stocpr = 25,
+	TFA9872_irq_stmwsrc = 26,
+	TFA9872_irq_stmwsmu = 28,
+	TFA9872_irq_stclkoor = 31,
+	TFA9872_irq_sttdmer = 32,
+	TFA9872_irq_stclpr = 34,
+	TFA9872_irq_stlp0 = 36,
+	TFA9872_irq_stlp1 = 37,
+	TFA9872_irq_stla = 38,
+	TFA9872_irq_stvddph = 39,
+	TFA9872_irq_max = 40,
+	TFA9872_irq_all = -1 /* all irqs */};
 
 #define TFA9872_IRQ_NAMETABLE static tfaIrqName_t Tfa9872IrqNames[]= {\
 	{ 0, "STVDDS"},\

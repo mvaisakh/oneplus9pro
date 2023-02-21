@@ -1,6 +1,5 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -8,19 +7,11 @@
  *
  */
 
-
-/** Filename: tfa9894_tfaFieldnames_N2.h
- *  This file was generated automatically on 09/28/18 at 12:19:41. 
- *  Source file: TFA9894_N2A1_I2C_RegisterMap.xlsx
- */
-
 #ifndef _TFA9894_TFAFIELDNAMES_N2_H
 #define _TFA9894_TFAFIELDNAMES_N2_H
 
 
-#define TFA9894N2_I2CVERSION    25.0
-
-typedef enum Tfa9894N2BfEnumList {
+typedef enum nxpTfa9894N2BfEnumList {
     TFA9894N2_BF_PWDN  = 0x0000,    /*!< Powerdown control                                  */
     TFA9894N2_BF_I2CR  = 0x0010,    /*!< I2C Reset - Auto clear                             */
     TFA9894N2_BF_CFE   = 0x0020,    /*!< Enable CoolFlux DSP                                */
@@ -244,7 +235,7 @@ typedef enum Tfa9894N2BfEnumList {
     TFA9894N2_BF_DCTRIP2= 0x7254,    /*!< 2nd adaptive boost trip levels, effective only when DCIE is set to 1 */
     TFA9894N2_BF_DCTRIPT= 0x72a4,    /*!< Track adaptive boost trip levels, effective only when boost_intelligent is set to 1 */
     TFA9894N2_BF_DCTRIPHYSTE= 0x72f0,    /*!< Enable hysteresis on booster trip levels           */
-    TFA9894N2_BF_DCHOLD= 0x7304,    /*!< Hold time / Hysteresis for DCDC booster, effective only when boost_intelligent is set to 1 */
+    TFA9894N2_BF_DCHOLD= 0x7304,    /*!< Hold time for DCDC booster, effective only when boost_intelligent is set to 1 */
     TFA9894N2_BF_RST   = 0x9000,    /*!< Reset for Coolflux DSP                             */
     TFA9894N2_BF_DMEM  = 0x9011,    /*!< Target memory for CFMA using I2C interface         */
     TFA9894N2_BF_AIF   = 0x9030,    /*!< Auto increment                                     */
@@ -278,21 +269,6 @@ typedef enum Tfa9894N2BfEnumList {
     TFA9894N2_BF_MTPRDLSB= 0xa60f,    /*!< LSB word of MTP manual read data                   */
     TFA9894N2_BF_EXTTS = 0xb108,    /*!< External temperature (C)                           */
     TFA9894N2_BF_TROS  = 0xb190,    /*!< Select temp Speaker calibration                    */
-    TFA9894N2_BF_PLLINSELI= 0xca05,    /*!< PLL INSELI - PLL direct bandwidth control mode only with pll_bandsel set to 1 */
-    TFA9894N2_BF_PLLINSELP= 0xca64,    /*!< PLL INSELP - PLL direct bandwidth control mode only with pll_bandsel set to 1 */
-    TFA9894N2_BF_PLLINSELR= 0xcab3,    /*!< PLL INSELR - PLL direct bandwidth control mode only with pll_bandsel set to 1 */
-    TFA9894N2_BF_PLLNDEC= 0xcb09,    /*!< PLL NDEC in direct control mode only, use_direct_pll_ctrl set to 1 */
-    TFA9894N2_BF_PLLMDECMSB= 0xcba0,    /*!< MSB of PLL MDEC in direct control mode only, use_direct_pll_ctrl set to 1 */
-    TFA9894N2_BF_PLLBYPASS= 0xcbb0,    /*!< PLL bypass control during functional mode          */
-    TFA9894N2_BF_PLLDIRECTI= 0xcbc0,    /*!< PLL directi control in direct control mode only, use_direct_pll_ctrl set to 1 */
-    TFA9894N2_BF_PLLDIRECTO= 0xcbd0,    /*!< PLL directo control in direct control mode only, use_direct_pll_ctrl set to 1 */
-    TFA9894N2_BF_PLLFRMSTBL= 0xcbe0,    /*!< PLL FRM clock stable control in direct control mode only, use_direct_pll_ctrl set to 1 */
-    TFA9894N2_BF_PLLFRM= 0xcbf0,    /*!< PLL free running mode control in functional mode   */
-    TFA9894N2_BF_PLLMDECLSB= 0xcc0f,    /*!< Bits 15..0 of PLL MDEC in direct control mode only, use_direct_pll_ctrl set to 1 */
-    TFA9894N2_BF_PLLPDEC= 0xcd06,    /*!< PLL PDEC in direct control mode only, use_direct_pll_ctrl set to 1 */
-    TFA9894N2_BF_DIRECTPLL= 0xcd70,    /*!< Enabled PLL direct control mode, overrules the PLL LUT with I2C register values */
-    TFA9894N2_BF_DIRECTCLK= 0xcd80,    /*!< Enabled CGU clock divider direct control mode      */
-    TFA9894N2_BF_PLLLIM= 0xcd90,    /*!< PLL up limiter control in PLL direct bandwidth control mode, pll_bandsel set to 1 */
     TFA9894N2_BF_SWPROFIL= 0xe00f,    /*!< Software profile data                              */
     TFA9894N2_BF_SWVSTEP= 0xe10f,    /*!< Software vstep information                         */
     TFA9894N2_BF_MTPOTC= 0xf000,    /*!< Calibration schedule                               */
@@ -302,7 +278,7 @@ typedef enum Tfa9894N2BfEnumList {
     TFA9894N2_BF_USERDEF= 0xf042,    /*!< Calibration delta current limit DCDC               */
     TFA9894N2_BF_CUSTINFO= 0xf078,    /*!< Reserved space for allowing customer to store speaker information */
     TFA9894N2_BF_R25C  = 0xf50f,    /*!< Ron resistance of speaker coil                     */
-} Tfa9894N2BfEnumList_t;
+} nxpTfa9894N2BfEnumList_t;
 #define TFA9894N2_NAMETABLE static tfaBfName_t Tfa9894N2DatasheetNames[]= {\
    { 0x0, "PWDN"},    /* Powerdown control                                 , */\
    { 0x10, "I2CR"},    /* I2C Reset - Auto clear                            , */\
@@ -527,7 +503,7 @@ typedef enum Tfa9894N2BfEnumList {
    { 0x7254, "DCTRIP2"},    /* 2nd adaptive boost trip levels, effective only when DCIE is set to 1, */\
    { 0x72a4, "DCTRIPT"},    /* Track adaptive boost trip levels, effective only when boost_intelligent is set to 1, */\
    { 0x72f0, "DCTRIPHYSTE"},    /* Enable hysteresis on booster trip levels          , */\
-   { 0x7304, "DCHOLD"},    /* Hold time / Hysteresis for DCDC booster, effective only when boost_intelligent is set to 1, */\
+   { 0x7304, "DCHOLD"},    /* Hold time for DCDC booster, effective only when boost_intelligent is set to 1, */\
    { 0x9000, "RST"},    /* Reset for Coolflux DSP                            , */\
    { 0x9011, "DMEM"},    /* Target memory for CFMA using I2C interface        , */\
    { 0x9030, "AIF"},    /* Auto increment                                    , */\
@@ -561,21 +537,6 @@ typedef enum Tfa9894N2BfEnumList {
    { 0xa60f, "MTPRDLSB"},    /* LSB word of MTP manual read data                  , */\
    { 0xb108, "EXTTS"},    /* External temperature (C)                          , */\
    { 0xb190, "TROS"},    /* Select temp Speaker calibration                   , */\
-   { 0xca05, "PLLINSELI"},    /* PLL INSELI - PLL direct bandwidth control mode only with pll_bandsel set to 1, */\
-   { 0xca64, "PLLINSELP"},    /* PLL INSELP - PLL direct bandwidth control mode only with pll_bandsel set to 1, */\
-   { 0xcab3, "PLLINSELR"},    /* PLL INSELR - PLL direct bandwidth control mode only with pll_bandsel set to 1, */\
-   { 0xcb09, "PLLNDEC"},    /* PLL NDEC in direct control mode only, use_direct_pll_ctrl set to 1, */\
-   { 0xcba0, "PLLMDECMSB"},    /* MSB of PLL MDEC in direct control mode only, use_direct_pll_ctrl set to 1, */\
-   { 0xcbb0, "PLLBYPASS"},    /* PLL bypass control during functional mode         , */\
-   { 0xcbc0, "PLLDIRECTI"},    /* PLL directi control in direct control mode only, use_direct_pll_ctrl set to 1, */\
-   { 0xcbd0, "PLLDIRECTO"},    /* PLL directo control in direct control mode only, use_direct_pll_ctrl set to 1, */\
-   { 0xcbe0, "PLLFRMSTBL"},    /* PLL FRM clock stable control in direct control mode only, use_direct_pll_ctrl set to 1, */\
-   { 0xcbf0, "PLLFRM"},    /* PLL free running mode control in functional mode  , */\
-   { 0xcc0f, "PLLMDECLSB"},    /* Bits 15..0 of PLL MDEC in direct control mode only, use_direct_pll_ctrl set to 1, */\
-   { 0xcd06, "PLLPDEC"},    /* PLL PDEC in direct control mode only, use_direct_pll_ctrl set to 1, */\
-   { 0xcd70, "DIRECTPLL"},    /* Enabled PLL direct control mode, overrules the PLL LUT with I2C register values, */\
-   { 0xcd80, "DIRECTCLK"},    /* Enabled CGU clock divider direct control mode     , */\
-   { 0xcd90, "PLLLIM"},    /* PLL up limiter control in PLL direct bandwidth control mode, pll_bandsel set to 1, */\
    { 0xe00f, "SWPROFIL"},    /* Software profile data                             , */\
    { 0xe10f, "SWVSTEP"},    /* Software vstep information                        , */\
    { 0xf000, "MTPOTC"},    /* Calibration schedule                              , */\
@@ -862,7 +823,7 @@ typedef enum Tfa9894N2BfEnumList {
    { 0x7254, "boost_trip_lvl_2nd"},    /* 2nd adaptive boost trip levels, effective only when DCIE is set to 1, */\
    { 0x72a4, "boost_trip_lvl_track"},    /* Track adaptive boost trip levels, effective only when boost_intelligent is set to 1, */\
    { 0x72f0, "enbl_trip_hyst"},    /* Enable hysteresis on booster trip levels          , */\
-   { 0x7304, "boost_hold_time"},    /* Hold time / Hysteresis for DCDC booster, effective only when boost_intelligent is set to 1, */\
+   { 0x7304, "boost_hold_time"},    /* Hold time for DCDC booster, effective only when boost_intelligent is set to 1, */\
    { 0x7350, "dcdc_pfm20khz_limit"},    /* DCDC in PFM mode pwm mode is activated each 50us to force a pwm pulse, */\
    { 0x7361, "dcdc_ctrl_maxzercnt"},    /* Number of zero current flags to count before going to pfm mode, */\
    { 0x7386, "dcdc_vbat_delta_detect"},    /* Threshold before booster is reacting on a delta Vbat (in PFM mode) by temporarily switching to PWM mode, */\

@@ -1,17 +1,10 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2021 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
- */
-
-
-/** Filename: tfa9912_device_genregs.h
- *  This file was generated automatically on 04/19/17 at 12:26:46.
- *  Source file: TFA9912_N1A_I2C_regmap_V1.39.xlsx
  */
 
 #ifndef _TFA9912_DEVICE_GENREGS_H

@@ -560,7 +560,7 @@ static bool mlme_vdev_state_suspend_event(void *ctx, uint16_t event,
 					  void *event_data)
 {
 	struct vdev_mlme_obj *vdev_mlme = (struct vdev_mlme_obj *)ctx;
-	bool status;
+	bool status = 0;
 
 	switch (event) {
 	case WLAN_VDEV_SM_EV_DOWN:

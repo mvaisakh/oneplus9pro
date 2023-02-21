@@ -42,7 +42,7 @@ snd-soc-tfa98xx-objs += src/tfa98xx.o
 snd-soc-tfa98xx-objs += src/tfa_container.o
 snd-soc-tfa98xx-objs += src/tfa_dsp.o
 snd-soc-tfa98xx-objs += src/tfa_init.o
-
+snd-soc-tfa98xx-objs += stc/smartpa_pm.o
 
 else
 

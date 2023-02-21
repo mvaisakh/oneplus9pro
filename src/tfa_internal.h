@@ -1,6 +1,5 @@
-/* 
- * Copyright (C) 2014-2020 NXP Semiconductors, All Rights Reserved.
- * Copyright 2020 GOODIX 
+/*
+ * Copyright (C) 2014 NXP Semiconductors, All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -26,8 +25,8 @@
 
 #define TFA98XX_GENERIC_SLAVE_ADDRESS 0x1C
 
-TFA_INTERNAL enum Tfa98xx_Error tfa98xx_check_rpc_status(struct tfa_device *tfa, int *pRpcStatus);
-TFA_INTERNAL enum Tfa98xx_Error tfa98xx_wait_result(struct tfa_device *tfa, int waitRetryCount);
+TFA_INTERNAL enum Tfa98xx_Error tfa98xx_check_rpc_status_v6(struct tfa_device *tfa, int *pRpcStatus);
+TFA_INTERNAL enum Tfa98xx_Error tfa98xx_wait_result_v6(struct tfa_device *tfa, int waitRetryCount);
 
 #endif /* __TFA_INTERNAL_H__ */
 

@@ -34,7 +34,7 @@
 #include "tfa_internal.h"
 
 #ifdef OPLUS_FEATURE_SMARTPA_PM
-#include "../smartpa_pm/smartpa_pm.h"
+#include "smartpa_pm.h"
 #endif /* OPLUS_FEATURE_SMARTPA_PM */
 
 #ifdef OPLUS_ARCH_EXTENDS

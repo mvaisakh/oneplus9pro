@@ -22,4 +22,7 @@ source "drivers/soc/versatile/Kconfig"
 source "drivers/soc/xilinx/Kconfig"
 source "drivers/soc/zte/Kconfig"
 
+# OPlus
+source "drivers/soc/oplus/system/Kconfig"
+
 endmenu

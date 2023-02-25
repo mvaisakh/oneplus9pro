@@ -67,4 +67,5 @@ obj-$(CONFIG_WIGIG_SENSING_SPI)	+= wigig_sensing.o
 obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
 
 # Oplus
-obj-$(CONFIG_AW8697_HAPTIC) += aw8697_haptic/
+obj-$(CONFIG_AW8697_HAPTIC)	+= aw8697_haptic/
+obj-$(CONFIG_SIM_DETECT)	+= sim_detect.o

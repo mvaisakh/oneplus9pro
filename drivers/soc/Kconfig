@@ -24,5 +24,6 @@ source "drivers/soc/zte/Kconfig"
 
 # OPlus
 source "drivers/soc/oplus/system/Kconfig"
+source "drivers/soc/oplus/device_info/Kconfig"
 
 endmenu

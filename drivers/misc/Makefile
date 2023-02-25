@@ -70,3 +70,4 @@ obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
 obj-$(CONFIG_AW8697_HAPTIC)	+= aw8697_haptic/
 obj-$(CONFIG_SIM_DETECT)	+= sim_detect.o
 obj-$(CONFIG_OEM_QMI)		+= oem_qmi_client.o
+obj-$(CONFIG_OPLUS_TRIKEY_MAIN)	+= tri_state_key/

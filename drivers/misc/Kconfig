@@ -542,6 +542,7 @@ source "drivers/misc/habanalabs/Kconfig"
 
 # Oplus
 source "drivers/misc/aw8697_haptic/Kconfig"
+source "drivers/misc/tri_state_key/Kconfig"
 
 # SIM Detect
 config SIM_DETECT

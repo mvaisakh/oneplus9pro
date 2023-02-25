@@ -550,4 +550,10 @@ config SIM_DETECT
 	help
 	  Say Y here to enable sim detect system support
 
+config OEM_QMI
+	tristate "oem qmi feature"
+	default n
+	help
+	  Say Y here to enable oem qmi support
+
 endmenu

@@ -27,5 +27,6 @@ source "drivers/soc/oplus/system/Kconfig"
 source "drivers/soc/oplus/device_info/Kconfig"
 source "drivers/soc/oplus/game_opt/Kconfig"
 source "drivers/soc/oplus/misc/Kconfig"
+source "drivers/soc/oplus/sensor/Kconfig"
 
 endmenu

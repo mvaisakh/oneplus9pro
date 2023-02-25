@@ -32,3 +32,4 @@ obj-$(CONFIG_ARCH_ZX)		+= zte/
 obj-$(CONFIG_OPLUS_SYSTEM_KERNEL)	+= oplus/system/
 obj-$(CONFIG_OPLUS_DEVICE_INFO)		+= oplus/device_info/
 obj-$(CONFIG_OPLUS_FEATURE_GAME_OPT)	+= oplus/game_opt/
+obj-y					+= oplus/misc/

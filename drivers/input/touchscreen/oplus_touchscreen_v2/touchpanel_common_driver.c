@@ -3719,57 +3719,44 @@ static int ts_mtk_drm_notifier_callback(struct notifier_block *nb,
 static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
 	int *blank;
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
 	struct msm_drm_notifier *evdata = data;
-#endif
 
 	struct touchpanel_data *ts = container_of(self, struct touchpanel_data,
 				     fb_notif);
 
 	/*to aviod some kernel bug (at fbmem.c some local veriable are not initialized)*/
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
 	if (event != MSM_DRM_EARLY_EVENT_BLANK && event != MSM_DRM_EVENT_BLANK
 	    && event != MSM_DRM_EVENT_FOR_TOUCH)
-#endif
 		return 0;
 
 	if (evdata && evdata->data && ts && ts->chip_data) {
 		blank = evdata->data;
 		TP_INFO(ts->tp_index, "%s: event = %ld, blank = %d\n", __func__, event, *blank);
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
 
-		if (*blank == MSM_DRM_BLANK_POWERDOWN) { /*suspend*/
-			if (event == MSM_DRM_EARLY_EVENT_BLANK) {    /*early event*/
-#endif
-				if (ts->speedup_resume_wq) {
-					flush_workqueue(ts->speedup_resume_wq);        /*wait speedup_resume_wq done*/
+		switch(event) {
+			case MSM_DRM_EARLY_EVENT_BLANK:
+				if (*blank == MSM_DRM_BLANK_POWERDOWN) {
+					if (ts->speedup_resume_wq) {
+						flush_workqueue(ts->speedup_resume_wq);  /* wait speedup_resume_wq done */
+					}
+					lcd_off_early_event(ts);
+				} else if (*blank == MSM_DRM_BLANK_UNBLANK) {
+					lcd_on_early_event(ts);
 				}
-
-				lcd_off_early_event(ts);
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
-
-			} else if (event == MSM_DRM_EVENT_BLANK) {   /*event*/
-#endif
-				lcd_off_event(ts);
-			}
-
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
-
-		} else if (*blank == MSM_DRM_BLANK_UNBLANK) { /*resume*/
-			if (event == MSM_DRM_EARLY_EVENT_BLANK) {    /*early event*/
-#endif
-				lcd_on_early_event(ts);
-
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
-
-			} else if (event == MSM_DRM_EVENT_BLANK) {   /*event*/
-#endif
-				lcd_on_event(ts);
-			}
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
-		} else if (event == MSM_DRM_EVENT_FOR_TOUCH) {   //event
-#endif
-			lcd_other_event(blank, ts);
+				break;
+			case MSM_DRM_EVENT_BLANK:
+				if (*blank == MSM_DRM_BLANK_POWERDOWN) {
+					lcd_off_event(ts);
+				} else if (*blank == MSM_DRM_BLANK_UNBLANK) {
+						lcd_on_event(ts);
+				}
+				break;
+			case MSM_DRM_EVENT_FOR_TOUCH:
+				lcd_other_event(blank, ts);
+				break;
+			default:
+				lcd_other_event(blank, ts);
+				break;
 		}
 	}
 

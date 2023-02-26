@@ -6,7 +6,7 @@
 
 usage() {
 	echo "Usage: $0 <platform_defconfig_variant>"
-	echo "Variants: <platform>-gki_defconfig, <platform>-qgki_defconfig, <platform>-consolidate_defconfig and <platform>-qgki-debug_defconfig"
+	echo "Variants: <platform>-gki_defconfig, <platform>-nqgki_defconfig <platform>-qgki_defconfig, <platform>-consolidate_defconfig and <platform>-qgki-debug_defconfig"
 	echo "Example: $0 lahaina-gki_defconfig"
 	exit 1
 }
@@ -74,6 +74,16 @@ case "$REQUIRED_DEFCONFIG" in
 		FINAL_DEFCONFIG_BLEND+=" $OPLUS_GKI_ALLYES_FRAG "
 		FINAL_DEFCONFIG_BLEND+=" $QCOM_GKI_ALLYES_FRAG "
 		;;
+        ${PLATFORM_NAME}-nqgki_defconfig )
+                # DEBUG_FS fragment.
+                FINAL_DEFCONFIG_BLEND+=" $QCOM_DEBUG_FS_FRAG"
+                FINAL_DEFCONFIG_BLEND+=" $OPLUS_NQGKI_FRAG"
+                FINAL_DEFCONFIG_BLEND+=" $QCOM_NQGKI_FRAG"
+                ${SCRIPTS_ROOT}/fragment_allyesconfig.sh $OPLUS_NGKI_FRAG $OPLUS_GKI_ALLYES_FRAG
+                ${SCRIPTS_ROOT}/fragment_allyesconfig.sh $QCOM_NGKI_FRAG $QCOM_GKI_ALLYES_FRAG
+                FINAL_DEFCONFIG_BLEND+=" $OPLUS_GKI_ALLYES_FRAG "
+                FINAL_DEFCONFIG_BLEND+=" $QCOM_GKI_ALLYES_FRAG "
+                ;;
 	${PLATFORM_NAME}-gki_defconfig )
 		FINAL_DEFCONFIG_BLEND+=" $OPLUS_GKI_FRAG "
 		FINAL_DEFCONFIG_BLEND+=" $QCOM_GKI_FRAG "

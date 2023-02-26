@@ -19,7 +19,11 @@ include $(srctree)/techpack/camera/config/monacocamera.conf
 endif
 
 ifeq ($(CONFIG_ARCH_LAHAINA), y)
+ifneq ($(CONFIG_NGKI),y)
 include $(srctree)/techpack/camera/config/lahainacamera.conf
+else
+include $(srctree)/techpack/camera/config/lahainangkicamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_HOLI), y)

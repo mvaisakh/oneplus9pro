@@ -13,8 +13,13 @@ endif
 
 ifeq ($(CONFIG_ARCH_LAHAINA), y)
      ifeq ($(CONFIG_QGKI), y)
-		include $(srctree)/techpack/display/config/lahainadisp.conf
+       ifeq ($(CONFIG_NGKI),y)
+		include $(srctree)/techpack/display/config/ngki_lahainadisp.conf
 LINUXINCLUDE    += -include $(srctree)/techpack/display/config/lahainadispconf.h
+       else
+                include $(srctree)/techpack/display/config/lahainadisp.conf
+LINUXINCLUDE    += -include $(srctree)/techpack/display/config/lahainadispconf.h
+       endif
      else
 		include $(srctree)/techpack/display/config/gki_lahainadisp.conf
 LINUXINCLUDE    += -include $(srctree)/techpack/display/config/gki_lahainadispconf.h

@@ -19,7 +19,11 @@ ifeq ($(CONFIG_ARCH_KONA), y)
 include $(srctree)/techpack/audio/config/konaauto.conf
 endif
 ifeq ($(CONFIG_ARCH_LAHAINA), y)
+ifneq ($(CONFIG_NGKI),y)
 include $(srctree)/techpack/audio/config/lahainaauto.conf
+else
+include $(srctree)/techpack/audio/config/lahainangkiauto.conf
+endif
 endif
 ifeq ($(CONFIG_ARCH_HOLI), y)
 include $(srctree)/techpack/audio/config/holiauto.conf

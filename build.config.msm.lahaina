@@ -26,7 +26,7 @@ esac
 ## Variant setup
 MSM_ARCH=lahaina
 BRANCH=msm-5.4
-VARIANTS=(qgki-debug qgki-consolidate qgki gki gki-only)
+VARIANTS=(qgki-debug qgki-consolidate nqgki qgki gki gki-only)
 
 DT_OVERLAY_SUPPORT=1
 
@@ -39,7 +39,7 @@ PAGE_SIZE=4096
 . ${KERNEL_DIR}/build.config.msm.common
 
 case "${VARIANT}" in
-qgki-debug | qgki-consolidate | qgki | gki)
+nqgki | qgki-debug | qgki-consolidate | qgki | gki)
 	. ${KERNEL_DIR}/build.config.msm.gki
 	;;
 gki-only)

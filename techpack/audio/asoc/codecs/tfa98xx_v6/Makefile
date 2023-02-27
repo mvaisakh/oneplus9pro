@@ -24,8 +24,11 @@ endif
 
 ifneq ($(KERNELRELEASE),)
 
-EXTRA_CFLAGS += -I$(src)/inc
+EXTRA_CFLAGS += -I$(src)/inc \
+                -I$(srctree)/techpack/audio/include/
 EXTRA_CFLAGS += -Werror
+
+subdir-ccflags-y += $(EXTRA_CFLAGS)
 
 obj-$(CONFIG_SND_SOC_TFA98XX) := snd-soc-tfa98xx.o
 

@@ -12,15 +12,13 @@
 #include <linux/version.h>
 #include <linux/input.h>
 #include <dsp/apr_audio-v2.h>
+#include <dsp/q6afe-v2.h>
 
 //#define TEST_DEBUG_LOG 1
 
 static char const *smartpa_pm_ctrl_text[] = {"Off", "On"};
 static const struct soc_enum smartpa_pm_ctrl_enum =
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(smartpa_pm_ctrl_text), smartpa_pm_ctrl_text);
-
-extern int set_smartpa_pm_status_apr(void *buf, int cmd_size);
-extern int get_smartpa_pm_result_apr(void *buf, int cmd_size);
 
 static int smartpa_pm_ctrl_put(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)

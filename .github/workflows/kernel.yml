@@ -1,0 +1,74 @@
+name: Kernel Build CI
+
+on:
+  push:
+
+jobs:
+  build-sm8350-clang:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Clang Build
+      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=full BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-oneplus9series-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+
+  build-sm8350-gcc:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: GCC Build
+      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki COMPILER=gcc BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-oneplus9series-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+
+  publish-release:
+    needs: [build-sm8350-clang,build-sm8350-gcc]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Restoring artifacts
+      uses: actions/download-artifact@main
+      with:
+        name: release-zip
+        path: ${{ github.workspace }}
+    - name: Release Tag
+      id: release_tag
+      run: echo "TAG_NAME=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
+    - name: Create Release
+      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

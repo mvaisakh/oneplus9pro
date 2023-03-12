@@ -16,7 +16,7 @@ jobs:
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: Clang Build
-      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=full BUILD_KERNEL=1 build/build.sh
+      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=none BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/

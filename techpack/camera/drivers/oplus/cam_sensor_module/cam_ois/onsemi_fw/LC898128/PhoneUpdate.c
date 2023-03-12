@@ -16,6 +16,7 @@
 //#include	<math.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
+#include <asm/neon.h>
 
 #include	"FromCode_01_00_00.h"
 #include	"FromCode_01_02_01_00.h"
@@ -1006,8 +1007,9 @@ UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement
 	
 	UINT_8	UcCnvF = 0;
 
+	kernel_neon_begin();
 //	if( ( DegreeGap > 180.0f) || ( DegreeGap < -180.0f ) ) return ( 1 );
-	if( ( DegreeGap > (float)180) || ( DegreeGap < (float)-180 ) ) return ( 1 );
+	if( ( (double)DegreeGap > (float)180) || ( (double)DegreeGap < (float)-180 ) ) return ( 1 );
 	if( Arrangement >= 2 ) return ( 1 );
 
 /************************************************************************/
@@ -1083,7 +1085,7 @@ UINT_8 SetAngleCorrection( float DegreeGap, UINT_8 SelectAct, UINT_8 Arrangement
 //	RamWrite32A( 0x86FC , 			(UINT_32)Slagx45y );
 //	RamWrite32A( 0x8700 , 			(UINT_32)Slagy45y );
 //	RamWrite32A( 0x8704 , 			(UINT_32)Slagy45x );
-
+	kernel_neon_end();
 
 	return ( 0 );
 }

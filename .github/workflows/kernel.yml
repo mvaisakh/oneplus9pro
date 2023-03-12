@@ -22,6 +22,8 @@ jobs:
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/arch/arm64/boot/dts/vendor/oplus/martini/dtbo.img ak3/martini-dtbo.img
+        cat out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/arch/arm64/boot/dts/vendor/oplus/martini/*.dtb > ak3/martini-dtb
         cd ak3/ && zip -r9 eva-oneplus9series-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
         cd ../
     - uses: actions/upload-artifact@main
@@ -47,6 +49,8 @@ jobs:
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/arch/arm64/boot/dts/vendor/oplus/martini/dtbo.img ak3/martini-dtbo.img
+        cat out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/arch/arm64/boot/dts/vendor/oplus/martini/*.dtb > ak3/martini-dtb
         cd ak3/ && zip -r9 eva-oneplus9series-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
         cd ../
     - uses: actions/upload-artifact@main

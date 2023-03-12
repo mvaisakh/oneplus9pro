@@ -12,6 +12,8 @@ endif
 ccflags-y += -I$(srctree)/techpack/camera/include/uapi/camera
 ccflags-y += -I$(srctree)
 
+ois_fpu_cflag := -mgeneral-regs-only
+
 camera-y := \
 	cam_req_mgr/cam_req_mgr_core.o \
 	cam_req_mgr/cam_req_mgr_dev.o \
@@ -188,6 +190,11 @@ camera-$(CONFIG_SPECTRA_OPLUS) += \
 	oplus/cam_sensor_module/cam_eeprom/oplus_cam_eeprom_core.o\
 	oplus/cam_sensor_module/cam_sensor/oplus_cam_sensor_core.o\
 	oplus/cam_sensor_module/cam_flash/oplus_cam_flash_dev.o
+
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898124/HighLevelCmd.o := $(ois_fpu_cflag)
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898124/E2PromCmd.o := $(ois_fpu_cflag)
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898128/PhoneUpdate.o := $(ois_fpu_cflag)
+
 camera-$(CONFIG_LEDS_QPNP_FLASH_V2) += \
 	cam_sensor_module/cam_flash/cam_flash_dev.o \
 	cam_sensor_module/cam_flash/cam_flash_core.o \

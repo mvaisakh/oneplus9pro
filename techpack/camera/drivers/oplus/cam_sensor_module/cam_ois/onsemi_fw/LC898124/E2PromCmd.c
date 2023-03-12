@@ -5,6 +5,7 @@
 //**************************
 //	Include Header File		
 //**************************
+#include	<asm/neon.h>
 #include	"Ois.h"
 #include	"OisAPI.h"
 
@@ -1020,7 +1021,8 @@ UINT8	WrHallLnData(  UINT8 UcMode, mlLinearityValue *linval )
 	// Flash writeèÄîı
 	ans = UnlockCodeSet124();
 	if ( ans != 0 ) return ( 1 );							// Unlock Code Set
-	
+
+	kernel_neon_begin();
 //------------------------------------------------------------------------------------------------
 // Page 1 (0x10-0x1F) 
 //------------------------------------------------------------------------------------------------
@@ -1049,7 +1051,7 @@ UINT8	WrHallLnData(  UINT8 UcMode, mlLinearityValue *linval )
 //------------------------------------------------------------------------------------------------
 		DMIOWrite32( E2P_ADR, 0x40 );	// Start Address
 		DMIOWrite32( E2P_DFG, 0 ); 		// FLG CLR
-		
+
 	if( UcMode ){
 
 
@@ -1242,8 +1244,8 @@ UINT8	WrHallLnData(  UINT8 UcMode, mlLinearityValue *linval )
 	}
 	ReadE2Prom( CHECK_SUM_ADR, &cnt );
 	Parity = cnt;
-	if( (UINT8)ReadVerify != (UINT8)Parity)	return( 6 );  
-	
+	if( (UINT8)ReadVerify != (UINT8)Parity)	return( 6 );
+	kernel_neon_end();
 	return( 0 );
 }
 

@@ -11,7 +11,7 @@
 //#include	<stdlib.h>
 //#include	<math.h>
 #include <linux/kernel.h>
-
+#include <asm/neon.h>
 //****************************************************
 //	CUSTOMER NECESSARY CREATING LIST
 //****************************************************
@@ -898,6 +898,7 @@ UINT8	TstActMov124( UINT8 UcDirSel )
 	UINT8		i;
 	UINT32		UlReturnVal;
 
+	kernel_neon_begin();
 	if( UcDirSel == X_DIR ) {								// X axis
 		RamRead32A( Gyro_Limiter_X 			, ( UINT32 * )&UlLimit ) ;	// 
 		RamRead32A( GyroFilterTableX_gxzoom , ( UINT32 * )&Ulzoom ) ;	// 
@@ -989,7 +990,7 @@ TRACE(" Ret = %d \n", (unsigned int)UlReturnVal ) ;
 			UcRsltSts = EXE_HYMVER ;
 		}
 	}
-
+	kernel_neon_end();
 	return( UcRsltSts ) ;
 
 }
@@ -1725,7 +1726,7 @@ void	MesFil2124( UINT16	UsMesFreq )
 {
 	UINT32	UlMeasFilA1 , UlMeasFilB1 , UlMeasFilC1 , UlTempval ;
 	UINT32	UlMeasFilA2 , UlMeasFilC2 ;
-		
+	kernel_neon_begin();
 	UlTempval = (UINT32)((float)2147483647 * (float)UsMesFreq / ((float)UsMesFreq + DivOffset ));
 	UlMeasFilA1	=	0x7fffffff - UlTempval;
 	UlMeasFilB1	=	~UlMeasFilA1 + 0x00000001;	
@@ -1750,6 +1751,7 @@ void	MesFil2124( UINT16	UsMesFreq )
 	RamWrite32A ( MeasureFilterB_Coeff_a2	, UlMeasFilA2 ) ;
 	RamWrite32A ( MeasureFilterB_Coeff_b2	, UlMeasFilA2 ) ;
 	RamWrite32A ( MeasureFilterB_Coeff_c2	, UlMeasFilC2 ) ;
+	kernel_neon_end();
 }
 
 //********************************************************************************
@@ -1841,6 +1843,7 @@ TRACE("[s] %04xh %04xh \n",stpx,stpy) ;
 	}
 	for( i=0 ; i<6 ; i++ ){
 		if(i == 3){
+			kernel_neon_begin();
 //			cfax[i] = (INT16)((float)pixx[i+1] / (float)dacx[i+1] * 524287.0f);
 //			cfay[i] = (INT16)((float)pixy[i+1] / (float)dacy[i+1] * 524287.0f);
 			cffax[i] = ((float)pixx[i+1] / (float)dacx[i+1] * 524287.0f);
@@ -1849,7 +1852,9 @@ TRACE("[s] %04xh %04xh \n",stpx,stpy) ;
 			cfay[i] = (INT16)cffay[i];
 			cfbx[i] = (INT16)0;
 			cfby[i] = (INT16)0;
+			kernel_neon_end();
 		}else{
+			kernel_neon_begin();
 //			cfax[i] = (INT16)(( dacx[i] - dacx[i+1] ) / ( pixx[i] - pixx[i+1] ));
 //			cfay[i] = (INT16)(( dacy[i] - dacy[i+1] ) / ( pixy[i] - pixy[i+1] ));
 			cffax[i] = (float)( dacx[i] - dacx[i+1] ) / (float)( pixx[i] - pixx[i+1] );
@@ -1865,6 +1870,7 @@ TRACE("[s] %04xh %04xh \n",stpx,stpy) ;
 				cfbx[i] = (INT16)( (float)dacx[i] - cffax[i] * (float)pixx[i] );
 				cfby[i] = (INT16)( (float)dacy[i] - cffay[i] * (float)pixy[i] );
 			}
+			kernel_neon_end();
 		}
 		if(i<5){
 			cfzx[i] = pixx[i+1];

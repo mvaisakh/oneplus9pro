@@ -1456,7 +1456,7 @@ const UINT8 PACT1Tbl124[] = { 0x20, 0xDF };
 const UINT8 PACT2Tbl124[] = { 0x26, 0xD9 };	/* ACT_45DEG */
 
 
-UINT8 SetAngleCorrection124( float DegreeGap, UINT8 SelectAct, UINT8 Arrangement )
+UINT8 SetAngleCorrection124( UINT8 DegreeGap, UINT8 SelectAct, UINT8 Arrangement )
 {
 //	double OffsetAngle = 0.0f;
 	double OffsetAngle = (double)0;
@@ -1468,7 +1468,7 @@ UINT8 SetAngleCorrection124( float DegreeGap, UINT8 SelectAct, UINT8 Arrangement
 	UINT8	UcCnvF = 0;
 
 //	if( ( DegreeGap > 180.0f) || ( DegreeGap < -180.0f ) ) return ( 1 );
-	if( ( DegreeGap > (double)180) || ( DegreeGap < (double)-180 ) ) return ( 1 );
+	if( ( (float)DegreeGap > (double)180) || ( (float)DegreeGap < (double)-180 ) ) return ( 1 );
 	if( Arrangement >= 2 ) return ( 1 );
 
 /************************************************************************/
@@ -1477,13 +1477,13 @@ UINT8 SetAngleCorrection124( float DegreeGap, UINT8 SelectAct, UINT8 Arrangement
 	switch(SelectAct) {
 		case ACT_45DEG :
 //			OffsetAngle = (double)( 45.0f + DegreeGap ) * 3.141592653589793238 / 180.0f ;
-			OffsetAngle = (double)( (double)45 + DegreeGap ) * (double)77633864123 / (double)24711626453 / (double)180 ;
+			OffsetAngle = (double)( (double)45 + (float)DegreeGap ) * (double)77633864123 / (double)24711626453 / (double)180 ;
 			UcCnvF = PACT2Tbl124[ Arrangement ];
 			break;
 		case ACT_SO2821 :
 		case ACT_M12337_A1:
 //			OffsetAngle = (double)( DegreeGap ) * 3.141592653589793238 / 180.0f ;
-			OffsetAngle = (double)( DegreeGap ) * (double)77633864123 / (double)24711626453 / (double)180;
+			OffsetAngle = (double)( (float)DegreeGap ) * (double)77633864123 / (double)24711626453 / (double)180;
 			UcCnvF = PACT1Tbl124[ Arrangement ];
 			break;
 		default :

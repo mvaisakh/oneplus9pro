@@ -82,9 +82,6 @@ static int set_gpio_by_pinctrl(void)
 	return pinctrl_select_state(extcon_data->key_pinctrl,
 		extcon_data->set_state);
 }
-/*op add to fix GCE-7551 begin*/
-extern int aw8697_op_haptic_stop(void);
-/*op add to fix GCE-7551 end*/
 
 static void extcon_dev_work(struct work_struct *work)
 {
@@ -149,10 +146,6 @@ static void extcon_dev_work(struct work_struct *work)
 				extcon_data->edev, 2, key[1]);
 		extcon_set_state_sync(
 				extcon_data->edev, 3, key[2]);
-		/*op add to fix GCE-7551 begin*/
-		if (!key[2] ||  !key[1])
-			aw8697_op_haptic_stop();
-		/*op add to fix GCE-7551 end*/
 		/*op add to fix ISTRACKING-34823 begin*/
 		if (!key[0] || !key[1] || !key[2]) {
 			pre_key0 = key[0];

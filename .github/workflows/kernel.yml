@@ -15,6 +15,11 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync Clang
+      run: |
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r416183b/
+        cd prebuilts-master/clang/host/linux-x86/clang-r416183b/
+        bash $(curl -s "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman") -S=latest --patch=glibc && cd -
     - name: Clang Build
       run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=none BUILD_KERNEL=1 build/build.sh
     - name: Create zip

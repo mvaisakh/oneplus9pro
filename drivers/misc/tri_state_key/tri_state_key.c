@@ -170,7 +170,7 @@ static irqreturn_t extcon_dev_interrupt(int irq, void *_dev)
 	return IRQ_HANDLED;
 }
 
-static void timer_handle(unsigned long arg)
+static void timer_handle(struct timer_list *arg)
 {
 	schedule_work(&extcon_data->work);
 }

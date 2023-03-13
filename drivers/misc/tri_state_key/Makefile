@@ -1,4 +1,4 @@
 obj-$(CONFIG_OPLUS_TRIKEY_HALL)	+= ist_hall_ic/
 obj-$(CONFIG_OPLUS_TRIKEY_HALL)	+= hall_ic/
-oplus_bsp_tri_key-y             += oplus_tri_key.o
+oplus_bsp_tri_key-y             += oplus_tri_key.o tri_state_key.o
 obj-$(CONFIG_OPLUS_TRIKEY_MAIN)      += oplus_bsp_tri_key.o

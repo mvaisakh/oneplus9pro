@@ -39,7 +39,7 @@ __attribute__((weak)) void oplus_device_dir_redirect(struct sensor_info * chip)
 	pr_info("%s oplus_device_dir_redirect \n", __func__);
 };
 
-__attribute__((weak)) unsigned int get_serialID()
+__attribute__((weak)) unsigned int get_serialID(void)
 {
 	return 0;
 };

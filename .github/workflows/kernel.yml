@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils
+      run: sudo apt update -y && sudo apt install -y repo elfutils bsdtar
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1

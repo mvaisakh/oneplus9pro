@@ -138,7 +138,7 @@ static bool oplus_warp_is_battemp_exit(void)
 		return false;
 }
 
-void oplus_warp_battery_update()
+void oplus_warp_battery_update(void)
 {
 	struct oplus_warp_chip *chip = g_warp_chip;
 /*
@@ -2227,7 +2227,7 @@ void oplus_warp_set_fastchg_to_warm_false(void)
 	}
 }
 
-bool oplus_warp_get_fastchg_low_temp_full()
+bool oplus_warp_get_fastchg_low_temp_full(void)
 {
 	if (!g_warp_chip) {
 		return false;

@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils bsdtar
+      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -21,7 +21,7 @@ jobs:
         cd prebuilts-master/clang/host/linux-x86/clang-r416183b/
         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
         bash antman -S=latest
-        bash antman --patch=glibc && cd -
+        bash antman --patch=glibc
     - name: Clang Build
       run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=none BUILD_KERNEL=1 build/build.sh
     - name: Create zip

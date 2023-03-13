@@ -20,7 +20,8 @@ jobs:
         mkdir -p prebuilts-master/clang/host/linux-x86/clang-r416183b/
         cd prebuilts-master/clang/host/linux-x86/clang-r416183b/
         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
-        bash antman -S=latest --patch=glibc && cd -
+        bash antman -S=latest
+        bash antman --patch=glibc && cd -
     - name: Clang Build
       run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=none BUILD_KERNEL=1 build/build.sh
     - name: Create zip

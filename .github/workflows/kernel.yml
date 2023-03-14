@@ -61,7 +61,7 @@ jobs:
        name: release-zip
        path: ak3/*.zip
 
-  build-lemonade-clang:
+  build-martini-clang:
 
     runs-on: ubuntu-latest
 

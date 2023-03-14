@@ -1,9 +1,9 @@
 ################################################################################
 ## DTB general support
 if [ "${DEVICE}" == "9RT" ]; then
-	DTB_DIR=vendor/oplus/lemonadev
-else
 	DTB_DIR=vendor/oplus/martini
+else
+	DTB_DIR=vendor/oplus/lemonadev
 fi
 
 function clean_dtbs() {

@@ -1,6 +1,10 @@
 ################################################################################
 ## DTB general support
-DTB_DIR=vendor/oplus/lemonadev
+if [ "${DEVICE}" == "9RT" ]; then
+	DTB_DIR=vendor/oplus/lemonadev
+else
+	DTB_DIR=vendor/oplus/martini
+fi
 
 function clean_dtbs() {
 	rm -rf ${OUT_DIR}/arch/${ARCH}/boot/dts

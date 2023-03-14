@@ -52,5 +52,20 @@ gki-only)
 esac
 
 ################################################################################
+## Check device
+function 9rt_check() {
+  # Enable 9RT specific configs
+  ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
+    -e OPLUS_CHG_OP9RT_PMIC_VOOCPHY
+
+  (cd ${OUT_DIR} && \
+    make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
+}
+
+if [ ${DEVICE} == "9RT" ]; then
+	append_cmd POST_DEFCONFIG_CMDS '9rt_check'
+fi
+
+################################################################################
 ## Inherit perf configs
 . ${KERNEL_DIR}/build.config.common.performance

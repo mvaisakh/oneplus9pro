@@ -15,11 +15,6 @@ config OPLUS_SM8350_CHARGER
 	help
 	  Enables support for the sm8350 charging
 
-config OPLUS_CHG_OP9RT_PMIC_VOOCPHY
-	bool "OP9RT PMIC Support"
-	help
-	  Enabled PMIC support for OP9RT
-
 config OPLUS_SHORT_C_BATT_CHECK
 	bool "OPLUS_SHORT_C_BATT CHECK SUPPORT"
 	default n

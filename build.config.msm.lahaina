@@ -52,18 +52,10 @@ gki-only)
 esac
 
 ################################################################################
-## Check device
-function 9rt_check() {
-  # Enable 9RT specific configs
-  ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
-    -e OPLUS_CHG_OP9RT_PMIC_VOOCPHY
-
-  (cd ${OUT_DIR} && \
-    make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
-}
+# Enable VOOC for 9RT
 
 if [ ${DEVICE} == "9RT" ]; then
-	append_cmd POST_DEFCONFIG_CMDS '9rt_check'
+	export OPLUS_VND_ENV_CHG_OP9RT_PMIC_VOOCPHY=yes
 fi
 
 ################################################################################

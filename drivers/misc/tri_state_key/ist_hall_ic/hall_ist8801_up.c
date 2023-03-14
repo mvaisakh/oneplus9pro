@@ -311,7 +311,7 @@ static void ist8801_dump_reg(u8 *buf)
 	sprintf(_buf,  "reg 0x%x:0x%x\n", 0x54, val);
 	strcat(buffer, _buf);
 
-	sprintf(buf, "%s\n", buffer);
+	sprintf(buf, "%s\n", (char*)buffer);
 	TRI_KEY_LOG("%s\n", buf);
 }
 
@@ -652,7 +652,7 @@ static int ist8801_set_detection_mode(u8 mode)
 
 			err = request_threaded_irq(g_ist8801_data->irq, NULL,
 			&ist8801_up_irq_handler,
-			IRQ_TYPE_EDGE_FALLING | IRQF_ONESHOT,
+			IRQ_TYPE_LEVEL_LOW | IRQF_ONESHOT,
 				"ist8801_up", (void *)g_ist8801_data->client);
 			if (err < 0) {
 				TRI_KEY_ERR("IRQ LINE NOT AVAILABLE!!\n");

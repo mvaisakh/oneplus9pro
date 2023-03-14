@@ -71,7 +71,6 @@ unsigned int tristate_extcon_tab[] = {
 		MODE_MUTE,
 		MODE_DO_NOT_DISTURB,
 		MODE_NORMAL,
-		EXTCON_NONE,
 	};
 
 static struct hrtimer tri_key_timer;
@@ -525,7 +524,7 @@ static int judge_interference(struct extcon_dev_data *chip)
 				}
 			}
 		if (delta > calib_DnValueMin - down_tolerance &&
-			delta < calib_DnValueMin + up_mid_tol) {
+			delta < calib_DnValueMin + mid_down_tol) {
 			TRI_KEY_LOG("calib_Min:%d,calib_Sum:%d\n",
 				calib_DnValueMin, calib_DnValueSum);
 
@@ -1039,18 +1038,17 @@ void initialCalibValue(short calib_dnHall_UpV, short calib_dnHall_MdV,
 	calib_upHall_UD_distance = Minus(calib_upHall_UpV, calib_upHall_DnV);
 	calib_dnHall_UD_distance = Minus(calib_dnHall_UpV, calib_dnHall_DnV);
 	up_mid_tol = (short)(abs(calib_UpValueMin - calib_MdValueMin)
-			* 4 / 10);
+		* 4 / 10);
 	up_tolerance = (short)(abs(calib_UpValueMin - calib_MdValueMin)
-			* 11 / 10);
+		* 11 / 10);
 	mid_down_tol = (short)(abs(calib_MdValueMin - calib_DnValueMin)
-			* 4 / 10);
+		* 4 / 10);
 	down_tolerance = (short)(abs(calib_MdValueMin -
-				calib_DnValueMin) * 11 / 10);
+		calib_DnValueMin) * 11 / 10);
 	up_mid_distance = (short)(abs(calib_UpValueMin -
-				calib_MdValueMin) * 2 / 10);
+		calib_MdValueMin) * 2 / 10);
 	mid_down_distance = (short)(abs(calib_MdValueMin -
-				calib_DnValueMin) * 2 / 10);
-
+		calib_DnValueMin) * 2 / 10);
 	TRI_KEY_LOG("Upmin:%d, Mdmin:%d, Dnmin:%d\n",
 		calib_UpValueMin, calib_MdValueMin, calib_DnValueMin);
 	TRI_KEY_LOG("up_mid_tol:%d, mid_down_tol:%d\n",
@@ -1065,12 +1063,12 @@ static ssize_t proc_hall_data_read(struct file *file, char __user *user_buf,
 
 	if (!g_the_chip) {
 		TRI_KEY_ERR("g_the_chip null\n");
-		snprintf(page, PAGE_SIZE, "%d\n", -1);
+		snprintf(page, sizeof(page), "%d\n", -1);
 	} else {
 		oplus_hall_get_data(DHALL_0);
 		oplus_hall_get_data(DHALL_1);
 
-		snprintf(page, PAGE_SIZE, "%d, %d\n",
+		snprintf(page, sizeof(page), "%d, %d\n",
 			g_the_chip->dhall_data0, g_the_chip->dhall_data1);
 	}
 	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
@@ -1091,11 +1089,11 @@ static ssize_t proc_tri_state_read(struct file *file, char __user *user_buf,
 
 	if (!g_the_chip) {
 		TRI_KEY_ERR("g_the_chip null\n");
-		snprintf(page, PAGE_SIZE, "%d\n", -1);
+		snprintf(page, sizeof(page), "%d\n", -1);
 	} else {
 		oplus_hall_get_data(DHALL_0);
 		oplus_hall_get_data(DHALL_1);
-		snprintf(page, PAGE_SIZE, "%d\n", g_the_chip->state);
+		snprintf(page, sizeof(page), "%d\n", g_the_chip->state);
 	}
 	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
 	return ret;
@@ -1115,9 +1113,9 @@ static ssize_t proc_hall_data_calib_read(struct file *file, char __user *user_bu
 
 	if (!g_the_chip) {
 		TRI_KEY_ERR("g_the_chip null\n");
-		snprintf(page, PAGE_SIZE, "%d\n", -1);
+		snprintf(page, sizeof(page), "%d\n", -1);
 	} else {
-		snprintf(page, PAGE_SIZE, "%d,%d,%d,%d,%d,%d,%d,%d\n",
+		snprintf(page, sizeof(page), "%d,%d,%d,%d,%d,%d,%d,%d\n",
 		g_the_chip->dnHall_UpV, g_the_chip->upHall_UpV,
 		g_the_chip->dnHall_MdV, g_the_chip->upHall_MdV,
 		g_the_chip->dnHall_DnV, g_the_chip->upHall_DnV,
@@ -1196,9 +1194,9 @@ static ssize_t proc_hall_debug_info_read(struct file *file, char __user *user_bu
 
 	if (!g_the_chip) {
 		TRI_KEY_ERR("g_the_chip null\n");
-		snprintf(page, PAGE_SIZE, "%d\n", -1);
+		snprintf(page, sizeof(page), "%d\n", -1);
 	} else
-		snprintf(page, PAGE_SIZE, "%d\n", tri_key_debug);
+		snprintf(page, sizeof(page), "%d\n", tri_key_debug);
 
 	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
 	return ret;
@@ -1207,31 +1205,6 @@ static ssize_t proc_hall_debug_info_read(struct file *file, char __user *user_bu
 static const struct file_operations proc_hall_debug_info_ops = {
 	.write = proc_hall_debug_info_write,
 	.read  = proc_hall_debug_info_read,
-	.open  = simple_open,
-	.owner = THIS_MODULE,
-};
-
-static ssize_t proc_hall_enable_irq_write(struct file *file, const char __user *buffer,
-			size_t count, loff_t *ppos)
-{
-	int tmp = 0;
-	char buf[4] = {0};
-
-	if (count > 2)
-		return count;
-	copy_from_user(buf, buffer, count);
-	if (!kstrtoint(buf, 0, &tmp)) {
-		oplus_hall_enable_irq(0, tmp);
-		oplus_hall_enable_irq(1, tmp);
-	} else
-		TRI_KEY_DEBUG("invalid content: '%s', length = %zd\n",
-		buf, count);
-
-	return count;
-}
-
-static const struct file_operations proc_hall_enable_irq_ops = {
-	.write = proc_hall_enable_irq_write,
 	.open  = simple_open,
 	.owner = THIS_MODULE,
 };
@@ -1275,14 +1248,8 @@ static int init_trikey_proc(struct extcon_dev_data *hall_dev)
 		TRI_KEY_ERR("%s: Couldn't create proc entry, %d\n", __func__, __LINE__);
 	}
 
-	prEntry_tmp = proc_create("hall_enable_irq", 0666, prEntry_trikey,
-			&proc_hall_enable_irq_ops);
-	if (prEntry_tmp == NULL) {
-		ret = -ENOMEM;
-		TRI_KEY_ERR("%s: Couldn't create proc entry, %d\n", __func__, __LINE__);
-	}
-
 	return ret;
+
 }
 static void register_tri_key_dev_work(struct work_struct *work)
 {
@@ -1370,7 +1337,6 @@ static void register_tri_key_dev_work(struct work_struct *work)
 	}
 	err = oplus_hall_set_detection_mode(DHALL_1,
 			DETECTION_MODE_INTERRUPT);
-
 	TRI_KEY_LOG("tri_key:set 1 detection mode\n");
 	if (err < 0) {
 		TRI_KEY_ERR("%s set HALL1 detection mode failed %d\n",

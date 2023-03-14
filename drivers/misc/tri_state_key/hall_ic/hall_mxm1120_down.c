@@ -27,6 +27,9 @@
 #include <linux/irq.h>
 #include <linux/interrupt.h>
 #include <linux/regulator/consumer.h>
+#include <linux/uaccess.h>
+#include <linux/gpio.h>
+#include <linux/of_gpio.h>
 #include "hall_mxm1120.h"
 #include "../oplus_tri_key.h"
 
@@ -132,6 +135,7 @@ static int m1120_i2c_read_block(struct m1120_data_t *m1120_data, u8 addr, u8 *da
 	mutex_unlock(&hall_m1120_down_i2c_mutex);
 
 	return err;
+
 }
 
 static int m1120_i2c_write_block(struct m1120_data_t *m1120_data, u8 addr, u8 *data, u8 len)
@@ -166,7 +170,7 @@ static int m1120_i2c_write_block(struct m1120_data_t *m1120_data, u8 addr, u8 *d
 	if (err < 0)
 		TRI_KEY_ERR("send command error!! %d\n", err);
 
-	/*store reg written*/
+	//store reg written
 	if (len == 1) {
 		switch (addr) {
 		case M1120_REG_PERSINT:
@@ -498,7 +502,7 @@ static int m1120_input_dev_init(struct m1120_data_t *p_data)
 	input_set_drvdata(dev, p_data);
 	input_set_capability(dev, M1120_EVENT_TYPE, M1120_EVENT_CODE);
 #else
-#error("[ERR] M1120_EVENT_TYPE is not defined.")
+#error ("[ERR] M1120_EVENT_TYPE is not defined.")
 #endif
 
 	err = input_register_device(dev);
@@ -652,8 +656,8 @@ static int tri_key_m1120_parse_dt(struct device *dev,
 			"downhall_tri_state_key_active");
 	if (IS_ERR_OR_NULL(set_state))
 		TRI_KEY_ERR("Failed to lookup_state\n");
-	else
-		pinctrl_select_state(key_pinctrl, set_state);
+
+	pinctrl_select_state(key_pinctrl, set_state);
 
 
 	return 0;
@@ -727,6 +731,7 @@ static int m1120_get_irq_state(void)
 
 static bool m1120_update_threshold(int position, short lowthd, short highthd)
 {
+
 	u8 lthh, lthl, hthh, hthl;
 	int err = 0;
 
@@ -833,7 +838,7 @@ static int m1120_set_detection_mode_1(u8 mode)
 			/* request irq */
 			TRI_KEY_LOG("m1120 down enter irq handler\n");
 			if (request_irq(p_m1120_data->irq, &m1120_down_irq_handler,
-				IRQ_TYPE_EDGE_FALLING | IRQF_ONESHOT, "hall_m1120_down",
+				IRQ_TYPE_LEVEL_LOW, "hall_m1120_down",
 					(void *)p_m1120_data->client)) {
 				TRI_KEY_ERR("IRQ LINE NOT AVAILABLE!!\n");
 				return -EINVAL;
@@ -865,6 +870,7 @@ static int m1120_set_detection_mode_1(u8 mode)
 
 static int m1120_set_reg_1(int reg, int val)
 {
+
 	u8 data = (u8)val;
 
 	TRI_KEY_LOG("======> %s", __func__);
@@ -927,6 +933,29 @@ static int tri_key_m1120_i2c_drv_probe(struct i2c_client *client, const struct i
 	p_data->dev = &client->dev;
 	p_m1120_data = p_data;
 
+	if (client->dev.of_node) {
+		TRI_KEY_LOG("Use client->dev.of_node\n");
+		err = tri_key_m1120_parse_dt(&client->dev, p_data);
+		if (err) {
+			TRI_KEY_ERR("Failed to parse device tree\n");
+			err = -EINVAL;
+			goto error_1;
+		}
+	}
+
+	if (gpio_is_valid(p_data->irq_gpio)) {
+		err = gpio_request(p_data->irq_gpio, "m1120_down_irq");
+		if (err) {
+			TRI_KEY_LOG("unable to request gpio [%d]", p_data->irq_gpio);
+		} else {
+			err = gpio_direction_input(p_data->irq_gpio);
+			msleep(50);
+			p_data->irq = gpio_to_irq(p_data->irq_gpio);
+			TRI_KEY_LOG("======> irq : %d", p_data->irq);
+		}
+
+	}
+
 	err = m1120_power_init(p_data);
 	if (err) {
 		TRI_KEY_ERR("Failed to get sensor regulators\n");
@@ -940,6 +969,7 @@ static int tri_key_m1120_i2c_drv_probe(struct i2c_client *client, const struct i
 		goto error_1;
 	}
 
+
 	/*(6) reset and init device*/
 	err = m1120_init_device(p_data);
 	if (err) {
@@ -948,28 +978,6 @@ static int tri_key_m1120_i2c_drv_probe(struct i2c_client *client, const struct i
 	}
 	TRI_KEY_LOG("%s was found", id->name);
 
-	if (client->dev.of_node) {
-		TRI_KEY_LOG("Use client->dev.of_node\n");
-		err = tri_key_m1120_parse_dt(&client->dev, p_data);
-		if (err) {
-			TRI_KEY_ERR("Failed to parse device tree\n");
-			err = -EINVAL;
-			goto error_1;
-		}
-	}
-	/*(7)request irq*/
-	if (gpio_is_valid(p_data->irq_gpio)) {
-		err = gpio_request(p_data->irq_gpio, "m1120_down_irq");
-		if (err) {
-			TRI_KEY_LOG("unable to request gpio [%d]", p_data->irq_gpio);
-			goto error_1;
-		} else {
-			err = gpio_direction_input(p_data->irq_gpio);
-			msleep(50);
-			p_data->irq = gpio_to_irq(p_data->irq_gpio);
-			TRI_KEY_LOG("======> irq : %d", p_data->irq);
-		}
-	}
 	/*(8) init input device*/
 	err = m1120_input_dev_init(p_data);
 	if (err) {
@@ -988,7 +996,6 @@ static int tri_key_m1120_i2c_drv_probe(struct i2c_client *client, const struct i
 	return 0;
 
 error_1:
-	TRI_KEY_LOG("fail\n");
 	if (gpio_is_valid(p_data->irq_gpio))
 		gpio_free(p_data->irq_gpio);
 

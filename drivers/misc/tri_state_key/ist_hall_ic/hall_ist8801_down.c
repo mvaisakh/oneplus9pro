@@ -654,7 +654,7 @@ static int ist8801_set_detection_mode(u8 mode)
 			/* request irq */
 			err = request_threaded_irq(g_ist8801_data->irq, NULL,
 			&ist8801_down_irq_handler,
-			IRQ_TYPE_EDGE_FALLING | IRQF_ONESHOT,
+			IRQ_TYPE_LEVEL_LOW | IRQF_ONESHOT,
 			"ist8801_down", (void *)g_ist8801_data->client);
 			if (err < 0) {
 				TRI_KEY_ERR("IRQ LINE NOT AVAILABLE!!\n");

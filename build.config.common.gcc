@@ -10,7 +10,7 @@ STOP_SHIP_TRACEPRINTK=1
 IN_KERNEL_MODULES=1
 DO_NOT_STRIP_MODULES=1
 
-POST_DEFCONFIG_CMDS="check_defconfig && update_gcc_config"
+append_cmd POST_DEFCONFIG_CMDS "update_gcc_config"
 function update_gcc_config() {
   # Disable clang-specific options
   ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \

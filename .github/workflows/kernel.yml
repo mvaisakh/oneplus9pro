@@ -80,7 +80,7 @@ jobs:
         bash antman -S=latest
         bash antman --patch=glibc
     - name: Clang Build
-      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=none BUILD_KERNEL=1 build/build.sh
+      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9RT LTO=none BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/

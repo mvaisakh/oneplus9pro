@@ -136,10 +136,8 @@
 #undef TP_ALL_GESTURE_ENABLE
 #endif
 
-#define TP_ALL_GESTURE_SUPPORT \
-	(ts->black_gesture_support || ts->fingerprint_underscreen_support)
-#define TP_ALL_GESTURE_ENABLE  \
-	((ts->gesture_enable & 0x01) == 1 || ts->fp_enable)
+#define TP_ALL_GESTURE_SUPPORT 1
+#define TP_ALL_GESTURE_ENABLE 1
 
 
 /*********PART3:Struct Area**********************/

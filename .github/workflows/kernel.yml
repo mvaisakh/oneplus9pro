@@ -23,7 +23,10 @@ jobs:
         bash antman -S=latest
         bash antman --patch=glibc
     - name: Clang Build
-      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=none BUILD_KERNEL=1 build/build.sh
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki LTO=none BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
@@ -48,7 +51,10 @@ jobs:
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: GCC Build
-      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki COMPILER=gcc BUILD_KERNEL=1 build/build.sh
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki COMPILER=gcc BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
@@ -80,7 +86,10 @@ jobs:
         bash antman -S=latest
         bash antman --patch=glibc
     - name: Clang Build
-      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9RT LTO=none BUILD_KERNEL=1 build/build.sh
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9RT LTO=none BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
@@ -105,7 +114,10 @@ jobs:
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: GCC Build
-      run: BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=nqgki COMPILER=gcc BUILD_KERNEL=1 build/build.sh
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=nqgki COMPILER=gcc BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/

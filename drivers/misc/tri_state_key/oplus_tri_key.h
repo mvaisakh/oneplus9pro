@@ -111,5 +111,6 @@ extern int oplus_hall_set_reg(unsigned int id, int reg, int val);
 extern bool oplus_hall_update_threshold(unsigned int id,
 				int position, short lowthd, short highthd);
 extern bool oplus_hall_is_power_on(void);
+extern int aw8697_op_haptic_stop(void);
 
 #endif /* __TRIKEY_H__ */

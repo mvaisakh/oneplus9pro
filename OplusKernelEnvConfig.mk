@@ -125,7 +125,6 @@ OPLUS_FEATURE_SENSOR_FEEDBACK
 #only declare a macro if nativefeature is define and also added in above ALLOWED_MCROS
 $(foreach myfeature,$(ALLOWED_MCROS),\
     $(if $(strip $($(myfeature))),\
-         $(warning make $(myfeature) to be a macro here) \
          $(eval KBUILD_CFLAGS += -D$(myfeature)) \
          $(eval KBUILD_CPPFLAGS += -D$(myfeature)) \
          $(eval CFLAGS_KERNEL += -D$(myfeature)) \

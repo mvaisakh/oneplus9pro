@@ -414,6 +414,7 @@ static void tp_geture_info_transform(struct gesture_info *gesture,
 static void tp_gesture_handle(struct touchpanel_data *ts)
 {
 	struct gesture_info gesture_info_temp;
+	unsigned int gesture_code;
 
 	if (((!ts->ts_ops->get_gesture_info) && (!ts->enable_point_auto_change))
 	    || ((!ts->ts_ops->get_gesture_info_auto) && ts->enable_point_auto_change)) {
@@ -466,40 +467,126 @@ static void tp_gesture_handle(struct touchpanel_data *ts)
 
 #endif /* end of CONFIG_OPLUS_TP_APK*/
 
-	if (gesture_info_temp.gesture_type == DOU_TAP
-			&& CHK_BIT(ts->gesture_enable_indep, (1 << gesture_info_temp.gesture_type))) {
-		tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+	switch(gesture_info_temp.gesture_type) {
+		case DOU_TAP:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
 			  &gesture_info_temp, sizeof(struct gesture_info), \
 			  sizeof(struct gesture_info));
-		input_report_key(ts->input_dev, KEY_WAKEUP, 1);
-		input_sync(ts->input_dev);
-		input_report_key(ts->input_dev, KEY_WAKEUP, 0);
-		input_sync(ts->input_dev);
-
-	} else if (gesture_info_temp.gesture_type != UNKOWN_GESTURE
-		&& gesture_info_temp.gesture_type != FINGER_PRINTDOWN
-		&& gesture_info_temp.gesture_type != FRINGER_PRINTUP
-		&& CHK_BIT(ts->gesture_enable_indep, (1 << gesture_info_temp.gesture_type))) {
-		tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			gesture_code = KEY_WAKEUP;
+			break;
+		case FINGER_PRINTDOWN:
+			ts->fp_info.touch_state = 1;
+			ts->fp_info.x = gesture_info_temp.Point_start.x;
+			ts->fp_info.y = gesture_info_temp.Point_start.y;
+			TP_INFO(ts->tp_index, "screen off down : (%d, %d)\n", ts->fp_info.x, ts->fp_info.y);
+			touch_call_notifier_fp(&ts->fp_info);
+			break;
+		case FRINGER_PRINTUP:
+			ts->fp_info.touch_state = 0;
+			ts->fp_info.x = gesture_info_temp.Point_start.x;
+			ts->fp_info.y = gesture_info_temp.Point_start.y;
+			TP_INFO(ts->tp_index, "screen off up : (%d, %d)\n", ts->fp_info.x, ts->fp_info.y);
+			touch_call_notifier_fp(&ts->fp_info);
+			break;
+		case UP_VEE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
 			  &gesture_info_temp, sizeof(struct gesture_info), \
 			  sizeof(struct gesture_info));
-		input_report_key(ts->input_dev, KEY_GESTURE_START + gesture_info_temp.gesture_type, 1);
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case DOWN_VEE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case LEFT_VEE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case RIGHT_VEE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case CIRCLE_GESTURE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case DOU_SWIP:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case LEFT2RIGHT_SWIP:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case RIGHT2LEFT_SWIP:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case UP2DOWN_SWIP:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case DOWN2UP_SWIP:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case M_GESTRUE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case W_GESTURE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case SINGLE_TAP:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case HEART:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		case S_GESTURE:
+			tp_memcpy(&ts->gesture, sizeof(ts->gesture), \
+			  &gesture_info_temp, sizeof(struct gesture_info), \
+			  sizeof(struct gesture_info));
+			gesture_code = KEY_GESTURE_START + gesture_info_temp.gesture_type;
+			break;
+		default:
+			gesture_code = KEY_UNKNOWN;
+			break;
+	}
+	if (gesture_code != KEY_UNKNOWN) {
+		input_report_key(ts->input_dev, gesture_code, 1);
 		input_sync(ts->input_dev);
-		input_report_key(ts->input_dev, KEY_GESTURE_START + gesture_info_temp.gesture_type, 0);
+		input_report_key(ts->input_dev, gesture_code, 0);
 		input_sync(ts->input_dev);
-
-	} else if (gesture_info_temp.gesture_type == FINGER_PRINTDOWN) {
-		ts->fp_info.touch_state = 1;
-		ts->fp_info.x = gesture_info_temp.Point_start.x;
-		ts->fp_info.y = gesture_info_temp.Point_start.y;
-		TP_INFO(ts->tp_index, "screen off down : (%d, %d)\n", ts->fp_info.x, ts->fp_info.y);
-		touch_call_notifier_fp(&ts->fp_info);
-	} else if (gesture_info_temp.gesture_type == FRINGER_PRINTUP) {
-		ts->fp_info.touch_state = 0;
-		ts->fp_info.x = gesture_info_temp.Point_start.x;
-		ts->fp_info.y = gesture_info_temp.Point_start.y;
-		TP_INFO(ts->tp_index, "screen off up : (%d, %d)\n", ts->fp_info.x, ts->fp_info.y);
-		touch_call_notifier_fp(&ts->fp_info);
 	}
 }
 

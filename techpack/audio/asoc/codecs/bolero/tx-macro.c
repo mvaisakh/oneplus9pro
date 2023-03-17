@@ -1105,12 +1105,12 @@ static int tx_macro_enable_dec(struct snd_soc_dapm_widget *w,
 				unmute_delay = tx_dmic_unmute_delay;
 		}
 		/* schedule work queue to Remove Mute */
-		queue_delayed_work(system_freezable_wq,
+		queue_delayed_work(system_freezable_power_efficient_wq,
 				   &tx_priv->tx_mute_dwork[decimator].dwork,
 				   msecs_to_jiffies(unmute_delay));
 		if (tx_priv->tx_hpf_work[decimator].hpf_cut_off_freq !=
 							CF_MIN_3DB_150HZ)
-			queue_delayed_work(system_freezable_wq,
+			queue_delayed_work(system_freezable_power_efficient_wq,
 				&tx_priv->tx_hpf_work[decimator].dwork,
 				msecs_to_jiffies(hpf_delay));
 		snd_soc_component_update_bits(component,

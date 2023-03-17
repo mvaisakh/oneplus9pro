@@ -38,6 +38,9 @@
 #include <linux/sched.h>
 #include <asm/arch_timer.h>
 #include <linux/sched/clock.h>
+#ifdef CONFIG_DEEPSLEEP
+#include <linux/ipa.h>
+#endif
 #include <linux/jiffies.h>
 #include <linux/delay.h>
 #include <linux/wait.h>

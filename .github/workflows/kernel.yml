@@ -3,9 +3,21 @@ name: Kernel Build CI
 on:
   push:
 
-jobs:
-  build-lemonade-clang:
+env:
+  BOT_MSG_URL: ${{ secrets.TG_BOT_MSG_URL }}
+  CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+jobs:
+  bot-notify-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send message
+      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="CI kernel build triggered for <b>OnePlus 9 Series</b>"
+
+  build-lemonade-clang:
+    needs: [bot-notify-ci]
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +52,7 @@ jobs:
        path: ak3/*.zip
 
   build-lemonade-gcc:
-
+    needs: [bot-notify-ci]
     runs-on: ubuntu-latest
 
     steps:
@@ -68,7 +80,7 @@ jobs:
        path: ak3/*.zip
 
   build-martini-clang:
-
+    needs: [bot-notify-ci]
     runs-on: ubuntu-latest
 
     steps:
@@ -103,7 +115,7 @@ jobs:
        path: ak3/*.zip
 
   build-martini-gcc:
-
+    needs: [bot-notify-ci]
     runs-on: ubuntu-latest
 
     steps:
@@ -146,5 +158,16 @@ jobs:
       run: echo "TAG_NAME=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
     - name: Create Release
       run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  bot-notify:
+    needs: [publish-release]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Release Check
+      run: gh release list -L 1 > list
+    - name: Prepare release message
+      run: gh release view $(cat list | awk '{ print substr( $0, 1, length($0)-45 ) }') > release-text
+    - name: Send message
+      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="<b>New build</b> %0A$(cat release-text | sed '1d;3d;4d;6d;7d;9d;10d;11d;12d;')"

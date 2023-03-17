@@ -1766,11 +1766,9 @@ int ipa_get_ep_mapping(enum ipa_client_type client);
 
 bool ipa_is_ready(void);
 
-#ifdef CONFIG_DEEPSLEEP
 int ipa_fmwk_deepsleep_entry_ipa(void);
 
 int ipa_fmwk_deepsleep_exit_ipa(void);
-#endif
 
 enum ipa_hw_type ipa_get_hw_type(void);
 

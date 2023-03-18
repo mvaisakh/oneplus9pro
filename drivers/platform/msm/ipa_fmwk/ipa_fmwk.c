@@ -613,6 +613,7 @@ bool ipa_is_ready(void)
 }
 EXPORT_SYMBOL(ipa_is_ready);
 
+#ifdef CONFIG_DEEPSLEEP
 int ipa_fmwk_deepsleep_entry_ipa(void)
 {
 	if (!ipa_fmwk_ctx) {
@@ -644,6 +645,8 @@ int ipa_fmwk_deepsleep_exit_ipa(void)
 	return 0;
 }
 EXPORT_SYMBOL(ipa_fmwk_deepsleep_exit_ipa);
+#endif
+
 
 int ipa_register_ipa_ready_cb(void(*ipa_ready_cb)(void *user_data),
 	void *user_data)

@@ -52,10 +52,16 @@ gki-only)
 esac
 
 ################################################################################
-# Enable VOOC for 9RT
-
+# Enable VOOC for 9RT.
 if [ ${DEVICE} == "9RT" ]; then
 	export OPLUS_VND_ENV_CHG_OP9RT_PMIC_VOOCPHY=yes
+fi
+
+# Enable VOOC for realme GT master edition (lunaa).
+if [ ${DEVICE} == "LUNAA" ]; then
+	export OPLUS_VND_ENV_CHG_OP9RT_PMIC_VOOCPHY=yes
+    # export the $DEVICE variable.
+	export DEVICE=LUNAA
 fi
 
 ################################################################################

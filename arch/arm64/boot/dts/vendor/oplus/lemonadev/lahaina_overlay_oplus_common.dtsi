@@ -35,3 +35,7 @@
     };
 };
 //#endif
+
+&qupv3_se3_2uart {
+    status = "disabled";
+};

@@ -39,7 +39,11 @@ include $(srctree)/techpack/camera/config/shimacamera.conf
 endif
 
 ifeq ($(CONFIG_ARCH_YUPIK), y)
+ifneq ($(CONFIG_NGKI),y)
 include $(srctree)/techpack/camera/config/yupikcamera.conf
+else
+include $(srctree)/techpack/camera/config/yupikngkicamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_SM6150), y)

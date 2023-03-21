@@ -1662,7 +1662,11 @@ static void __exit i2c_dev_exit(void)
 	platform_driver_unregister(&geni_i2c_driver);
 }
 
+#ifndef MODULE
 subsys_initcall(i2c_dev_init);
+#else
+module_init(i2c_dev_init);
+#endif
 module_exit(i2c_dev_exit);
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:i2c_geni");

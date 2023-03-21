@@ -24,3 +24,18 @@ function update_gcc_config() {
   (cd ${OUT_DIR} && \
     make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
 }
+
+function enable_gcc_lto() {
+  # Enable GCC LTO
+  ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
+    -e LTO \
+    -e LTO_MENU \
+    -e LTO_GCC
+
+  (cd ${OUT_DIR} && \
+    make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
+}
+
+if [ ${GCC_LTO} == "1" ]; then
+	append_cmd POST_DEFCONFIG_CMDS "enable_gcc_lto"
+fi

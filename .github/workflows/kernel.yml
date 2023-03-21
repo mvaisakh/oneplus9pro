@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Send message
-      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="CI kernel build triggered for <b>OnePlus 9 Series</b>"
+      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="CI kernel build triggered for <b>OPlus sm8350 Devices</b>"
 
   build-lemonade-clang:
     needs: [bot-notify-ci]

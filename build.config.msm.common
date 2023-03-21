@@ -2,8 +2,10 @@
 ## DTB general support
 if [ "${DEVICE}" == "9RT" ]; then
 	DTB_DIR=vendor/oplus/martini
-else
+elif [ "${DEVICE}" == "9P" ]; then
 	DTB_DIR=vendor/oplus/lemonadev
+elif [ "${DEVICE}" == "LUNAA" ]; then
+	DTB_DIR=vendor/oplus/lunaa
 fi
 
 function clean_dtbs() {

@@ -29,8 +29,8 @@ jobs:
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: Sync Clang
       run: |
-        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r416183b/
-        cd prebuilts-master/clang/host/linux-x86/clang-r416183b/
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
         bash antman -S=latest
         bash antman --patch=glibc
@@ -92,8 +92,8 @@ jobs:
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: Sync Clang
       run: |
-        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r416183b/
-        cd prebuilts-master/clang/host/linux-x86/clang-r416183b/
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
         bash antman -S=latest
         bash antman --patch=glibc

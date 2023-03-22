@@ -31,7 +31,8 @@ function enable_gcc_lto() {
     -e LTO \
     -e LTO_MENU \
     -e LTO_GCC \
-    -d IKHEADERS
+    -d IKHEADERS \
+    -d IKCONFIG
 
   (cd ${OUT_DIR} && \
     make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)

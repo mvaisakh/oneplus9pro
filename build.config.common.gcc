@@ -30,7 +30,8 @@ function enable_gcc_lto() {
   ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
     -e LTO \
     -e LTO_MENU \
-    -e LTO_GCC
+    -e LTO_GCC \
+    -d IKHEADERS
 
   (cd ${OUT_DIR} && \
     make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)

@@ -655,7 +655,7 @@ static int ist8801_set_detection_mode(u8 mode)
 			IRQ_TYPE_EDGE_FALLING | IRQF_ONESHOT,
 				"ist8801_up", (void *)g_ist8801_data->client);
 			if (err < 0) {
-				TRI_KEY_ERR("IRQ LINE NOT AVAILABLE!!\n");
+				TRI_KEY_ERR("IRQ LINE NOT AVAILABLE!! err: %d\n", err);
 				return -EINVAL;
 			}
 			irq_set_irq_wake(g_ist8801_data->irq, 1);

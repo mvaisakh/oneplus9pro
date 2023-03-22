@@ -859,9 +859,14 @@ else ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS += -Os
 endif
 
-# Optimise kernel binary for 888's CPU
+# Optimise kernel binary for lahaina/yupik's CPU
+ifeq ($(DEVICE), LUNAA)
+KBUILD_CFLAGS	+= -mcpu=cortex-a78
+KBUILD_AFLAGS	+= -mcpu=cortex-a78
+else
 KBUILD_CFLAGS	+= -mcpu=cortex-x1
 KBUILD_AFLAGS	+= -mcpu=cortex-x1
+endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
 KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)

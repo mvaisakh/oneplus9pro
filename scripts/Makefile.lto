@@ -22,7 +22,7 @@ ifdef CONFIG_LTO_GCC
 # new enough is ok.
 #
 # XXX narrow down binutils versions
-ifeq ($(shell if ar --version | grep -q 2\.31 ; then echo bad ; fi),bad)
+ifeq ($(shell if $(CROSS_COMPILE)ar --version | grep -q 2\.31 ; then echo bad ; fi),bad)
 ifeq ($(shell if test `ulimit -n` -lt 4000 ; then echo yes ; fi),yes)
         $(warning Disabling LTO. File descriptor limit too low. Increase with ulimit -n 4000 or upgrade binutils)
         undefine CONFIG_LTO_GCC
@@ -37,13 +37,13 @@ endif
 # and needed -fno-toplevel-reorder, which can lead to missing symbols
 # 5.0 ICEs with newer kernels
 # so only support 6.0+
-ifeq ($(call cc-ifversion, -lt, 0600,y),y)
+ifeq ($(call $(CROSS_COMPILE)cc-ifversion, -lt, 0600,y),y)
         $(warning Disabling LTO. Need gcc 5+)
 	undefine CONFIG_LTO_GCC
 endif
 
 # binutils before 2.27 has various problems with plugins
-ifeq ($(call ld-ifversion,-lt,227000000,y),y)
+ifeq ($(call $(CROSS_COMPILE)ld-ifversion,-lt,227000000,y),y)
         $(warning Disabling LTO. Too old binutils (< 2.27))
 	undefine CONFIG_LTO_GCC
 endif

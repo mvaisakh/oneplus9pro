@@ -66,7 +66,7 @@ config DRM_OPLUS_PANEL_NOTIFY
 	 Say 'n' to not support oplus notify
 
 config QCOM_KGSL_IDLE_TIMEOUT
-	int
+	int "GPU idle timeout value"
 	default 100000 if !QGKI
 	default 80
 	help

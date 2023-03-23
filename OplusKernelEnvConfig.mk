@@ -163,7 +163,13 @@ ifeq ($(OPLUS_FEATURE_SECURE_KEYINTERFACESGUARD),yes)
 KBUILD_CFLAGS += -DOPLUS_DISALLOW_KEY_INTERFACES
 endif
 
-$(warning "OPLUS_VND_ENV_CHG_OP9RT_PMIC_VOOCPHY is $(strip $(OPLUS_VND_ENV_CHG_OP9RT_PMIC_VOOCPHY))")
+ifeq ($(DEVICE), 9RT)
+$(info Building kernel for OnePlus 9RT, enabling VOOC)
+else ifeq ($(DEVICE), LUNAA)
+$(info Building kernel for Realme GT Master Edition, enabling VOOC)
+else
+$(info Building kernel for OnePlus 9 Pro)
+endif
 ifeq ($(OPLUS_VND_ENV_CHG_OP9RT_PMIC_VOOCPHY),yes)
 export CONFIG_OPLUS_CHG_OP9RT_PMIC_VOOCPHY=y
 endif

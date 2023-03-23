@@ -85,6 +85,10 @@ config THREAD_INFO_IN_TASK
 	  One subtle change that will be needed is to use try_get_task_stack()
 	  and put_task_stack() in save_thread_stack_tsk() and get_wchan().
 
+config GCC_GRAPHITE
+	bool "Enable GCC Polyhedral Loop Optimization (Graphite)"
+	depends on CC_IS_GCC
+
 menu "General setup"
 
 config BROKEN

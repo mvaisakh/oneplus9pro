@@ -79,17 +79,19 @@ void ufs_latency_hist_handle(void *data, struct ufs_hba *hba , struct ufshcd_lrb
 static int __init
 oplus_ufs_common_init(void)
 {
-	int rc;
+	int rc = 0;
 
 	printk("oplus_ufs_common_init");
 
+#ifdef CONFIG_TRACEPOINTS
 	rc = register_trace_android_vh_ufs_gen_proc_devinfo(ufs_gen_proc_devinfo_handle, NULL);
 	if (rc != 0)
 		pr_err("register_trace_android_vh_ufs_gen_proc_devinfo failed! rc=%d\n", rc);
-		
+
 	rc = register_trace_android_vh_ufs_latency_hist(ufs_latency_hist_handle, NULL);
 	if (rc != 0)
 		pr_err("register_trace_android_vh_ufs_latency_hist failed! rc=%d\n", rc);
+#endif
 
 	return rc;
 }

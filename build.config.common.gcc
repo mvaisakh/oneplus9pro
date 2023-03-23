@@ -39,6 +39,19 @@ function enable_gcc_lto() {
     make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
 }
 
+function enable_gcc_graphite() {
+  # Enable GCC Graphite
+  ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
+    -e GCC_GRAPHITE
+
+  (cd ${OUT_DIR} && \
+    make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
+}
+
 if [ ${GCC_LTO} == "1" ]; then
 	append_cmd POST_DEFCONFIG_CMDS "enable_gcc_lto"
+fi
+
+if [ ${GRAPHITE} == "1" ]; then
+        append_cmd POST_DEFCONFIG_CMDS "enable_gcc_graphite"
 fi

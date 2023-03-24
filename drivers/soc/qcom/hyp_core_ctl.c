@@ -23,6 +23,9 @@
 #include <linux/cpufreq.h>
 #include <linux/sched/sysctl.h>
 
+#include <linux/cpu.h>
+#include <linux/interrupt.h>
+
 #include <linux/haven/hcall.h>
 #include <linux/haven/hh_errno.h>
 #include <linux/haven/hh_rm_drv.h>

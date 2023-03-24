@@ -602,20 +602,30 @@ static irqreturn_t ist8801_up_irq_handler(int irq, void *dev_id)
 static int ist8801_setup_eint(struct ist8801_data_t *ist8801_data)
 {
 	int ret = 0;
+	int retries = 3;
 
 	if (gpio_is_valid(ist8801_data->irq_gpio)) {
-		ret = gpio_request(ist8801_data->irq_gpio, "ist8801_up_irq");
-		if (ret)
-			TRI_KEY_LOG("unable to request gpio [%d]\n",
-			ist8801_data->irq_gpio);
-		else {
-			ret = gpio_direction_input(ist8801_data->irq_gpio);
-			msleep(50);
-			ist8801_data->irq = gpio_to_irq(ist8801_data->irq_gpio);
-		}
+	    while (retries--) {
+	        ret = gpio_request(ist8801_data->irq_gpio, "ist8801_up_irq");
+	        if (ret == 0) {
+	            ret = gpio_direction_input(ist8801_data->irq_gpio);
+	            msleep(50);
+	            ist8801_data->irq = gpio_to_irq(ist8801_data->irq_gpio);
+	            break; // break out of the retry loop on success
+	        } else {
+	            TRI_KEY_LOG("unable to request gpio [%d], retrying...\n",
+	                        ist8801_data->irq_gpio);
+        	    msleep(500); // wait for 500ms before retrying
+	        }
+	    }
+	    if (ret) {
+	        TRI_KEY_ERR("unable to request gpio [%d]\n",
+        	            ist8801_data->irq_gpio);
+	    } else {
+	        TRI_KEY_ERR("GPIO %d irq:%d\n", ist8801_data->irq_gpio,
+        	            ist8801_data->irq);
+	    }
 	}
-	TRI_KEY_ERR("GPIO %d irq:%d\n", ist8801_data->irq_gpio,
-			ist8801_data->irq);
 
 	return 0;
 }

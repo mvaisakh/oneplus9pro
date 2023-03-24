@@ -94,7 +94,7 @@ jobs:
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9P VARIANT=qgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 BUILD_KERNEL=1 build/build.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9P VARIANT=qgki COMPILER=gcc GRAPHITE=1 BUILD_KERNEL=1 build/build.sh
     - name: Push prebuilts to repo
       run: |
         gh repo clone mvaisakh/android_device_oneplus_lemonade-kernel
@@ -181,7 +181,7 @@ jobs:
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=qgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 BUILD_KERNEL=1 build/build.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=qgki COMPILER=gcc GRAPHITE=1 BUILD_KERNEL=1 build/build.sh
     - name: Push prebuilts to repo
       run: |
         gh repo clone mvaisakh/android_device_oneplus_martini-kernel
@@ -268,7 +268,7 @@ jobs:
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=LUNAA VARIANT=qgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 BUILD_KERNEL=1 build/build.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=LUNAA VARIANT=qgki COMPILER=gcc GRAPHITE=1 BUILD_KERNEL=1 build/build.sh
     - name: Push prebuilts to repo
       run: |
         gh repo clone mvaisakh/android_device_realme_lunaa-kernel

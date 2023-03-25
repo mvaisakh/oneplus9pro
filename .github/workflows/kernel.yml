@@ -79,30 +79,6 @@ jobs:
        name: release-zip
        path: ak3/*.zip
 
-  build-lemonade-qgki:
-    needs: [bot-notify-ci]
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
-    - name: Repo sync
-      run: |
-        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4-qgki --depth=1
-        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: QGKI Build
-      run: |
-        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
-        sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9P VARIANT=qgki LTO=thin BUILD_KERNEL=1 build/build.sh
-    - name: Push prebuilts to repo
-      run: |
-        gh repo clone mvaisakh/android_device_oneplus_lemonade-kernel
-        cp out/msm-5.4-lahaina-qgki/dist/* android_device_oneplus_lemonade-kernel
-        cd android_device_oneplus_lemonade-kernel && git add .
-        git commit -am "lemonade-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux version 5.4')"
-        gh repo sync
-
   build-martini-clang:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
@@ -166,30 +142,6 @@ jobs:
        name: release-zip
        path: ak3/*.zip
 
-  build-martini-qgki:
-    needs: [bot-notify-ci]
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
-    - name: Repo sync
-      run: |
-        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4-qgki --depth=1
-        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: QGKI Build
-      run: |
-        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
-        sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=qgki LTO=thin BUILD_KERNEL=1 build/build.sh
-    - name: Push prebuilts to repo
-      run: |
-        gh repo clone mvaisakh/android_device_oneplus_martini-kernel
-        cp out/msm-5.4-lahaina-qgki/dist/* android_device_oneplus_martini-kernel
-        cd android_device_oneplus_martini-kernel && git add .
-        git commit -am "martini-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux version 5.4')"
-        gh repo sync
-
   build-lunaa-clang:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
@@ -252,30 +204,6 @@ jobs:
       with:
        name: release-zip
        path: ak3/*.zip
-
-  build-lunaa-qgki:
-    needs: [bot-notify-ci]
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
-    - name: Repo sync
-      run: |
-        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4-qgki --depth=1
-        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: QGKI Build
-      run: |
-        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
-        sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=LUNAA VARIANT=qgki LTO=thin BUILD_KERNEL=1 build/build.sh
-    - name: Push prebuilts to repo
-      run: |
-        gh repo clone mvaisakh/android_device_realme_lunaa-kernel
-        cp out/msm-5.4-lahaina-qgki/dist/* android_device_realme_lunaa-kernel
-        cd android_device_realme_lunaa-kernel && git add .
-        git commit -am "lunaa-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux version 5.4')"
-        gh repo sync
 
   publish-release:
     needs: [build-lemonade-clang,build-lemonade-gcc,build-martini-clang,build-martini-gcc,build-lunaa-clang,build-lunaa-gcc]

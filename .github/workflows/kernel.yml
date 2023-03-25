@@ -90,7 +90,14 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: GCC Build
+    - name: Sync Clang
+      run: |
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+        bash antman -S=latest
+        bash antman --patch=glibc
+    - name: QGKI Build
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
@@ -177,7 +184,14 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: GCC Build
+    - name: Sync Clang
+      run: |
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+        bash antman -S=latest
+        bash antman --patch=glibc
+    - name: QGKI Build
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
@@ -264,7 +278,14 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: GCC Build
+    - name: Sync Clang
+      run: |
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+        bash antman -S=latest
+        bash antman --patch=glibc
+    - name: QGKI Build
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh

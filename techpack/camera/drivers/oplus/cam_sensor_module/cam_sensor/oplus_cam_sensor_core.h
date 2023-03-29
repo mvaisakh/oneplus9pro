@@ -8,7 +8,7 @@
 #include "cam_sensor_dev.h"
 
 struct cam_sensor_i2c_reg_setting_array {
-	struct cam_sensor_i2c_reg_array reg_setting[1280];
+	struct cam_sensor_i2c_reg_array reg_setting[4600];
 	unsigned short size;
 	enum camera_sensor_i2c_type addr_type;
 	enum camera_sensor_i2c_type data_type;
@@ -27,6 +27,7 @@ struct cam_sensor_settings {
 	struct cam_sensor_i2c_reg_setting_array gc2375_setting;
 
 	struct cam_sensor_i2c_reg_setting_array hi846_setting; //Rear_UW
+	struct cam_sensor_i2c_reg_setting_array ov64b_setting;
 	struct cam_sensor_i2c_reg_setting_array imx615_setting; //Front_Main
 	struct cam_sensor_i2c_reg_setting_array imx616_setting; //Front_Main
 	struct cam_sensor_i2c_reg_setting_array gc8054_setting; //Front_UW

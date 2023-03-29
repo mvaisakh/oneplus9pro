@@ -30,6 +30,7 @@ struct camera_vendor_match_tbl match_tbl[] = {
         {0x689,  "imx689", "Sony"    },
         {0x0616, "imx616", "Sony"    },
         {0x4608, "hi846",  "Hynix"   },
+        {0x5664, "ov64b",  "OmniVision"},
         {0x8054, "gc8054", "Galaxyc" },
         {0x2b,   "ov02b10","OmniVision" },
         {0x5647, "ov08d10","OmniVision" },
@@ -53,7 +54,6 @@ struct cam_sensor_settings sensor_init_settings = {
 
 #include <linux/firmware.h>
 #include <linux/dma-contiguous.h>
-
 
 #define MAX_LENGTH 128
 bool chip_version_old = FALSE;
@@ -217,6 +217,7 @@ int cam_ftm_power_down(struct cam_sensor_ctrl_t *s_ctrl) {
         s_ctrl->sensordata->slave_info.sensor_id == 0x689 ||
         s_ctrl->sensordata->slave_info.sensor_id == 0x2375||
         s_ctrl->sensordata->slave_info.sensor_id == 0x4608||
+        s_ctrl->sensordata->slave_info.sensor_id == 0x5664||
         s_ctrl->sensordata->slave_info.sensor_id == 0x0616||
         s_ctrl->sensordata->slave_info.sensor_id == 0x8054||
         s_ctrl->sensordata->slave_info.sensor_id == 0x88  ||
@@ -342,6 +343,16 @@ int cam_ftm_power_up(struct cam_sensor_ctrl_t *s_ctrl) {
                 sensor_setting.data_type = CAMERA_SENSOR_I2C_TYPE_WORD;
                 sensor_setting.size = sensor_settings.hi846_setting.size;
                 sensor_setting.delay = sensor_settings.hi846_setting.delay;
+                rc = camera_io_dev_write(&(s_ctrl->io_master_info), &sensor_setting);
+            } else if ((s_ctrl->sensordata->slave_info.sensor_id == 0x5664) ||
+                (s_ctrl->sensordata->slave_info.sensor_id == 0x6b64) ||
+                (s_ctrl->sensordata->slave_info.sensor_id == 0x5a64)) {
+                CAM_ERR(CAM_SENSOR, "FTM sensor setting 0x%x",s_ctrl->sensordata->slave_info.sensor_id);
+                sensor_setting.reg_setting = sensor_settings.ov64b_setting.reg_setting;
+                sensor_setting.addr_type = CAMERA_SENSOR_I2C_TYPE_WORD;
+                sensor_setting.data_type = CAMERA_SENSOR_I2C_TYPE_BYTE;
+                sensor_setting.size = sensor_settings.ov64b_setting.size;
+                sensor_setting.delay = sensor_settings.ov64b_setting.delay;
                 rc = camera_io_dev_write(&(s_ctrl->io_master_info), &sensor_setting);
             } else if (s_ctrl->sensordata->slave_info.sensor_id == 0x0615) {
                 CAM_ERR(CAM_SENSOR, "FTM sensor setting 0x%x",s_ctrl->sensordata->slave_info.sensor_id);
@@ -1345,7 +1356,14 @@ int sensor_start_thread(void *arg) {
     if (rc == 0) {
         mutex_lock(&(s_ctrl->sensor_initsetting_mutex));
         if(s_ctrl->sensor_initsetting_state == CAM_SENSOR_SETTING_WRITE_INVALID){
-            if(s_ctrl->sensordata->slave_info.sensor_id == 0x766)
+            if (0x5664 == s_ctrl->sensordata->slave_info.sensor_id) {
+                sensor_init_setting.reg_setting = sensor_init_settings.ov64b_init_setting1.reg_setting;
+                sensor_init_setting.addr_type = sensor_init_settings.ov64b_init_setting1.addr_type;
+                sensor_init_setting.data_type = sensor_init_settings.ov64b_init_setting1.data_type;
+                sensor_init_setting.size = sensor_init_settings.ov64b_init_setting1.size;
+                sensor_init_setting.delay = sensor_init_settings.ov64b_init_setting1.delay;
+	    }
+            else if(s_ctrl->sensordata->slave_info.sensor_id == 0x766)
             {
                 rc=camera_io_dev_read(
                         &(s_ctrl->io_master_info),

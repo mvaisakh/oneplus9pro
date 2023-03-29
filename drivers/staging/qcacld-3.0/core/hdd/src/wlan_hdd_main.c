@@ -12768,7 +12768,7 @@ static void hdd_cfg_params_init(struct hdd_context *hdd_ctx)
 
 	config->private_wext_control = cfg_get(psoc, CFG_PRIVATE_WEXT_CONTROL);
 	config->enablefwprint = cfg_get(psoc, CFG_ENABLE_FW_UART_PRINT);
-	config->enable_fw_log = cfg_get(psoc, CFG_ENABLE_FW_LOG);
+	config->enable_fw_log = cfg_get(psoc, 0);
 	config->operating_chan_freq = cfg_get(psoc, CFG_OPERATING_FREQUENCY);
 	config->num_vdevs = cfg_get(psoc, CFG_NUM_VDEV_ENABLE);
 	qdf_str_lcopy(config->enable_concurrent_sta,

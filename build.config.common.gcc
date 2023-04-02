@@ -59,6 +59,15 @@ function enable_gcov_kernel() {
     make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
 }
 
+function enable_pgo_kernel() {
+  # Enable Coverage
+  ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
+    -e PGO
+
+  (cd ${OUT_DIR} && \
+    make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
+}
+
 if [ ${GCOV_PROFILE} == "1" ]; then
         append_cmd POST_DEFCONFIG_CMDS "enable_gcov_kernel"
 fi
@@ -69,4 +78,8 @@ fi
 
 if [ ${GRAPHITE} == "1" ]; then
         append_cmd POST_DEFCONFIG_CMDS "enable_gcc_graphite"
+fi
+
+if [ ${PGO} == "1" ]; then
+        append_cmd POST_DEFCONFIG_CMDS "enable_pgo_kernel"
 fi

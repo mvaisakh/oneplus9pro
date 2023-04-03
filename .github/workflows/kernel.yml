@@ -67,7 +67,7 @@ jobs:
         mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
-        tar -xf eva-kernel-gcov-profile-04032023.xz
+        tar -xvf eva-kernel-gcov-profile-04032023.xz
         cd -
     - name: GCC Build
       run: |
@@ -172,7 +172,7 @@ jobs:
         mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
-        tar -xf eva-kernel-gcov-profile-04032023.xz
+        tar -xvf eva-kernel-gcov-profile-04032023.xz
         cd -
     - name: GCC Build
       run: |
@@ -207,7 +207,7 @@ jobs:
         mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
-        tar -xf eva-kernel-gcov-profile-04032023.xz
+        tar -xvf eva-kernel-gcov-profile-04032023.xz
         cd -
     - name: GCC Build
       run: |
@@ -277,7 +277,7 @@ jobs:
         mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
-        tar -xf eva-kernel-gcov-profile-04032023.xz
+        tar -xvf eva-kernel-gcov-profile-04032023.xz
         cd -
     - name: GCC Build
       run: |
@@ -312,7 +312,7 @@ jobs:
         mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
-        tar -xf eva-kernel-gcov-profile-04032023.xz
+        tar -xvf eva-kernel-gcov-profile-04032023.xz
         cd -
     - name: GCC Build
       run: |

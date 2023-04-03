@@ -73,13 +73,48 @@ jobs:
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9P COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9P COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+
+  build-lemonade-gcc-profiling:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils wget tar
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync PGO Profiles
+      run: |
+        mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
+        cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
+        tar -xf eva-kernel-gcov-profile-04032023.xz
+        cd -
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9P COMPILER=gcc GCC_LTO=1 GRAPHITE=1 GCOV_PROFILE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
     - uses: actions/upload-artifact@main
       with:
@@ -143,13 +178,48 @@ jobs:
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+
+  build-martini-gcc-profiling:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync PGO Profiles
+      run: |
+        mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
+        cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
+        tar -xf eva-kernel-gcov-profile-04032023.xz
+        cd -
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 GCOV_PROFILE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
     - uses: actions/upload-artifact@main
       with:
@@ -213,7 +283,7 @@ jobs:
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=LUNAA VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=LUNAA VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
         cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
@@ -226,8 +296,43 @@ jobs:
        name: release-zip
        path: ak3/*.zip
 
+  build-lunaa-gcc-profiling:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync PGO Profiles
+      run: |
+        mkdir -p out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
+        cd out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
+        tar -xf eva-kernel-gcov-profile-04032023.xz
+        cd -
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=LUNAA VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 GCOV_KERNEL=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+
   publish-release:
-    needs: [build-lemonade-clang,build-lemonade-gcc,build-martini-clang,build-martini-gcc,build-lunaa-clang,build-lunaa-gcc]
+    needs: [build-lemonade-clang,build-lemonade-gcc,build-lemonade-gcc-profiling,build-martini-clang,build-martini-gcc,build-martini-gcc-profiling,build-lunaa-clang,build-lunaa-gcc,build-lunaa-gcc-profiling]
     runs-on: ubuntu-latest
 
     steps:

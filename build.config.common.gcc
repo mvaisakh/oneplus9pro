@@ -53,6 +53,8 @@ function enable_gcov_kernel() {
   ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
     -e DEBUG_KERNEL \
     -e DEBUG_FS \
+    -e TRACING \
+    -e PROFILE_ALL_BRANCHES \
     -e GCOV_KERNEL \
     -e GCOV_PROFILE_ALL
 

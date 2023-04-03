@@ -116,10 +116,15 @@ jobs:
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
+    - name: Create profiling tar
+      run: |
+        tar -cf ${{ github.workspace }}/eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
-       path: ak3/*.zip
+       path: |
+         ak3/*.zip
+         ${{ github.workspace }}/*.xz
 
   build-martini-clang:
     needs: [bot-notify-ci]
@@ -221,10 +226,15 @@ jobs:
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
+    - name: Create profiling tar
+      run: |
+        tar -cf ${{ github.workspace }}/eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
-       path: ak3/*.zip
+       path: |
+         ak3/*.zip
+         ${{ github.workspace }}/*.xz
 
   build-lunaa-clang:
     needs: [bot-notify-ci]
@@ -326,10 +336,15 @@ jobs:
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
+    - name: Create profiling tar
+      run: |
+        tar -cf ${{ github.workspace }}/eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
-       path: ak3/*.zip
+       path: |
+         ak3/*.zip
+         ${{ github.workspace }}/*.xz
 
   publish-release:
     needs: [build-lemonade-clang,build-lemonade-gcc,build-lemonade-gcc-profiling,build-martini-clang,build-martini-gcc,build-martini-gcc-profiling,build-lunaa-clang,build-lunaa-gcc,build-lunaa-gcc-profiling]
@@ -346,7 +361,7 @@ jobs:
       id: release_tag
       run: echo "TAG_NAME=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
     - name: Create Release
-      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip
+      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip *.xz
     - name: Release Check
       run: gh release list -L 1 > list
     - name: Prepare release message

@@ -100,13 +100,6 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: Sync PGO Profiles
-      run: |
-        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-lemonade-gcov-profile-04032023.xz
-        tar -xf eva-lemonade-gcov-profile-04032023.xz
-        cd -
     - name: GCC Build
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
@@ -213,13 +206,6 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: Sync PGO Profiles
-      run: |
-        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-kernel-gcov-profile-04032023.xz
-        tar -xvf eva-kernel-gcov-profile-04032023.xz
-        cd -
     - name: GCC Build
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh

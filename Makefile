@@ -805,6 +805,7 @@ endif
 # Profile Guided Optimization
 ifeq ($(CONFIG_PGO), y)
 KBUILD_CFLAGS	+= -fprofile-use -Wno-coverage-mismatch -Wno-error=coverage-mismatch
+KBUILD_CFLAGS	+= $(call cc-disable-warning, missing-profile)
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one

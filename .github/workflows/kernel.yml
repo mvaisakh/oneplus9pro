@@ -114,13 +114,13 @@ jobs:
         cd ../
     - name: Create profiling tar
       run: |
-        tar -cf ${{ github.workspace }}/eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+        tar -cf eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
        path: |
          ak3/*.zip
-         ${{ github.workspace }}/*.xz
+         *.xz
 
   build-martini-clang:
     needs: [bot-notify-ci]
@@ -220,13 +220,13 @@ jobs:
         cd ../
     - name: Create profiling tar
       run: |
-        tar -cf ${{ github.workspace }}/eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+        tar -cf eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
        path: |
          ak3/*.zip
-         ${{ github.workspace }}/*.xz
+         *.xz
 
   build-lunaa-clang:
     needs: [bot-notify-ci]
@@ -316,13 +316,13 @@ jobs:
         cd ../
     - name: Create profiling tar
       run: |
-        tar -cf ${{ github.workspace }}/eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+        tar -cf eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
        path: |
          ak3/*.zip
-         ${{ github.workspace }}/*.xz
+         *.xz
 
   publish-release:
     needs: [build-lemonade-clang,build-lemonade-gcc,build-lemonade-gcc-profiling,build-martini-clang,build-martini-gcc,build-martini-gcc-profiling,build-lunaa-clang,build-lunaa-gcc,build-lunaa-gcc-profiling]

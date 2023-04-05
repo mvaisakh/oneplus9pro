@@ -7053,7 +7053,7 @@
     .delay = 1,
 },
 
-.ov64b_init_setting1 =
+.ov64b_setting =
 {
 	.reg_setting =
 		{

@@ -1357,11 +1357,11 @@ int sensor_start_thread(void *arg) {
         mutex_lock(&(s_ctrl->sensor_initsetting_mutex));
         if(s_ctrl->sensor_initsetting_state == CAM_SENSOR_SETTING_WRITE_INVALID){
             if (0x5664 == s_ctrl->sensordata->slave_info.sensor_id) {
-                sensor_init_setting.reg_setting = sensor_init_settings.ov64b_init_setting1.reg_setting;
-                sensor_init_setting.addr_type = sensor_init_settings.ov64b_init_setting1.addr_type;
-                sensor_init_setting.data_type = sensor_init_settings.ov64b_init_setting1.data_type;
-                sensor_init_setting.size = sensor_init_settings.ov64b_init_setting1.size;
-                sensor_init_setting.delay = sensor_init_settings.ov64b_init_setting1.delay;
+                sensor_init_setting.reg_setting = sensor_init_settings.ov64b_setting.reg_setting;
+                sensor_init_setting.addr_type = sensor_init_settings.ov64b_setting.addr_type;
+                sensor_init_setting.data_type = sensor_init_settings.ov64b_setting.data_type;
+                sensor_init_setting.size = sensor_init_settings.ov64b_setting.size;
+                sensor_init_setting.delay = sensor_init_settings.ov64b_setting.delay;
 	    }
             else if(s_ctrl->sensordata->slave_info.sensor_id == 0x766)
             {

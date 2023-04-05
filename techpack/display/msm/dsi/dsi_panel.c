@@ -3427,6 +3427,8 @@ static int dsi_panel_parse_bl_config(struct dsi_panel *panel)
 	panel->bl_config.bl_inverted_dbv = utils->read_bool(utils->data,
 		"qcom,mdss-dsi-bl-inverted-dbv");
 
+	panel->bl_config.bl_remap = utils->read_bool(utils->data,
+		"qcom,mdss-dsi-bl-remap");
 #ifdef OPLUS_BUG_STABILITY
 	rc = utils->read_u32(utils->data, "qcom,mdss-dsi-bl-normal-max-level", &val);
 	if (rc) {

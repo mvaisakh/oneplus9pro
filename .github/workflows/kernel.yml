@@ -345,4 +345,4 @@ jobs:
     - name: Prepare release message
       run: gh release view $(cat list | awk '{ print substr( $0, 1, length($0)-45 ) }') > release-text
     - name: Send message
-      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="<b>New build for OnePlus 9 Series</b> %0A$(cat release-text | sed '1d;3d;4d;6d;7d;9d;10d;11d;12d;13d;14d;15d;16d;17;')"
+      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="<b>New build for OnePlus 9 Series</b> %0A$(cat release-text | sed '1d;3d;4d;6d;7d;9d;10d;11d;12d;13d;14d;15d;16d;17d;')"

@@ -73,7 +73,7 @@
 			effect_0 {
 				/* CLICK */
 				qcom,effect-id = <0>;
-				qcom,wf-vmax-mv = <8700>;
+				qcom,wf-vmax-mv = <9200>;
 				qcom,wf-fifo-data = [
 							00 01 01 01 01 01 01 01
 							01 01 01 02 02 02 02 02
@@ -117,7 +117,7 @@
 			effect_1 {
 				/* DOUBLE_CLICK */
 				qcom,effect-id = <1>;
-				qcom,wf-vmax-mv = <8700>;
+				qcom,wf-vmax-mv = <9200>;
 				qcom,wf-fifo-data = [
 							00 00 00 00 00 00 00 00
 							00 01 01 01 01 01 01 01
@@ -169,7 +169,7 @@
 			effect_2 {
 				/* TICK */
 				qcom,effect-id = <2>;
-				qcom,wf-vmax-mv = <8700>;
+				qcom,wf-vmax-mv = <9200>;
 				qcom,wf-fifo-data = [
 							00 01 01 01 01 01 01 01
 							01 01 01 02 02 02 02 02
@@ -213,7 +213,7 @@
 			effect_3 {
 				/* THUD */
 				qcom,effect-id = <3>;
-				qcom,wf-vmax-mv = <8700>;
+				qcom,wf-vmax-mv = <9200>;
 				qcom,wf-fifo-data = [
 							00 00 00 00 00 00 00 00
 							00 00 00 00 00 00 00 00
@@ -271,7 +271,7 @@
 			effect_4 {
 				/* POP */
 				qcom,effect-id = <4>;
-				qcom,wf-vmax-mv = <8700>;
+				qcom,wf-vmax-mv = <9200>;
 				qcom,wf-fifo-data = [
 							00 00 01 01 01 01 01 01
 							01 01 02 02 02 02 02 02
@@ -317,7 +317,7 @@
 			effect_5 {
 				/* HEAVY CLICK */
 				qcom,effect-id = <5>;
-				qcom,wf-vmax-mv = <8700>;
+				qcom,wf-vmax-mv = <9200>;
 				qcom,wf-fifo-data = [
 							00 00 00 00 00 00 00 00
 							00 00 00 00 00 00 00 00

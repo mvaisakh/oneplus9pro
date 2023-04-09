@@ -30,8 +30,8 @@
 
 #ifdef CONFIG_OPLUS_SYSTEM_KERNEL_QCOM
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0))
-#include <../../../../kernel/msm-5.4/mm/internal.h>
-#include <../../../../kernel/msm-5.4/mm/slab.h>
+#include <../../../../mm/internal.h>
+#include <../../../../mm/slab.h>
 #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
 #include <../../../../kernel/msm-4.19/mm/internal.h>
 #include <../../../../kernel/msm-4.19/mm/slab.h>
@@ -118,7 +118,7 @@ static struct list_head  pid_head;
 static struct pid_cnt_struct top_pid[5]; /* record the top 5 pid */
 static unsigned long sort_addrs[OPLUS_MEMCFG_SLABTRACE_CNT]; /*sort by caller address */
 static struct kmem_cache *pid_cnt_cachep;
-extern alloc_loc_track(struct loc_track *t, unsigned long max, gfp_t flags);
+extern int alloc_loc_track(struct loc_track *t, unsigned long max, gfp_t flags);
 extern void get_map(struct kmem_cache *s, struct page *page, unsigned long *map);
 extern void flush_all(struct kmem_cache *s);
 

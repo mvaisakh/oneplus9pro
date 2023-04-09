@@ -1153,6 +1153,7 @@ struct rq {
 	int			idle_state_idx;
 #endif
 #endif
+	struct list_head	ux_thread_list;
 };
 
 #ifdef CONFIG_FAIR_GROUP_SCHED

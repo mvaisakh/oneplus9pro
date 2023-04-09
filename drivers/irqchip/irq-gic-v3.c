@@ -46,7 +46,7 @@ void (*match_modem_wakeup)(void) = NULL;
 EXPORT_SYMBOL(match_modem_wakeup);
 void (*match_wlan_wakeup)(void) = NULL;
 EXPORT_SYMBOL(match_wlan_wakeup);
-extern is_first_ipcc_msg;
+extern int is_first_ipcc_msg;
 #endif /* CONFIG_OPLUS_FEATURE_NWPOWER */
 
 #define GICD_INT_NMI_PRI	(GICD_INT_DEF_PRI & ~0x80)

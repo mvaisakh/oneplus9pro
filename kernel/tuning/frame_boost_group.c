@@ -27,7 +27,7 @@ char dy[] = "droid.ugc.aweme";
 char douyu[] = "v.douyu.android";
 extern bool isHighFps;
 extern bool use_vload;
-extern capacity_spare_without(int cpu, struct task_struct *p);
+extern unsigned long capacity_spare_without(int cpu, struct task_struct *p);
 extern struct walt_sched_cluster *sched_cluster[];
 extern int num_sched_clusters;
 extern int sysctl_slide_boost_enabled;

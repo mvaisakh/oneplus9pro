@@ -100,7 +100,7 @@ bool is_webview_boost(struct task_struct *p)
 	return false;
 }
 
-extern capacity_spare_without(int cpu, struct task_struct *p);
+extern unsigned long capacity_spare_without(int cpu, struct task_struct *p);
 int find_webview_cpu(struct task_struct *p)
 {
 	int i;

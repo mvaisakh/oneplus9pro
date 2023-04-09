@@ -119,7 +119,7 @@ u64 _slide_get_boost_load(int cpu) {
 		return 0;
 	}
 }
-void adjust_sched_assist_input_ctrl() {
+void adjust_sched_assist_input_ctrl(void) {
 	static int input_boost_old = 0;
 	if (sysctl_input_boost_enabled && sysctl_slide_boost_enabled) {
 		sysctl_input_boost_enabled = 0;

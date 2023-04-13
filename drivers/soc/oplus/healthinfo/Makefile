@@ -1,3 +1,3 @@
 #ifdef OPLUS_FEATURE_HEALTHINFO
-obj-$(CONFIG_OPLUS_HEALTHINFO)  += healthinfo.o
+obj-$(CONFIG_OPLUS_HEALTHINFO)  += healthinfo.o cpuload.o
 #endif /* OPLUS_FEATURE_HEALTHINFO */

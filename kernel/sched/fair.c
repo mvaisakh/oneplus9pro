@@ -5848,10 +5848,11 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p,
 
 static unsigned long cpu_util_without(int cpu, struct task_struct *p);
 
-static unsigned long capacity_spare_without(int cpu, struct task_struct *p)
+unsigned long capacity_spare_without(int cpu, struct task_struct *p)
 {
 	return max_t(long, capacity_of(cpu) - cpu_util_without(cpu, p), 0);
 }
+EXPORT_SYMBOL(capacity_spare_without);
 
 /*
  * find_idlest_group finds and returns the least busy CPU group within the

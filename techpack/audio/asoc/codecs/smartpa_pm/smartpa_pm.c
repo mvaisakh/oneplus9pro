@@ -12,6 +12,7 @@
 #include <linux/version.h>
 #include <linux/input.h>
 #include <dsp/apr_audio-v2.h>
+#include <dsp/q6afe-v2.h>
 
 //#define TEST_DEBUG_LOG 1
 

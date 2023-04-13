@@ -23,7 +23,6 @@ extern int isHighFps;
 extern struct frame_boost_group default_frame_boost_group;
 extern int stune_boost;
 extern unsigned int timeout_load;
-extern bool walt_clusters_parsed;
 #undef DEBUG
 #define DEBUG 0
 
@@ -173,9 +172,6 @@ static long ofb_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return -EFAULT;
 	}
 
-	if (unlikely(!walt_clusters_parsed))
-		return -EFAULT;
-
 	/*
 	 * Process variable-sized commands (Frameboost3.0 extend ofb_ctrl_data,
 	 * mask IOCSIZE_MASK segment of cmd for kernel5.4 Inputboost2.0 here).
@@ -252,9 +248,6 @@ static long sys_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		ofb_debug("invalid address");
 		return -EFAULT;
 	}
-
-	if (unlikely(!walt_clusters_parsed))
-		return -EFAULT;
 
 	/*
 	 * Process variable-sized commands (Frameboost3.0 extend ofb_ctrl_data,

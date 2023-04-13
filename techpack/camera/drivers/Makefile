@@ -2,6 +2,8 @@
 
 cameratree := $(srctree)/techpack/camera/drivers
 
+ois_fpu_cflag := -mgeneral-regs-only
+
 cam_include_dirs := $(shell dirname `find $(cameratree) -name '*.h'` | uniq)
 ccflags-y += $(addprefix -I,$(cam_include_dirs))
 
@@ -237,6 +239,10 @@ camera-$(CONFIG_SPECTRA_TFE) += \
 
 
 camera-y += camera_main.o
+
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898124/HighLevelCmd.o := $(ois_fpu_cflag)
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898124/E2PromCmd.o := $(ois_fpu_cflag)
+CFLAGS_REMOVE_oplus/cam_sensor_module/cam_ois/onsemi_fw/LC898128/PhoneUpdate.o := $(ois_fpu_cflag)
 
 obj-$(CONFIG_SPECTRA_CAMERA) += camera.o
 

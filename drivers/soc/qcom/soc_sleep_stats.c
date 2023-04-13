@@ -39,9 +39,7 @@ struct soc_sleep_stats_data {
 	const struct stats_config *config;
 	struct kobject *kobj;
 	struct kobj_attribute ka;
-	#if defined(OPLUS_FEATURE_POWERINFO_RPMH) && defined(CONFIG_OPLUS_POWERINFO_RPMH)
 	struct kobj_attribute ka_oplus;
-	#endif
 	void __iomem *reg;
 };
 
@@ -70,14 +68,12 @@ static inline u64 get_time_in_sec(u64 counter)
 	return counter;
 }
 
-#if defined(OPLUS_FEATURE_POWERINFO_RPMH) && defined(CONFIG_OPLUS_POWERINFO_RPMH)
 static inline u64 get_time_in_msec(u64 counter)
 {
 	do_div(counter, arch_timer_get_rate()/1000);
 
 	return counter;
 }
-#endif
 
 static inline ssize_t append_data_to_buf(char *buf, int length,
 					 struct stats_entry *data)

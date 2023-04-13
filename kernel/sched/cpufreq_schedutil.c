@@ -28,7 +28,7 @@ static unsigned int default_target_loads[] = {DEFAULT_TARGET_LOAD};
 #endif
 
 #ifdef CONFIG_OPLUS_FEATURE_SUGOV_POWER_EFFIENCY
-#include <linux/cpufreq_effiency.h>
+#include <linux/cpufreq_efficiency.h>
 #endif
 #ifdef CONFIG_OPLUS_FEATURE_INPUT_BOOST
 #include <linux/tuning/rt_boost.h>

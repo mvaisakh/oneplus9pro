@@ -117,7 +117,7 @@ jobs:
         tar -cf eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
-       name: release-zip
+       name: profile-zip
        path: |
          ak3/*.zip
          *.xz
@@ -223,7 +223,7 @@ jobs:
         tar -cf eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
-       name: release-zip
+       name: profile-zip
        path: |
          ak3/*.zip
          *.xz
@@ -319,13 +319,13 @@ jobs:
         tar -cf eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
-       name: release-zip
+       name: profile-zip
        path: |
          ak3/*.zip
          *.xz
 
   publish-release:
-    needs: [build-lemonade-clang,build-lemonade-gcc,build-lemonade-gcc-profiling,build-martini-clang,build-martini-gcc,build-martini-gcc-profiling,build-lunaa-clang,build-lunaa-gcc,build-lunaa-gcc-profiling]
+    needs: [build-lemonade-clang,build-lemonade-gcc,build-martini-clang,build-martini-gcc,build-lunaa-clang,build-lunaa-gcc]
     runs-on: ubuntu-latest
 
     steps:
@@ -346,3 +346,20 @@ jobs:
       run: gh release view $(cat list | awk '{ print substr( $0, 1, length($0)-45 ) }') > release-text
     - name: Send message
       run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="<b>New build for OnePlus 9 Series</b> %0A$(cat release-text | sed '1d;3d;4d;6d;7d;9d;10d;11d;12d;13d;14d;15d;16d;17d;')"
+
+  publish-release-profiling:
+    needs: [build-lemonade-gcc-profiling,build-martini-gcc-profiling,build-lunaa-gcc-profiling]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Restoring artifacts
+      uses: actions/download-artifact@main
+      with:
+        name: profile-zip
+        path: ${{ github.workspace }}
+    - name: Profiling Tag
+      id: profile_tag
+      run: echo "TAG_NAME_PROFILING=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
+    - name: Create Release
+      run: gh release create profiling-${{ env.TAG_NAME }} --generate-notes -p *.zip */*.zip *.xz

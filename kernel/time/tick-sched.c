@@ -1282,18 +1282,6 @@ void tick_irq_enter(void)
  * High resolution timer specific code
  */
 #ifdef CONFIG_HIGH_RES_TIMERS
-#ifdef CONFIG_QCOM_RUN_QUEUE_STATS
-static void wakeup_user(void)
-{
-	unsigned long jiffy_gap;
-
-	jiffy_gap = jiffies - rq_info.def_timer_last_jiffy;
-	if (jiffy_gap >= rq_info.def_timer_jiffies) {
-		rq_info.def_timer_last_jiffy = jiffies;
-		queue_work(rq_wq, &rq_info.def_timer_work);
-	}
-}
-#endif
 /*
  * We rearm the timer until we get disabled by the idle code.
  * Called with interrupts disabled.
@@ -1313,15 +1301,6 @@ static enum hrtimer_restart tick_sched_timer(struct hrtimer *timer)
 	 */
 	if (regs) {
 		tick_sched_handle(ts, regs);
-#ifdef CONFIG_QCOM_RUN_QUEUE_STATS
-		if (rq_info.init == 1 &&
-				tick_do_timer_cpu == smp_processor_id()) {
-			/*
-			 * wakeup user if needed
-			 */
-			wakeup_user();
-		}
-#endif
 	}
 	else
 		ts->next_tick = 0;

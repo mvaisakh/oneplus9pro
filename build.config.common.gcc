@@ -7,7 +7,7 @@ MKDTBO_EXT=${ROOT_DIR}/tools/libufdt/utils/src/mkdtboimg.py
 
 KCFLAGS="${KCFLAGS} -D__ANDROID_COMMON_KERNEL__"
 STOP_SHIP_TRACEPRINTK=1
-if ![ ${VARIANT} == ngki ]; then
+if ! [ ${VARIANT} == ngki ]; then
 IN_KERNEL_MODULES=1
 fi
 DO_NOT_STRIP_MODULES=1

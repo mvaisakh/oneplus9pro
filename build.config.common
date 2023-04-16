@@ -14,3 +14,16 @@ IN_KERNEL_MODULES=1
 fi
 DO_NOT_STRIP_MODULES=0
 STRIP_MODULES=1
+
+function enable_llvm_polly() {
+  # Enable LLVM Polly
+  ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
+    -e LLVM_POLLY
+
+  (cd ${OUT_DIR} && \
+    make O=${OUT_DIR} $archsubarch CROSS_COMPILE=${CROSS_COMPILE} olddefconfig)
+}
+
+if [ ${POLLY} == "1" ]; then
+        append_cmd POST_DEFCONFIG_CMDS "enable_llvm_polly"
+fi

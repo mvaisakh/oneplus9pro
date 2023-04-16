@@ -11,6 +11,7 @@
 
 #define MAX_LONG_SIZE 24
 #define DEFAULT_DEF_TIMER_JIFFIES 5
+#define NO_OP 1
 
 struct rq_data rq_info;
 struct workqueue_struct *rq_wq;
@@ -93,12 +94,14 @@ static int __init msm_rq_stats_init(void)
 	return -EPERM;
 #endif
 
+#ifndef NO_OP
 	rq_wq = create_singlethread_workqueue("rq_stats");
 	WARN_ON(!rq_wq);
 	INIT_WORK(&rq_info.def_timer_work, def_work_fn);
 	spin_lock_init(&rq_lock);
 	rq_info.def_timer_jiffies = DEFAULT_DEF_TIMER_JIFFIES;
 	rq_info.def_timer_last_jiffy = 0;
+#endif
 	ret = init_rq_attribs();
 
 	rq_info.init = 1;

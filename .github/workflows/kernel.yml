@@ -339,7 +339,7 @@ jobs:
       id: release_tag
       run: echo "TAG_NAME=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
     - name: Create Release
-      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip *.xz
+      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip
     - name: Release Check
       run: gh release list -L 1 > list
     - name: Prepare release message
@@ -362,4 +362,4 @@ jobs:
       id: profile_tag
       run: echo "TAG_NAME_PROFILING=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
     - name: Create Release
-      run: gh release create profiling-${{ env.TAG_NAME }} --generate-notes -p */*.zip *.xz
+      run: gh release create "${{ env.TAG_NAME_PROFILING }}-profiling" --generate-notes -p */*.zip *.xz

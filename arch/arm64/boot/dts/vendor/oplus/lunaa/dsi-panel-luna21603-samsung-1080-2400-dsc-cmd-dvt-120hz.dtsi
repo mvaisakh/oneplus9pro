@@ -742,6 +742,7 @@
 &dsi_luna21603_samsung_1080_2400_dsc_cmd_dvt_120hz {
     qcom,panel-supply-entries = <&dsi_panel_pwr_supply_vddr>;
     qcom,mdss-dsi-panel-controller = <&mdss_dsi0>;
+    qcom,mdss-dsi-bl-remap;
     qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
     qcom,mdss-dsi-bl-min-level = <1>;
     qcom,mdss-dsi-bl-normal-max-level = <2047>;

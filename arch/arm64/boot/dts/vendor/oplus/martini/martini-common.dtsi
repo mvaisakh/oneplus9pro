@@ -2117,7 +2117,7 @@
 		S3908 {
 			switch_report_rate;
 			report_rate_default = <60>;
-			report_rate_game_value = <3>;
+			report_rate_game_value = <9>;
                         fps_report_rate = <60 2 90 3 120 3>;//1:180Hz 2:120Hz 3:240Hz
 			default_gesture_mask = <8191>;
 		};

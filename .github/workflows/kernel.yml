@@ -65,12 +65,12 @@ jobs:
     - name: Sync PGO Profiles
       run: |
         mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/040420230313/eva-lemonade-gcov-gcno-040420230310.xz
-        tar -xf eva-lemonade-gcov-gcno-040420230310.xz
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-lemonade-gcov-gcno-220420230411.xz
+        tar -xf eva-lemonade-gcov-gcno-220420230411.xz
         mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
         cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-lemonade-gcov-profile-04032023.xz
-        tar -xvf eva-lemonade-gcov-profile-04032023.xz
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-kernel-lemonadep-gcov-profile-230420230326.xz
+        tar -xvf eva-kernel-lemonadep-gcov-profile-230420230326.xz
         cd -
     - name: GCC Build
       run: |
@@ -277,12 +277,12 @@ jobs:
     - name: Sync PGO Profiles
       run: |
         mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/180420230309-profiling/eva-lunaa-gcov-gcno-180420230307.xz
-        tar -xf eva-lunaa-gcov-gcno-180420230307.xz
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-lunaa-gcov-gcno-220420230426.xz
+        tar -xf eva-lunaa-gcov-gcno-220420230426.xz
         mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
         cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-lunaa-gcov-profile-04032023.xz
-        tar -xvf eva-lunaa-gcov-profile-04032023.xz
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-kernel-lunaa-gcov-profile-230420230421.xz
+        tar -xvf eva-kernel-lunaa-gcov-profile-230420230421.xz
         cd -
     - name: GCC Build
       run: |

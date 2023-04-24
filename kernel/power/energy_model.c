@@ -109,7 +109,6 @@ static int __init em_debug_init(void)
 			break;
 		}
 
-		em_debug_create_pd(pd, cpu);
 		cpumask_andnot(&span, &span, to_cpumask(pd->cpus));
 	}
 

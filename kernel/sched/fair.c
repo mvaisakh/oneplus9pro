@@ -94,19 +94,6 @@ static unsigned int normalized_sysctl_sched_wakeup_granularity	= 1000000UL;
 const_debug unsigned int sysctl_sched_migration_cost	= 500000UL;
 DEFINE_PER_CPU_READ_MOSTLY(int, sched_load_boost);
 
-int sched_thermal_decay_shift;
-static int __init setup_sched_thermal_decay_shift(char *str)
-{
-	int _shift = 0;
-
-	if (kstrtoint(str, 0, &_shift))
-		pr_warn("Unable to set scheduler thermal pressure decay shift parameter\n");
-
-	sched_thermal_decay_shift = clamp(_shift, 0, 10);
-	return 1;
-}
-__setup("sched_thermal_decay_shift=", setup_sched_thermal_decay_shift);
-
 #ifdef CONFIG_SMP
 /*
  * For asym packing, by default the lower numbered CPU has higher priority.
@@ -7068,7 +7055,7 @@ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
 
 	trace_android_vh_em_pd_energy(pd->em_pd, max_util, sum_util, &energy);
 	if (!energy)
-		energy = em_cpu_energy(pd->em_pd, max_util, sum_util);
+		energy = em_pd_energy(pd->em_pd, max_util, sum_util);
 
 	return energy;
 }
@@ -8356,15 +8343,15 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
 				cpu_rq(env->dst_cpu)->wrq.cluster, p))
 		return 0;
 
-	/* Don't detach task if it is under active migration */
-	if (env->src_rq->wrq.push_task == p)
-		return 0;
-#endif
-
 	/* Don't detach task if it doesn't fit on the destination */
 	if (env->flags & LBF_IGNORE_BIG_TASKS &&
 		!task_fits_max(p, env->dst_cpu))
 		return 0;
+
+	/* Don't detach task if it is under active migration */
+	if (env->src_rq->wrq.push_task == p)
+		return 0;
+#endif
 
 	if (task_running(env->src_rq, p)) {
 		schedstat_inc(p->se.statistics.nr_failed_migrations_running);
@@ -8676,9 +8663,6 @@ static inline bool others_have_blocked(struct rq *rq)
 	if (READ_ONCE(rq->avg_dl.util_avg))
 		return true;
 
-	if (thermal_load_avg(rq))
-		return true;
-
 #ifdef CONFIG_HAVE_SCHED_AVG_IRQ
 	if (READ_ONCE(rq->avg_irq.util_avg))
 		return true;
@@ -8704,7 +8688,6 @@ static bool __update_blocked_others(struct rq *rq, bool *done)
 {
 	const struct sched_class *curr_class;
 	u64 now = rq_clock_pelt(rq);
-	unsigned long thermal_pressure;
 	bool decayed;
 
 	/*
@@ -8713,11 +8696,8 @@ static bool __update_blocked_others(struct rq *rq, bool *done)
 	 */
 	curr_class = rq->curr->sched_class;
 
-	thermal_pressure = arch_scale_thermal_pressure(cpu_of(rq));
-
 	decayed = update_rt_rq_load_avg(now, rq, curr_class == &rt_sched_class) |
 		  update_dl_rq_load_avg(now, rq, curr_class == &dl_sched_class) |
-		  update_thermal_load_avg(rq_clock_thermal(rq), rq, thermal_pressure) |
 		  update_irq_load_avg(rq, 0);
 
 	if (others_have_blocked(rq))
@@ -8942,15 +8922,8 @@ static unsigned long scale_rt_capacity(int cpu, unsigned long max)
 	if (unlikely(irq >= max))
 		return 1;
 
-	/*
-	 * avg_rt.util_avg and avg_dl.util_avg track binary signals
-	 * (running and not running) with weights 0 and 1024 respectively.
-	 * avg_thermal.load_avg tracks thermal pressure and the weighted
-	 * average uses the actual delta max capacity(load).
-	 */
 	used = READ_ONCE(rq->avg_rt.util_avg);
 	used += READ_ONCE(rq->avg_dl.util_avg);
-	used += thermal_load_avg(rq);
 
 	if (unlikely(used >= max))
 		return 1;

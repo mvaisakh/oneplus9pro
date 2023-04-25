@@ -135,7 +135,7 @@ void __init xen_smp_cpus_done(unsigned int max_cpus)
 		if (xen_vcpu_nr(cpu) < MAX_VIRT_CPUS)
 			continue;
 
-		rc = remove_cpu(cpu);
+		rc = cpu_down(cpu);
 
 		if (rc == 0) {
 			/*

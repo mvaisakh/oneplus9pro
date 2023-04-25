@@ -212,7 +212,7 @@ static int __init processor_probe(struct parisc_device *dev)
 #ifdef CONFIG_SMP
 	if (cpuid) {
 		set_cpu_present(cpuid, true);
-		add_cpu(cpuid);
+		cpu_up(cpuid);
 	}
 #endif
 

@@ -166,11 +166,14 @@ int arch_hibernation_header_restore(void *addr)
 		sleep_cpu = -EINVAL;
 		return -EINVAL;
 	}
-
-	ret = bringup_hibernate_cpu(sleep_cpu);
-	if (ret) {
-		sleep_cpu = -EINVAL;
-		return ret;
+	if (!cpu_online(sleep_cpu)) {
+		pr_info("Hibernated on a CPU that is offline! Bringing CPU up.\n");
+		ret = cpu_up(sleep_cpu);
+		if (ret) {
+			pr_err("Failed to bring hibernate-CPU up!\n");
+			sleep_cpu = -EINVAL;
+			return ret;
+		}
 	}
 
 	resume_hdr = *hdr;

@@ -646,8 +646,14 @@ cpu_halt (void)
 
 void machine_shutdown(void)
 {
-	smp_shutdown_nonboot_cpus(reboot_cpu);
+#ifdef CONFIG_HOTPLUG_CPU
+	int cpu;
 
+	for_each_online_cpu(cpu) {
+		if (cpu != smp_processor_id())
+			cpu_down(cpu);
+	}
+#endif
 #ifdef CONFIG_KEXEC
 	kexec_disable_iosapic();
 #endif

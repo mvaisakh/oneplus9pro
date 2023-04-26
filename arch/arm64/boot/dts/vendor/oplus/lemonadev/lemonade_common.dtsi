@@ -707,6 +707,10 @@
 		};
 	};
 
+    sensor_fb: sensor_fb {
+        compatible = "oplus,sensor-feedback";
+    };
+
 	//#ifdef OPLUS_FEATURE_FINGERPRINT
 	oplus_secure_common {
 		compatible = "oplus,secure_common";

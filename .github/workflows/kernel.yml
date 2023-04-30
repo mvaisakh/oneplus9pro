@@ -312,7 +312,7 @@ jobs:
        name: release-zip
        path: ak3/*.zip
 
-  build-martini-gcc:
+  build-martini-gcc-oss-hwc:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
 

@@ -45,7 +45,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -84,7 +84,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-clang-oss-hwc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -122,7 +122,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -164,7 +164,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc-oss-hwc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -192,7 +192,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - name: Create profiling tar
       run: |
         tar -cf eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
@@ -232,7 +232,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -271,7 +271,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-clang-oss-hwc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -309,7 +309,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -351,7 +351,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc-oss-hwc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -379,7 +379,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - name: Create profiling tar
       run: |
         tar -cf eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
@@ -419,7 +419,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -458,7 +458,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-clang-oss-hwc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -496,7 +496,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -538,7 +538,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc-oss-hwc.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - uses: actions/upload-artifact@main
       with:
        name: release-zip
@@ -566,7 +566,7 @@ jobs:
         cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
         cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
-        cd ../
+        cd ../..
     - name: Create profiling tar
       run: |
         tar -cf eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)

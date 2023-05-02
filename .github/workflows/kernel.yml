@@ -74,7 +74,8 @@ jobs:
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
         cd kernel/msm-5.4
-        git fetch https://gerrit.aospa.co/AOSPA/android_kernel_oneplus_sm8350 refs/changes/11/29411/1 && git cherry-pick FETCH_HEAD
+        wget https://github.com/rk134/patches/raw/main/fodpatch.patch
+        git apply *.patch
         cd ..
         BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9P LTO=thin POLLY=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
@@ -153,7 +154,8 @@ jobs:
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
         cd kernel/msm-5.4
-        git fetch https://gerrit.aospa.co/AOSPA/android_kernel_oneplus_sm8350 refs/changes/11/29411/1 && git cherry-pick FETCH_HEAD
+        wget https://github.com/rk134/patches/raw/main/fodpatch.patch
+        git apply *.patch
         cd ..
         BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9P COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
@@ -259,7 +261,8 @@ jobs:
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
         cd kernel/msm-5.4
-        git fetch https://gerrit.aospa.co/AOSPA/android_kernel_oneplus_sm8350 refs/changes/11/29411/1 && git cherry-pick FETCH_HEAD
+        wget https://github.com/rk134/patches/raw/main/fodpatch.patch
+        git apply *.patch
         cd ..
         BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=9RT LTO=thin POLLY=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
@@ -338,7 +341,8 @@ jobs:
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
         cd kernel/msm-5.4
-        git fetch https://gerrit.aospa.co/AOSPA/android_kernel_oneplus_sm8350 refs/changes/11/29411/1 && git cherry-pick FETCH_HEAD
+        wget https://github.com/rk134/patches/raw/main/fodpatch.patch
+        git apply *.patch
         cd ..
         BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=9RT VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
@@ -444,7 +448,8 @@ jobs:
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
         cd kernel/msm-5.4
-        git fetch https://gerrit.aospa.co/AOSPA/android_kernel_oneplus_sm8350 refs/changes/11/29411/1 && git cherry-pick FETCH_HEAD
+        wget https://github.com/rk134/patches/raw/main/fodpatch.patch
+        git apply *.patch
         cd ..
         BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina VARIANT=nqgki DEVICE=LUNAA LTO=thin POLLY=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
@@ -523,7 +528,8 @@ jobs:
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
         sed -i s/build-host/statixos/g build/_setup_env.sh
         cd kernel/msm-5.4
-        git fetch https://gerrit.aospa.co/AOSPA/android_kernel_oneplus_sm8350 refs/changes/11/29411/1 && git cherry-pick FETCH_HEAD
+        wget https://github.com/rk134/patches/raw/main/fodpatch.patch
+        git apply *.patch
         cd ..
         BUILD_CONFIG=kernel/msm-5.4/build.config.msm.lahaina DEVICE=LUNAA VARIANT=nqgki COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip

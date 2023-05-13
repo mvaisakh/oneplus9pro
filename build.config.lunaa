@@ -1,3 +1,9 @@
 #
 # Realme GT Master Edition specific config
 #
+KERNEL_DIR=kernel/msm-5.4
+
+DEVICE=lunaa
+
+# Source lahaina build config
+. ${KERNEL_DIR}/build.config.msm.lahaina

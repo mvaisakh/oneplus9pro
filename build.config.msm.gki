@@ -2,7 +2,7 @@
 # Common MSM configuration for building GKI-based kernels
 
 function generate_defconfig() {
-	${KERNEL_DIR}/scripts/gki/generate_defconfig.sh ${DEFCONFIG}
+	${KERNEL_DIR}/scripts/gki/generate_defconfig.sh ${DEVICE} ${DEFCONFIG}
 }
 DEFCONFIG=vendor/${MSM_ARCH}-${VARIANT}_defconfig
 append_cmd PRE_DEFCONFIG_CMDS 'generate_defconfig'

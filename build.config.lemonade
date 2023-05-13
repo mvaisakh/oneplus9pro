@@ -1,3 +1,9 @@
 #
 # OnePlus 9/9 Pro specific config
 #
+KERNEL_DIR=kernel/msm-5.4
+
+DEVICE=lemonade
+
+# Source lahaina build config
+. ${KERNEL_DIR}/build.config.msm.lahaina

@@ -1,3 +1,9 @@
 #
 # OnePlus 9RT specific config
 #
+KERNEL_DIR=kernel/msm-5.4
+
+DEVICE=martini
+
+# Source lahaina build config
+. ${KERNEL_DIR}/build.config.msm.lahaina

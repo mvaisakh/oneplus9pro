@@ -5,32 +5,40 @@
 # Script to generate a defconfig variant based on the input
 
 usage() {
-	echo "Usage: $0 <platform_defconfig_variant>"
+	echo "Usage: $0 <device_name> <platform_defconfig_variant>"
+	echo "Devices: lemonade, martini, lunaa"
 	echo "Variants: <platform>-gki_defconfig, <platform>-qgki_defconfig, <platform>-consolidate_defconfig and <platform>-qgki-debug_defconfig"
-	echo "Example: $0 lahaina-gki_defconfig"
+	echo "Example: $0 lemonade lahaina-gki_defconfig"
 	exit 1
 }
 
 if [ -z "$1" ]; then
+        echo "Error: Device name not specified!"
+        usage
+fi
+
+if [ -z "$2" ]; then
 	echo "Error: Failed to pass input argument"
 	usage
 fi
 
 SCRIPTS_ROOT=$(readlink -f $(dirname $0)/)
 
-TEMP_DEF_NAME=`echo $1 | sed -r "s/_defconfig$//"`
+DEVICE_NAME=$1
+
+TEMP_DEF_NAME=`echo $2 | sed -r "s/_defconfig$//"`
 DEF_VARIANT=`echo ${TEMP_DEF_NAME} | sed -r "s/.*-//"`
 PLATFORM_NAME=`echo ${TEMP_DEF_NAME} | sed -r "s/-.*$//"`
 
 PLATFORM_NAME=`echo $PLATFORM_NAME | sed "s/vendor\///g"`
 
-REQUIRED_DEFCONFIG=`echo $1 | sed "s/vendor\///g"`
+REQUIRED_DEFCONFIG=`echo $2 | sed "s/vendor\///g"`
 
 # We should be in the kernel root after the envsetup
 if [[  "${REQUIRED_DEFCONFIG}" != *"gki"* ]]; then
 	source ${SCRIPTS_ROOT}/envsetup.sh $PLATFORM_NAME generic_defconfig
 else
-	source ${SCRIPTS_ROOT}/envsetup.sh $PLATFORM_NAME
+	source ${SCRIPTS_ROOT}/envsetup.sh $DEVICE_NAME $PLATFORM_NAME
 fi
 
 KERN_MAKE_ARGS="ARCH=$ARCH \
@@ -69,6 +77,8 @@ case "$REQUIRED_DEFCONFIG" in
 		FINAL_DEFCONFIG_BLEND+=" $QCOM_QGKI_FRAG"
 		${SCRIPTS_ROOT}/fragment_allyesconfig.sh $QCOM_GKI_FRAG $QCOM_GKI_ALLYES_FRAG
 		FINAL_DEFCONFIG_BLEND+=" $QCOM_GKI_ALLYES_FRAG "
+		FINAL_DEFCONFIG_BLEND+=" $OPLUS_COMMON_FRAG "
+		FINAL_DEFCONFIG_BLEND+=" $DEVICE_FRAG "
 		;;
 	${PLATFORM_NAME}-gki_defconfig )
 		FINAL_DEFCONFIG_BLEND+=" $QCOM_GKI_FRAG "
@@ -84,7 +94,7 @@ esac
 FINAL_DEFCONFIG_BLEND+=${BASE_DEFCONFIG}
 
 # Reverse the order of the configs for the override to work properly
-# Correct order is base_defconfig GKI.config QGKI.config consolidate.config debug.config
+# Correct order is base_defconfig GKI.config QGKI.config DEVICE.config consolidate.config debug.config
 FINAL_DEFCONFIG_BLEND=`echo "${FINAL_DEFCONFIG_BLEND}" | awk '{ for (i=NF; i>1; i--) printf("%s ",$i); print $1; }'`
 
 echo "defconfig blend for $REQUIRED_DEFCONFIG: $FINAL_DEFCONFIG_BLEND"

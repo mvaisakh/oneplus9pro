@@ -19,10 +19,6 @@
 
 
 #define ANC_USE_NETLINK
-//#define ANC_USE_SPI
-//#define ANC_USE_IRQ
-//#define ANC_USE_POWER_GPIO
-
 
 /* Magic code for IOCTL-subsystem */
 #define ANC_IOC_MAGIC            'a'
@@ -66,10 +62,5 @@ typedef enum {
     ANC_NETLINK_EVENT_INVALID,
     ANC_NETLINK_EVENT_MAX
 }ANC_NETLINK_EVENT_TYPE;
-
-int netlink_send_message_to_user(const char *p_buffer, size_t length);
-int anc_netlink_init(void);
-void anc_netlink_exit(void);
-
 
 #endif /* __JIIOV_PLATFORM_H__ */

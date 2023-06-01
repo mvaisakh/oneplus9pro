@@ -1,127 +1,75 @@
-/* memchr - find a character in a memory zone
-
-   Copyright (C) 2015-2023 Free Software Foundation, Inc.
-
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library.  If not, see
-   <https://www.gnu.org/licenses/>.  */
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2021 Arm Ltd.
+ */
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 
-/* Assumptions:
+/*
+ * Find a character in an area of memory.
  *
- * ARMv8-a, AArch64, Advanced SIMD.
- * MTE compatible.
+ * Parameters:
+ *	x0 - buf
+ *	x1 - c
+ *	x2 - n
+ * Returns:
+ *	x0 - address of first occurrence of 'c' or 0
  */
+
 #define L(label) .L ## label
-#define PTR_ARG(n)  mov w##n, w##n
-#define SIZE_ARG(n) mov w##n, w##n
+
+#define REP8_01 0x0101010101010101
+#define REP8_7f 0x7f7f7f7f7f7f7f7f
 
 #define srcin		x0
 #define chrin		w1
 #define cntin		x2
+
 #define result		x0
 
-#define src		x3
-#define cntrem		x4
-#define synd		x5
-#define shift		x6
-#define	tmp		x7
+#define wordcnt		x3
+#define rep01		x4
+#define repchr		x5
+#define cur_word	x6
+#define cur_byte	w6
+#define tmp		x7
+#define tmp2		x8
 
-#define vrepchr		v0
-#define qdata		q1
-#define vdata		v1
-#define vhas_chr	v2
-#define vend		v3
-#define dend		d3
-
-/*
-   Core algorithm:
-   For each 16-byte chunk we calculate a 64-bit nibble mask value with four bits
-   per byte. We take 4 bits of every comparison byte with shift right and narrow
-   by 4 instruction. Since the bits in the nibble mask reflect the order in
-   which things occur in the original string, counting leading zeros identifies
-   exactly which byte matched.  */
-
-SYM_FUNC_START_WEAK_PI(memchr)
-	PTR_ARG (0)
-	SIZE_ARG (2)
-	bic	src, srcin, 15
-	cbz	cntin, L(nomatch)
-	ld1	{vdata.16b}, [src]
-	dup	vrepchr.16b, chrin
-	cmeq	vhas_chr.16b, vdata.16b, vrepchr.16b
-	lsl	shift, srcin, 2
-	shrn	vend.8b, vhas_chr.8h, 4		/* 128->64 */
-	fmov	synd, dend
-	lsr	synd, synd, shift
-	cbz	synd, L(start_loop)
-
-	rbit	synd, synd
-	clz	synd, synd
-	cmp	cntin, synd, lsr 2
-	add	result, srcin, synd, lsr 2
-	csel	result, result, xzr, hi
-	ret
-
-	.p2align 3
-L(start_loop):
-	sub	tmp, src, srcin
-	add	tmp, tmp, 17
-	subs	cntrem, cntin, tmp
-	b.lo	L(nomatch)
-
-	/* Make sure that it won't overread by a 16-byte chunk */
-	tbz	cntrem, 4, L(loop32_2)
-	sub	src, src, 16
 	.p2align 4
-L(loop32):
-	ldr	qdata, [src, 32]!
-	cmeq	vhas_chr.16b, vdata.16b, vrepchr.16b
-	umaxp	vend.16b, vhas_chr.16b, vhas_chr.16b		/* 128->64 */
-	fmov	synd, dend
-	cbnz	synd, L(end)
-
-L(loop32_2):
-	ldr	qdata, [src, 16]
-	cmeq	vhas_chr.16b, vdata.16b, vrepchr.16b
-	subs	cntrem, cntrem, 32
-	b.lo	L(end_2)
-	umaxp	vend.16b, vhas_chr.16b, vhas_chr.16b		/* 128->64 */
-	fmov	synd, dend
-	cbz	synd, L(loop32)
-L(end_2):
-	add	src, src, 16
-L(end):
-	shrn	vend.8b, vhas_chr.8h, 4		/* 128->64 */
-	sub	cntrem, src, srcin
-	fmov	synd, dend
-	sub	cntrem, cntin, cntrem
-#ifndef __AARCH64EB__
-	rbit	synd, synd
-#endif
-	clz	synd, synd
-	cmp	cntrem, synd, lsr 2
-	add	result, src, synd, lsr 2
-	csel	result, result, xzr, hi
+	nop
+SYM_FUNC_START_WEAK_PI(memchr)
+	and	chrin, chrin, #0xff
+	lsr	wordcnt, cntin, #3
+	cbz	wordcnt, L(byte_loop)
+	mov	rep01, #REP8_01
+	mul	repchr, x1, rep01
+	and	cntin, cntin, #7
+L(word_loop):
+	ldr	cur_word, [srcin], #8
+	sub	wordcnt, wordcnt, #1
+	eor	cur_word, cur_word, repchr
+	sub	tmp, cur_word, rep01
+	orr	tmp2, cur_word, #REP8_7f
+	bics	tmp, tmp, tmp2
+	b.ne	L(found_word)
+	cbnz	wordcnt, L(word_loop)
+L(byte_loop):
+	cbz	cntin, L(not_found)
+	ldrb	cur_byte, [srcin], #1
+	sub	cntin, cntin, #1
+	cmp	cur_byte, chrin
+	b.ne	L(byte_loop)
+	sub	srcin, srcin, #1
 	ret
-
-L(nomatch):
-	mov	result, 0
+L(found_word):
+CPU_LE(	rev	tmp, tmp)
+	clz	tmp, tmp
+	sub	tmp, tmp, #64
+	add	result, srcin, tmp, asr #3
 	ret
-
+L(not_found):
+	mov	result, #0
+	ret
 SYM_FUNC_END_PI(memchr)
 EXPORT_SYMBOL_NOKASAN(memchr)

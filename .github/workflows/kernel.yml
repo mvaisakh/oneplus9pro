@@ -7,6 +7,9 @@ env:
   BOT_MSG_URL: ${{ secrets.TG_BOT_MSG_URL }}
   CHAT_ID: ${{ secrets.TG_CHAT_ID }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+  GITHUB_EMAIL: ${{ secrets.EMAIL }}
+  GITHUB_USER: ${{ secrets.USERNAME }}
 
 jobs:
   bot-notify-ci:
@@ -50,6 +53,17 @@ jobs:
       with:
        name: release-zip
        path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/android_device_oneplus_lemonade-kernel lemonade-kernel -b tm-clang
+        cp out/msm-5.4-lahaina-nqgki/dist/* lemonade-kernel
+        cd lemonade-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lemonade-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
 
   build-lemonade-gcc:
     needs: [bot-notify-ci]
@@ -88,6 +102,17 @@ jobs:
       with:
        name: release-zip
        path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/android_device_oneplus_lemonade-kernel lemonade-kernel -b tm-gcc
+        cp out/msm-5.4-lahaina-nqgki/dist/* lemonade-kernel
+        cd lemonade-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lemonade-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
 
   build-lemonade-gcc-profiling:
     needs: [bot-notify-ci]
@@ -156,6 +181,17 @@ jobs:
       with:
        name: release-zip
        path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/android_device_oneplus_martini-kernel martini-kernel -b tm-clang
+        cp out/msm-5.4-lahaina-nqgki/dist/* martini-kernel
+        cd martini-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "martini-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
 
   build-martini-gcc:
     needs: [bot-notify-ci]
@@ -194,6 +230,17 @@ jobs:
       with:
        name: release-zip
        path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/android_device_oneplus_martini-kernel martini-kernel -b tm-gcc
+        cp out/msm-5.4-lahaina-nqgki/dist/* martini-kernel
+        cd martini-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "martini-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
 
   build-martini-gcc-profiling:
     needs: [bot-notify-ci]
@@ -262,6 +309,17 @@ jobs:
       with:
        name: release-zip
        path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/android_device_realme_lunaa-kernel lunaa-kernel -b tm-clang
+        cp out/msm-5.4-lahaina-nqgki/dist/* lunaa-kernel
+        cd lunaa-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lunaa-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
 
   build-lunaa-gcc:
     needs: [bot-notify-ci]
@@ -300,6 +358,17 @@ jobs:
       with:
        name: release-zip
        path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/android_device_realme_lunaa-kernel lunaa-kernel -b tm-gcc
+        cp out/msm-5.4-lahaina-nqgki/dist/* lunaa-kernel
+        cd lunaa-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lunaa-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
 
   build-lunaa-gcc-profiling:
     needs: [bot-notify-ci]

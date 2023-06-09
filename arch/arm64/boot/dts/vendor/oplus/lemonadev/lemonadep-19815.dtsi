@@ -103,7 +103,7 @@
 
 		S3908 {
 			report_rate_default = <90>;
-			report_rate_game_value = <2>;
+			report_rate_game_value = <9>;
 			default_gesture_mask = <65535>;
 		};
 	};

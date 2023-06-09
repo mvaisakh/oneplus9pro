@@ -8540,7 +8540,8 @@ struct aw8697_vmax_map {
 	int vmax;
 	int gain;
 };
-#ifdef CONFIG_OPLUS_HAPTIC_OOS
+
+#ifndef CONFIG_OPLUS_HAPTIC_OOS
 static struct aw8697_vmax_map vmax_map[] = {
 	{800,  0x00, 0x30},
 	{900,  0x00, 0x36},

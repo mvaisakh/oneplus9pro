@@ -117,8 +117,7 @@ static const struct parent_map gcc_parent_map_5[] = {
 
 static const char * const gcc_parent_names_5[] = {
 	"bi_tcxo",
-	"dsi0pll_byteclk_src",
-	"gpll0_out_aux",
+	"dsi0pllbyte",
 	"core_bi_pll_test_se",
 };
 
@@ -130,8 +129,7 @@ static const struct parent_map gcc_parent_map_6[] = {
 
 static const char * const gcc_parent_names_6[] = {
 	"bi_tcxo",
-	"dsi0_phy_pll_out_byteclk",
-	"gpll0_out_aux",
+	"dsi0pllbyte",
 	"core_bi_pll_test_se",
 };
 
@@ -211,8 +209,7 @@ static const struct parent_map gcc_parent_map_12[] = {
 
 static const char * const gcc_parent_names_12[] = {
 	"bi_tcxo",
-	"dsi0pll_pclk_src",
-	"gpll0_out_aux",
+	"dsi0pll",
 	"core_bi_pll_test_se",
 };
 
@@ -246,13 +243,11 @@ static const char * const gcc_parent_names_14[] = {
 
 static const struct parent_map gcc_parent_map_15[] = {
 	{ P_BI_TCXO, 0 },
-	{ P_GPLL0_OUT_AUX, 2 },
 	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_15[] = {
 	"bi_tcxo",
-	"gpll0_out_aux",
 	"core_bi_pll_test_se",
 };
 

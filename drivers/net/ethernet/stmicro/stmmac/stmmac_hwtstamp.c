@@ -52,8 +52,10 @@ static void config_sub_second_increment(void __iomem *ioaddr,
 	if (data > PTP_SSIR_SSINC_MAX)
 		data = PTP_SSIR_SSINC_MAX;
 
-	ss_inc &= PTP_SSIR_SSINC_MASK;
-	sns_inc &= PTP_SSIR_SNSINC_MASK;
+	if (ss_inc > PTP_SSIR_SSINC_MAX)
+		ss_inc = PTP_SSIR_SSINC_MAX;
+	if (sns_inc > PTP_SSIR_SNSINC_MAX)
+		sns_inc = PTP_SSIR_SNSINC_MAX;
 
 	reg_value = ss_inc;
 

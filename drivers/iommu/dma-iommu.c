@@ -749,7 +749,7 @@ static void iommu_dma_sync_single_for_cpu(struct device *dev,
 	if (!domain || iommu_is_iova_coherent(domain, dma_handle))
 		return;
 
-	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+	phys = iommu_iova_to_phys(domain, dma_handle);
 	arch_sync_dma_for_cpu(phys, size, dir);
 }
 
@@ -762,7 +762,7 @@ static void iommu_dma_sync_single_for_device(struct device *dev,
 	if (!domain || iommu_is_iova_coherent(domain, dma_handle))
 		return;
 
-	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+	phys = iommu_iova_to_phys(domain, dma_handle);
 	arch_sync_dma_for_device(phys, size, dir);
 }
 

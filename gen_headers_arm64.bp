@@ -691,6 +691,7 @@ gen_headers_out_arm64 = [
     "scsi/scsi_bsg_ufs.h",
     "scsi/scsi_netlink.h",
     "scsi/scsi_netlink_fc.h",
+    "scsi/ufs/ioctl.h",
     "sound/asequencer.h",
     "sound/asoc.h",
     "sound/asound.h",

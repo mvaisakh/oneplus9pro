@@ -355,6 +355,12 @@ enum req_flag_bits {
 	__REQ_DRV,
 	__REQ_SWAP,		/* swapping request. */
 	__REQ_NR_BITS,		/* stops here */
+#ifdef OPLUS_FEATURE_UFSPLUS
+#ifdef CONFIG_UFSHPB
+	/* HPB Flag */
+	__REQ_HPB_PREFER,
+#endif
+#endif /* OPLUS_FEATURE_UFSPLUS */
 };
 
 #define REQ_FAILFAST_DEV	(1ULL << __REQ_FAILFAST_DEV)
@@ -379,6 +385,12 @@ enum req_flag_bits {
 
 #define REQ_DRV			(1ULL << __REQ_DRV)
 #define REQ_SWAP		(1ULL << __REQ_SWAP)
+
+#ifdef OPLUS_FEATURE_UFSPLUS
+#ifdef CONFIG_UFSHPB
+#define REQ_HPB_PREFER		(1ULL << __REQ_HPB_PREFER)
+#endif
+#endif /* OPLUS_FEATURE_UFSPLUS */
 
 #define REQ_FAILFAST_MASK \
 	(REQ_FAILFAST_DEV | REQ_FAILFAST_TRANSPORT | REQ_FAILFAST_DRIVER)

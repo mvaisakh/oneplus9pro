@@ -7,6 +7,17 @@ function generate_defconfig() {
 DEFCONFIG=vendor/${MSM_ARCH}-${VARIANT}_defconfig
 append_cmd PRE_DEFCONFIG_CMDS 'generate_defconfig'
 
+function builtin_defconfig() {
+	${KERNEL_DIR}/scripts/gki/fragment_allyesconfig.sh \
+	${KERNEL_DIR}/arch/arm64/configs/${DEFCONFIG} \
+	${KERNEL_DIR}/arch/arm64/configs/vendor/${MSM_ARCH}-builtin_defconfig
+	DEFCONFIG=vendor/${MSM_ARCH}-builtin_defconfig
+}
+
+if [ ${BUILTIN} = "1" ]; then
+	append_cmd PRE_DEFCONFIG_CMDS 'builtin_defconfig'
+fi
+
 if [ -z "${GKI_RAMDISK_PREBUILT_BINARY}" ]; then
 	GKI_RAMDISK_PREBUILT_BINARY=prebuilts/boot-artifacts/${ARCH}/gki-ramdisk.cpio.gz
 fi

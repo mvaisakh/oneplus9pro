@@ -1,7 +1,5 @@
 ################################################################################
 ## DTB general support
-DTB_DIR=vendor/qcom
-
 function clean_dtbs() {
 	rm -rf ${OUT_DIR}/arch/${ARCH}/boot/dts
 }

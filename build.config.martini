@@ -5,6 +5,7 @@ KERNEL_DIR=kernel/msm-5.4
 
 DEVICE=martini
 export OPLUS_VND_ENV_CHG_OP9RT_PMIC_VOOCPHY=yes
+DTB_DIR=vendor/oplus/martini
 
 # Source lahaina build config
 . ${KERNEL_DIR}/build.config.msm.lahaina

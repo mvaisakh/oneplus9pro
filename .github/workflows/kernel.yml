@@ -1,0 +1,444 @@
+name: Kernel Build CI
+
+on:
+  push:
+
+env:
+  BOT_MSG_URL: ${{ secrets.TG_BOT_MSG_URL }}
+  CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+  GITHUB_EMAIL: ${{ secrets.EMAIL }}
+  GITHUB_USER: ${{ secrets.USERNAME }}
+
+jobs:
+  bot-notify-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send message
+      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="CI kernel build triggered for <b>OPlus sm8350 Devices</b>"
+
+  build-lemonade-clang:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync Clang
+      run: |
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+        bash antman -S=latest
+        bash antman --patch=glibc
+    - name: Clang Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.lemonade VARIANT=qgki BUILTIN=1 LTO=full POLLY=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_lemonade-kernel lemonade-kernel -b tm-clang
+        cp out/msm-5.4-lahaina-nqgki/dist/* lemonade-kernel
+        cd lemonade-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lemonade-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
+
+  build-lemonade-gcc:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils wget tar
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync PGO Profiles
+      run: |
+        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-lemonade-gcov-gcno-220420230411.xz
+        tar -xf eva-lemonade-gcov-gcno-220420230411.xz
+        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-kernel-lemonadep-gcov-profile-230420230326.xz
+        tar -xvf eva-kernel-lemonadep-gcov-profile-230420230326.xz
+        cd -
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.lemonade VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_lemonade-kernel lemonade-kernel -b tm-gcc
+        cp out/msm-5.4-lahaina-nqgki/dist/* lemonade-kernel
+        cd lemonade-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lemonade-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
+
+  build-lemonade-gcc-profiling:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils wget tar
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.lemonade VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 GCOV_PROFILE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - name: Create profiling tar
+      run: |
+        tar -cf eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+    - uses: actions/upload-artifact@main
+      with:
+       name: profile-zip
+       path: |
+         ak3/*.zip
+         *.xz
+
+  build-martini-clang:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync Clang
+      run: |
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+        bash antman -S=latest
+        bash antman --patch=glibc
+    - name: Clang Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.martini VARIANT=qgki BUILTIN=1 LTO=full POLLY=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_martini-kernel martini-kernel -b tm-clang
+        cp out/msm-5.4-lahaina-nqgki/dist/* martini-kernel
+        cd martini-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "martini-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
+
+  build-martini-gcc:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync PGO Profiles
+      run: |
+        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/040420230313/eva-martini-gcov-gcno-040420230307.xz
+        tar -xf eva-martini-gcov-gcno-040420230307.xz
+        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-martini-gcov-profile-04032023.xz
+        tar -xvf eva-martini-gcov-profile-04032023.xz
+        cd -
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.martini VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_martini-kernel martini-kernel -b tm-gcc
+        cp out/msm-5.4-lahaina-nqgki/dist/* martini-kernel
+        cd martini-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "martini-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
+
+  build-martini-gcc-profiling:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.martini VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 GCOV_PROFILE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - name: Create profiling tar
+      run: |
+        tar -cf eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+    - uses: actions/upload-artifact@main
+      with:
+       name: profile-zip
+       path: |
+         ak3/*.zip
+         *.xz
+
+  build-lunaa-clang:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync Clang
+      run: |
+        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
+        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+        bash antman -S=latest
+        bash antman --patch=glibc
+    - name: Clang Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.lunaa VARIANT=qgki BUILTIN=1 LTO=full POLLY=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_realme_lunaa-kernel lunaa-kernel -b tm-clang
+        cp out/msm-5.4-lahaina-nqgki/dist/* lunaa-kernel
+        cd lunaa-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lunaa-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
+
+  build-lunaa-gcc:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: Sync PGO Profiles
+      run: |
+        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-lunaa-gcov-gcno-220420230426.xz
+        tar -xf eva-lunaa-gcov-gcno-220420230426.xz
+        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-kernel-lunaa-gcov-profile-230420230421.xz
+        tar -xvf eva-kernel-lunaa-gcov-profile-230420230421.xz
+        cd -
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.lunaa VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - uses: actions/upload-artifact@main
+      with:
+       name: release-zip
+       path: ak3/*.zip
+    - name: Push kernel
+      run: |
+        git config --global user.name "${GITHUB_USER}"
+        git config --global user.email "${GITHUB_EMAIL}"
+        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_realme_lunaa-kernel lunaa-kernel -b tm-gcc
+        cp out/msm-5.4-lahaina-nqgki/dist/* lunaa-kernel
+        cd lunaa-kernel
+        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
+        git add .
+        git commit -m "lunaa-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
+        git push
+
+  build-lunaa-gcc-profiling:
+    needs: [bot-notify-ci]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup repo
+      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Repo sync
+      run: |
+        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
+        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
+    - name: GCC Build
+      run: |
+        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
+        sed -i s/build-host/statixos/g build/_setup_env.sh
+        BUILD_CONFIG=kernel/msm-5.4/build.config.lunaa VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 GCOV_PROFILE=1 BUILD_KERNEL=1 build/build.sh
+    - name: Create zip
+      run: |
+        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
+        cd ../
+    - name: Create profiling tar
+      run: |
+        tar -cf eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+    - uses: actions/upload-artifact@main
+      with:
+       name: profile-zip
+       path: |
+         ak3/*.zip
+         *.xz
+
+  publish-release:
+    needs: [build-lemonade-clang,build-lemonade-gcc,build-martini-clang,build-martini-gcc,build-lunaa-clang,build-lunaa-gcc]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Restoring artifacts
+      uses: actions/download-artifact@main
+      with:
+        name: release-zip
+        path: ${{ github.workspace }}
+    - name: Release Tag
+      id: release_tag
+      run: echo "TAG_NAME=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
+    - name: Create Release
+      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip
+    - name: Release Check
+      run: gh release list -L 1 > list
+    - name: Prepare release message
+      run: gh release view $(cat list | awk '{ print substr( $0, 1, length($0)-45 ) }') > release-text
+    - name: Send message
+      run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="<b>New build for OnePlus 9 Series</b> %0A$(cat release-text | sed '1d;3d;4d;6d;7d;9d;10d;11d;12d;13d;14d;15d;16d;17d;')"
+
+  publish-release-profiling:
+    needs: [build-lemonade-gcc-profiling,build-martini-gcc-profiling,build-lunaa-gcc-profiling]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Restoring artifacts
+      uses: actions/download-artifact@main
+      with:
+        name: profile-zip
+        path: ${{ github.workspace }}
+    - name: Profiling Tag
+      id: profile_tag
+      run: echo "TAG_NAME_PROFILING=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
+    - name: Create Release
+      run: gh release create "${{ env.TAG_NAME_PROFILING }}-profiling" --generate-notes -p */*.zip *.xz

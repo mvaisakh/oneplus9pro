@@ -460,6 +460,7 @@ LZMA		= lzma
 LZ4		= lz4c
 XZ		= xz
 
+DISABLE_WRAPPER := 1
 ifndef DISABLE_WRAPPER
 # Use the wrapper for the compiler.  This wrapper scans for new
 # warnings and causes the build to stop upon encountering them

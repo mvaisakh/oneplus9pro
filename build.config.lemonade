@@ -4,6 +4,7 @@
 KERNEL_DIR=kernel/msm-5.4
 
 DEVICE=lemonade
+export BRAND_SHOW_FLAG=oneplus
 
 # Source lahaina build config
 . ${KERNEL_DIR}/build.config.msm.lahaina

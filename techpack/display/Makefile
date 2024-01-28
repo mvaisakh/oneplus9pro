@@ -3,7 +3,11 @@
 # auto-detect subdirs
 ifeq ($(CONFIG_ARCH_KONA), y)
      ifeq ($(CONFIG_QGKI), y)
+	ifeq ($(BUILTIN), 1)
+		include $(srctree)/techpack/display/config/konabuiltindisp.conf
+	else
 		include $(srctree)/techpack/display/config/konadisp.conf
+	endif
 LINUXINCLUDE    += -include $(srctree)/techpack/display/config/konadispconf.h
      else
 		include $(srctree)/techpack/display/config/gki_konadisp.conf
@@ -13,7 +17,11 @@ endif
 
 ifeq ($(CONFIG_ARCH_LAHAINA), y)
      ifeq ($(CONFIG_QGKI), y)
+	ifeq ($(BUILTIN), 1)
+		include $(srctree)/techpack/display/config/lahainabuiltindisp.conf
+	else
 		include $(srctree)/techpack/display/config/lahainadisp.conf
+	endif
 LINUXINCLUDE    += -include $(srctree)/techpack/display/config/lahainadispconf.h
      else
 		include $(srctree)/techpack/display/config/gki_lahainadisp.conf
@@ -23,7 +31,11 @@ endif
 
 ifeq ($(CONFIG_ARCH_HOLI), y)
      ifeq ($(CONFIG_QGKI), y)
+	ifeq ($(BUILTIN), 1)
+		include $(srctree)/techpack/display/config/holibuiltindisp.conf
+	else
 		include $(srctree)/techpack/display/config/holidisp.conf
+	endif
 LINUXINCLUDE    += -include $(srctree)/techpack/display/config/holidispconf.h
      else
 		include $(srctree)/techpack/display/config/gki_holidisp.conf

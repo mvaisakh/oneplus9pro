@@ -12,6 +12,18 @@ function builtin_defconfig() {
 	${KERNEL_DIR}/arch/arm64/configs/${DEFCONFIG} \
 	${KERNEL_DIR}/arch/arm64/configs/vendor/${MSM_ARCH}-builtin_defconfig
 	DEFCONFIG=vendor/${MSM_ARCH}-builtin_defconfig
+	# Techpack builtin
+	sed 's/=m/=y/g' ${KERNEL_DIR}/techpack/audio/config/${MSM_ARCH}auto.conf > \
+	${KERNEL_DIR}/techpack/audio/config/${MSM_ARCH}builtinauto.conf
+	sed 's/=m/=y/g' ${KERNEL_DIR}/techpack/display/config/${MSM_ARCH}disp.conf > \
+	${KERNEL_DIR}/techpack/display/config/${MSM_ARCH}builtindisp.conf
+	sed 's/=m/=y/g' ${KERNEL_DIR}/techpack/camera/config/${MSM_ARCH}camera.conf > \
+	${KERNEL_DIR}/techpack/camera/config/${MSM_ARCH}builtincamera.conf
+	# Hardcode for yupik
+	sed 's/=m/=y/g' ${KERNEL_DIR}/techpack/camera/config/yupikcamera.conf > \
+	${KERNEL_DIR}/techpack/camera/config/yupikbuiltincamera.conf
+	sed 's/=m/=y/g' ${KERNEL_DIR}/techpack/camera/config/shimacamera.conf > \
+	${KERNEL_DIR}/techpack/camera/config/shimabuiltincamera.conf
 }
 
 if [ ${BUILTIN} = "1" ]; then

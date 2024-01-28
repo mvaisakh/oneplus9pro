@@ -3,43 +3,83 @@
 # auto-detect subdirs
 ifneq ($(CONFIG_ARCH_QTI_VM), y)
 ifeq ($(CONFIG_ARCH_KONA), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/konabuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/konacamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_LITO), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/litobuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/litocamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_BENGAL), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/bengalbuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/bengalcamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_MONACO), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/monacobuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/monacocamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_LAHAINA), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/lahainabuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/lahainacamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_HOLI), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/holibuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/holicamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_BLAIR), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/blairbuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/blaircamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_SHIMA), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/shimabuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/shimacamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_YUPIK), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/yupikbuiltincamera.conf
+else
 include $(srctree)/techpack/camera/config/yupikcamera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_SM6150), y)
+ifeq ($(BUILTIN), 1)
+include $(srctree)/techpack/camera/config/sm6150builtincamera.conf
+else
 include $(srctree)/techpack/camera/config/sm6150camera.conf
+endif
 endif
 
 ifeq ($(CONFIG_ARCH_KONA), y)

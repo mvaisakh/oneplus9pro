@@ -22,10 +22,12 @@ jobs:
   build-lemonade-clang:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -68,10 +70,12 @@ jobs:
   build-lemonade-gcc:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils wget tar
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -117,10 +121,12 @@ jobs:
   build-lemonade-gcc-profiling:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils wget tar
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -150,10 +156,12 @@ jobs:
   build-martini-clang:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -196,10 +204,12 @@ jobs:
   build-martini-gcc:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -245,10 +255,12 @@ jobs:
   build-martini-gcc-profiling:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -278,10 +290,12 @@ jobs:
   build-lunaa-clang:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils libarchive-tools
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -324,10 +338,12 @@ jobs:
   build-lunaa-gcc:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -373,10 +389,12 @@ jobs:
   build-lunaa-gcc-profiling:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
 
     steps:
-    - name: Setup repo
-      run: sudo apt update -y && sudo apt install -y repo elfutils
+    - name: Setup Pre-requisites
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1

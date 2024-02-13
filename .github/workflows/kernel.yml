@@ -19,54 +19,6 @@ jobs:
     - name: Send message
       run: curl -s -X POST ${{ env.BOT_MSG_URL }} -d chat_id=${{ env.CHAT_ID }} -d "disable_web_page_preview=true" -d "parse_mode=html" -d text="CI kernel build triggered for <b>OPlus sm8350 Devices</b>"
 
-  build-lemonade-clang:
-    needs: [bot-notify-ci]
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:latest
-
-    steps:
-    - name: Setup Pre-requisites
-      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
-    - name: Repo sync
-      run: |
-        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
-        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: Sync Clang
-      run: |
-        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
-        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
-        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
-        bash antman -S=latest
-        bash antman --patch=glibc
-    - name: Clang Build
-      run: |
-        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
-        sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.lemonade VARIANT=qgki BUILTIN=1 LTO=full POLLY=1 BUILD_KERNEL=1 build/build.sh
-    - name: Create zip
-      run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
-        cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
-        cd ../
-    - uses: actions/upload-artifact@main
-      with:
-       name: release-zip
-       path: ak3/*.zip
-    - name: Push kernel
-      run: |
-        git config --global user.name "${GITHUB_USER}"
-        git config --global user.email "${GITHUB_EMAIL}"
-        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_lemonade-kernel lemonade-kernel -b tm-clang
-        cp out/msm-5.4-lahaina-nqgki/dist/* lemonade-kernel
-        cd lemonade-kernel
-        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
-        git add .
-        git commit -m "lemonade-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
-        git push
-
   build-lemonade-gcc:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
@@ -153,54 +105,6 @@ jobs:
          ak3/*.zip
          *.xz
 
-  build-martini-clang:
-    needs: [bot-notify-ci]
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:latest
-
-    steps:
-    - name: Setup Pre-requisites
-      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
-    - name: Repo sync
-      run: |
-        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
-        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: Sync Clang
-      run: |
-        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
-        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
-        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
-        bash antman -S=latest
-        bash antman --patch=glibc
-    - name: Clang Build
-      run: |
-        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
-        sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.martini VARIANT=qgki BUILTIN=1 LTO=full POLLY=1 BUILD_KERNEL=1 build/build.sh
-    - name: Create zip
-      run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
-        cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
-        cd ../
-    - uses: actions/upload-artifact@main
-      with:
-       name: release-zip
-       path: ak3/*.zip
-    - name: Push kernel
-      run: |
-        git config --global user.name "${GITHUB_USER}"
-        git config --global user.email "${GITHUB_EMAIL}"
-        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_martini-kernel martini-kernel -b tm-clang
-        cp out/msm-5.4-lahaina-nqgki/dist/* martini-kernel
-        cd martini-kernel
-        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
-        git add .
-        git commit -m "martini-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
-        git push
-
   build-martini-gcc:
     needs: [bot-notify-ci]
     runs-on: ubuntu-latest
@@ -286,54 +190,6 @@ jobs:
        path: |
          ak3/*.zip
          *.xz
-
-  build-lunaa-clang:
-    needs: [bot-notify-ci]
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:latest
-
-    steps:
-    - name: Setup Pre-requisites
-      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
-    - name: Repo sync
-      run: |
-        repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
-        repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: Sync Clang
-      run: |
-        mkdir -p prebuilts-master/clang/host/linux-x86/clang-r450784d/
-        cd prebuilts-master/clang/host/linux-x86/clang-r450784d/
-        curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
-        bash antman -S=latest
-        bash antman --patch=glibc
-    - name: Clang Build
-      run: |
-        sed -i s/build-user/mvaisakh/g build/_setup_env.sh
-        sed -i s/build-host/statixos/g build/_setup_env.sh
-        BUILD_CONFIG=kernel/msm-5.4/build.config.lunaa VARIANT=qgki BUILTIN=1 LTO=full POLLY=1 BUILD_KERNEL=1 build/build.sh
-    - name: Create zip
-      run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
-        cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-clang.zip * -x .git README.md ./*/placeholder
-        cd ../
-    - uses: actions/upload-artifact@main
-      with:
-       name: release-zip
-       path: ak3/*.zip
-    - name: Push kernel
-      run: |
-        git config --global user.name "${GITHUB_USER}"
-        git config --global user.email "${GITHUB_EMAIL}"
-        git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_realme_lunaa-kernel lunaa-kernel -b tm-clang
-        cp out/msm-5.4-lahaina-nqgki/dist/* lunaa-kernel
-        cd lunaa-kernel
-        f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
-        git add .
-        git commit -m "lunaa-kernel: update prebuilts $(/bin/date -u '+%d%m%Y%I%M')" -m "version: $(strings Image | grep 'Linux Version 5')"
-        git push
 
   build-lunaa-gcc:
     needs: [bot-notify-ci]
@@ -422,7 +278,7 @@ jobs:
          *.xz
 
   publish-release:
-    needs: [build-lemonade-clang,build-lemonade-gcc,build-martini-clang,build-martini-gcc,build-lunaa-clang,build-lunaa-gcc]
+    needs: [build-lemonade-gcc,build-martini-gcc,build-lunaa-gcc]
     runs-on: ubuntu-latest
 
     steps:

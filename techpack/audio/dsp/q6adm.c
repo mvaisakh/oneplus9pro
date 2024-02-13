@@ -415,7 +415,7 @@ int adm_get_all_mute_pp_param_from_port(int port_id)
 
 	for (idx = 0; idx < MAX_COPPS_PER_PORT; idx++) {
 		if (atomic_read(&this_adm.copp.id[port_idx][idx]) != RESET_COPP_ID) {
-			pr_info("%s : active copp_idx:0x%x for port_id \n",__func__, idx);
+			pr_info("%s : active copp_idx:0x%d for port_id \n",__func__, idx);
 
 			if (atomic_read(&this_adm.copp.session_type[port_idx][idx]) == SESSION_TYPE_TX) {
 				param_hdr.instance_id = 0x8000;
@@ -2731,7 +2731,7 @@ static void send_adm_cal_type(int fedai_id, int cal_index, int path, int port_id
 				      cal_block->map_data.map_size,
 				      source_vm, 1, dest_vm, dest_perms, 2);
 		if (ret < 0) {
-			pr_err("%s: hyp_assign_phys failed result = %d addr = 0x%pK size = %d\n",
+			pr_err("%s: hyp_assign_phys failed result = %d addr = 0x%llxK size = %lu\n",
 				__func__, ret, cal_block->cal_data.paddr,
 				cal_block->map_data.map_size);
 			ret = -EINVAL;
@@ -4569,7 +4569,7 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 							source_vm, 2, dest_vm,
 							dest_perms, 1);
 						if (ret < 0) {
-							pr_err("%s: hyp_assign_phys failed result = %d addr = 0x%pK size = %d\n",
+							pr_err("%s: hyp_assign_phys failed result = %d addr = 0x%llxK size = %lu\n",
 								__func__, ret,
 								cal_block->cal_data.paddr,
 								cal_block->map_data.map_size);
@@ -4635,7 +4635,7 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 						source_vm, 2, dest_vm,
 						dest_perms, 1);
 				if (ret < 0) {
-					pr_err("%s: hyp_assign_phys failed result = %d addr = 0x%pK size = %d\n",
+					pr_err("%s: hyp_assign_phys failed result = %d addr = 0x%llxK size = %lu\n",
 						__func__, ret, cal_block->cal_data.paddr,
 						cal_block->map_data.map_size);
 					ret = -EINVAL;

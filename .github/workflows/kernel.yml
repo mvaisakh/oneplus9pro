@@ -32,16 +32,6 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: Sync PGO Profiles
-      run: |
-        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-lemonade-gcov-gcno-220420230411.xz
-        tar -xf eva-lemonade-gcov-gcno-220420230411.xz
-        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
-        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-kernel-lemonadep-gcov-profile-230420230326.xz
-        tar -xvf eva-kernel-lemonadep-gcov-profile-230420230326.xz
-        cd -
     - name: GCC Build
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh
@@ -118,16 +108,6 @@ jobs:
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
-    - name: Sync PGO Profiles
-      run: |
-        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/040420230313/eva-martini-gcov-gcno-040420230307.xz
-        tar -xf eva-martini-gcov-gcno-040420230307.xz
-        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
-        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
-        wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-martini-gcov-profile-04032023.xz
-        tar -xvf eva-martini-gcov-profile-04032023.xz
-        cd -
     - name: GCC Build
       run: |
         sed -i s/build-user/mvaisakh/g build/_setup_env.sh

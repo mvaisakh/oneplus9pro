@@ -429,7 +429,7 @@ int adm_get_all_mute_pp_param_from_port(int port_id)
 						ADM_CLIENT_ID_DEFAULT, NULL, &param_hdr,
 						param_value);
 			pr_info("%s : mute_detect return param, ret: %d, mutedet = %d, zd = %d, pop = %d, clip = %d\n",__func__, ret, *(uint32_t *)param_value, *((uint32_t *)param_value + 1), *((uint32_t *)param_value + 2), *((uint32_t *)param_value + 3));
-			pr_info("%s : COPP: 0x%x\n",__func__, this_adm.copp.app_type[port_idx][idx]);
+			pr_info("%s : COPP: 0x%td\n",__func__, this_adm.copp.app_type[port_idx][idx]);
 			switch (atomic_read(&this_adm.copp.app_type[port_idx][idx])) {
 				case 0x11130:
 					pr_info("%s : update playback detection result\n",__func__);

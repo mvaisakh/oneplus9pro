@@ -10522,7 +10522,7 @@ static int msm_pcm_afe_dyn_mclk_ctl_put(struct snd_kcontrol *kcontrol,
 	global_dyn_mclk_cfg.n = ucontrol->value.integer.value[8];
 	global_dyn_mclk_cfg.d = ucontrol->value.integer.value[9];
 
-	pr_debug("%s:%d.... portid:%d, clk_id_index:%d, clk_freq_in_hz:%d, clk_attri_index:%d, clk_root_index:%d, enable:%d, divider_2x:%d, m:%d, n:%d, d:%d, version:%d\n",
+	pr_debug("%s:%d.... portid:%d, clk_id_index:%ld, clk_freq_in_hz:%ld, clk_attri_index:%ld, clk_root_index:%ld, enable:%ld, divider_2x:%ld, m:%ld, n:%ld, d:%ld, version:%ld\n",
 		__func__, __LINE__, ucontrol->value.integer.value[0],
 		 ucontrol->value.integer.value[1],
 		ucontrol->value.integer.value[2], ucontrol->value.integer.value[3],
@@ -11814,7 +11814,7 @@ static void msm_dai_q6_tdm_shutdown(struct snd_pcm_substream *substream,
 					msm_dai_q6_tdm_set_clk(dai_data,
 						dai->id, false);
 				}
-				pr_err("%s:AFE Paired Rx Port Not disabled");
+				pr_err("%s:AFE Paired Rx Port Not disabled", __func__);
 			}
 		}
 		if (msm_dai_q6_get_tdm_clk_ref(group_idx) == 0) {

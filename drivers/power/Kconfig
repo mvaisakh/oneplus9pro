@@ -6,7 +6,6 @@ source "drivers/power/supply/Kconfig"
 #ifdef OPLUS_FEATURE_CHG_BASIC
 config OPLUS_CHG
 	tristate "OPLUS CHARGER KO module"
-	default m
 	help
 	  Enables support for the oplus charging framework
 

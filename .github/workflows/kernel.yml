@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Setup Pre-requisites
-      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file rsync zip -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -68,7 +68,7 @@ jobs:
 
     steps:
     - name: Setup Pre-requisites
-      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file rsync zip -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -103,7 +103,7 @@ jobs:
 
     steps:
     - name: Setup Pre-requisites
-      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file rsync zip -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1
@@ -144,7 +144,7 @@ jobs:
 
     steps:
     - name: Setup Pre-requisites
-      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file -y
+      run: sudo dnf install gcc clang lld repo bc flex openssl-devel wget tar zstd bsdtar file rsync zip -y
     - name: Repo sync
       run: |
         repo init -u https://github.com/mvaisakh/android_kernel_manifest -b eva-oneplus-5.4 --depth=1

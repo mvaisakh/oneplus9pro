@@ -34,11 +34,11 @@ jobs:
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: Sync PGO Profiles
       run: |
-        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-lemonade-gcov-gcno-220420230411.xz
         tar -xf eva-lemonade-gcov-gcno-220420230411.xz
-        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
+        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-kernel-lemonadep-gcov-profile-230420230326.xz
         tar -xvf eva-kernel-lemonadep-gcov-profile-230420230326.xz
         cd -
@@ -49,9 +49,9 @@ jobs:
         BUILD_CONFIG=kernel/msm-5.4/build.config.lemonade VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-qgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-qgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-qgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
         cd ../
     - uses: actions/upload-artifact@main
@@ -63,7 +63,7 @@ jobs:
         git config --global user.name "${GITHUB_USER}"
         git config --global user.email "${GITHUB_EMAIL}"
         git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_lemonade-kernel lemonade-kernel -b tm-gcc
-        cp out/msm-5.4-lahaina-nqgki/dist/* lemonade-kernel
+        cp out/msm-5.4-lahaina-qgki/dist/* lemonade-kernel
         cd lemonade-kernel
         f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
         git add .
@@ -90,14 +90,14 @@ jobs:
         BUILD_CONFIG=kernel/msm-5.4/build.config.lemonade VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 GCOV_PROFILE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-qgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-qgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-qgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lemonade-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
     - name: Create profiling tar
       run: |
-        tar -cf eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+        tar -cf eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: profile-zip
@@ -120,11 +120,11 @@ jobs:
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: Sync PGO Profiles
       run: |
-        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/040420230313/eva-martini-gcov-gcno-040420230307.xz
         tar -xf eva-martini-gcov-gcno-040420230307.xz
-        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
+        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/profile-04032023/eva-martini-gcov-profile-04032023.xz
         tar -xvf eva-martini-gcov-profile-04032023.xz
         cd -
@@ -135,9 +135,9 @@ jobs:
         BUILD_CONFIG=kernel/msm-5.4/build.config.martini VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-qgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-qgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-qgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
         cd ../
     - uses: actions/upload-artifact@main
@@ -149,7 +149,7 @@ jobs:
         git config --global user.name "${GITHUB_USER}"
         git config --global user.email "${GITHUB_EMAIL}"
         git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_oneplus_martini-kernel martini-kernel -b tm-gcc
-        cp out/msm-5.4-lahaina-nqgki/dist/* martini-kernel
+        cp out/msm-5.4-lahaina-qgki/dist/* martini-kernel
         cd martini-kernel
         f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
         git add .
@@ -176,14 +176,14 @@ jobs:
         BUILD_CONFIG=kernel/msm-5.4/build.config.martini VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 GCOV_PROFILE=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-qgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-qgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-qgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-martini-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
     - name: Create profiling tar
       run: |
-        tar -cf eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+        tar -cf eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: profile-zip
@@ -206,11 +206,11 @@ jobs:
         repo sync --no-tags --no-clone-bundle -j$(nproc --all)
     - name: Sync PGO Profiles
       run: |
-        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        mkdir -p /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-lunaa-gcov-gcno-220420230426.xz
         tar -xf eva-lunaa-gcov-gcno-220420230426.xz
-        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
-        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4
+        mv home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/* /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
+        cd /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4
         wget https://github.com/mvaisakh/oneplus9pro/releases/download/220420230428-profiling/eva-kernel-lunaa-gcov-profile-230420230421.xz
         tar -xvf eva-kernel-lunaa-gcov-profile-230420230421.xz
         cd -
@@ -221,9 +221,9 @@ jobs:
         BUILD_CONFIG=kernel/msm-5.4/build.config.lunaa VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 PGO=1 SKIP_MRPROPER=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-qgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-qgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-qgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc.zip * -x .git README.md ./*/placeholder
         cd ../
     - uses: actions/upload-artifact@main
@@ -235,7 +235,7 @@ jobs:
         git config --global user.name "${GITHUB_USER}"
         git config --global user.email "${GITHUB_EMAIL}"
         git clone https://"${GITHUB_USER}":"${PUSH_TOKEN}"@github.com/mvaisakh/android_device_realme_lunaa-kernel lunaa-kernel -b tm-gcc
-        cp out/msm-5.4-lahaina-nqgki/dist/* lunaa-kernel
+        cp out/msm-5.4-lahaina-qgki/dist/* lunaa-kernel
         cd lunaa-kernel
         f="$(git rev-parse --git-dir)/hooks/commit-msg"; curl -o "$f" https://review.statixos.com/tools/hooks/commit-msg ; chmod +x "$f"
         git add .
@@ -262,14 +262,14 @@ jobs:
         BUILD_CONFIG=kernel/msm-5.4/build.config.lunaa VARIANT=qgki BUILTIN=1 COMPILER=gcc GCC_LTO=1 GRAPHITE=1 SKIP_MRPROPER=1 GCOV_PROFILE=1 BUILD_KERNEL=1 build/build.sh
     - name: Create zip
       run: |
-        cp out/msm-5.4-lahaina-nqgki/dist/Image ak3/
-        cat out/msm-5.4-lahaina-nqgki/dist/*.dtb > ak3/dtb
-        cp out/msm-5.4-lahaina-nqgki/dist/dtbo.img ak3/
+        cp out/msm-5.4-lahaina-qgki/dist/Image ak3/
+        cat out/msm-5.4-lahaina-qgki/dist/*.dtb > ak3/dtb
+        cp out/msm-5.4-lahaina-qgki/dist/dtbo.img ak3/
         cd ak3/ && zip -r9 eva-lunaa-$(/bin/date -u '+%d%m%Y%I%M')-gcc-profiling.zip * -x .git README.md ./*/placeholder
         cd ../
     - name: Create profiling tar
       run: |
-        tar -cf eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-nqgki/kernel/msm-5.4/ | grep gcno)
+        tar -cf eva-lunaa-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
        name: profile-zip

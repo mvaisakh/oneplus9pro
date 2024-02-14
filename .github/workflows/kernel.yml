@@ -46,7 +46,7 @@ jobs:
         cd ../
     - uses: actions/upload-artifact@main
       with:
-       name: release-zip
+       name: lemonade-release-zip
        path: ak3/*.zip
     - name: Push kernel
       run: |
@@ -90,7 +90,7 @@ jobs:
         tar -cf eva-lemonade-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
-       name: profile-zip
+       name: lemonade-profile-zip
        path: |
          ak3/*.zip
          *.xz
@@ -122,7 +122,7 @@ jobs:
         cd ../
     - uses: actions/upload-artifact@main
       with:
-       name: release-zip
+       name: martini-release-zip
        path: ak3/*.zip
     - name: Push kernel
       run: |
@@ -166,7 +166,7 @@ jobs:
         tar -cf eva-martini-gcov-gcno-$(/bin/date -u '+%d%m%Y%I%M').xz $(find /home/runner/work/oneplus9pro/oneplus9pro/out/msm-5.4-lahaina-qgki/kernel/msm-5.4/ | grep gcno)
     - uses: actions/upload-artifact@main
       with:
-       name: profile-zip
+       name: martini-profile-zip
        path: |
          ak3/*.zip
          *.xz
@@ -180,13 +180,12 @@ jobs:
     - name: Restoring artifacts
       uses: actions/download-artifact@main
       with:
-        name: release-zip
         path: ${{ github.workspace }}
     - name: Release Tag
       id: release_tag
       run: echo "TAG_NAME=$(date -u +%d%m%Y%I%M)" >> $GITHUB_ENV
     - name: Create Release
-      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p *.zip
+      run: gh release create ${{ env.TAG_NAME }} --generate-notes -p */*.zip
     - name: Release Check
       run: gh release list -L 1 > list
     - name: Prepare release message
